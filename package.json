@@ -1,16 +1,20 @@
 {
-  "name": "react-state-management",
+  "name": "react-model",
   "version": "1.0.0",
-  "description": "",
+  "description": "The State management library for React",
   "main": "index.js",
   "scripts": {
     "dev": "next",
     "build": "next build",
     "start": "next start"
   },
-  "keywords": [],
+  "keywords": [
+    "react",
+    "model",
+    "state"
+  ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@zeit/next-typescript": "^1.1.1",
     "next": "^7.0.2",
