@@ -1,5 +1,5 @@
 import React from 'react'
-import { useStore } from '../model'
+import { useStore } from 'react-model'
 
 export default () => {
   const [state, actions] = useStore('Home')

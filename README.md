@@ -6,10 +6,19 @@ The State management library for React
 
 ## Quick Start
 
+Running demo
+
 ```
 git clone https://github.com/byte-fe/react-model.git
 cd react-model/example
-npm run dev
+yarn
+yarn dev
+```
+
+install package
+
+```
+npm install git+https://github.com/byte-fe/react-model.git#master
 ```
 
 ## Core Concept
@@ -19,14 +28,23 @@ npm run dev
 react-model keep the state and actions in a global store. So you need to register them before using.
 
 ```typescript
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { registerModel } from '../model'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
-registerModel({
-  Home,
-  Shared
-})
+registerModel(
+  {
+    Home,
+    Shared
+  },
+  {
+    useState,
+    useCallback,
+    useEffect,
+    useContext
+  }
+)
 ```
 
 ### useStore

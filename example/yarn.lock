@@ -3671,6 +3671,13 @@ react-error-overlay@4.0.0:
   resolved "http://registry.npm.taobao.org/react-error-overlay/download/react-error-overlay-4.0.0.tgz#d198408a85b4070937a98667f500c832f86bd5d4"
   integrity sha1-0ZhAioW0Bwk3qYZn9QDIMvhr1dQ=
 
+"react-model@git+https://github.com/byte-fe/react-model.git#develop":
+  version "1.0.0-alpha"
+  resolved "git+https://github.com/byte-fe/react-model.git#37639bf7759d77599c75337485ab4793559133f1"
+  dependencies:
+    react "16.7.0-alpha.2"
+    react-dom "16.7.0-alpha.2"
+
 react@16.7.0-alpha.2:
   version "16.7.0-alpha.2"
   resolved "http://registry.npm.taobao.org/react/download/react-16.7.0-alpha.2.tgz#924f2ae843a46ea82d104a8def7a599fbf2c78ce"
