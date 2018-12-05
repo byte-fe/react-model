@@ -1,7 +1,8 @@
 import React from 'react'
-import { useStore } from '../model'
+import { useStore } from '../../dist'
 
 export default () => {
+  console.log('Working in function')
   const [state, actions] = useStore('Home')
   const [sharedState, sharedActions] = useStore('Shared')
 

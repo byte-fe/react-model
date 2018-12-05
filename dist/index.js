@@ -59,15 +59,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 /// <reference path="./index.d.ts" />
-import React, { PureComponent, useState, useCallback, useEffect } from 'react';
+import React, { PureComponent } from 'react';
 import { GlobalContext, Consumer } from './helper';
 var GlobalState = {};
 var Setter = {
     classSetter: undefined,
     functionSetter: {}
 };
-var registerModel = function (models) {
-    return (GlobalState = __assign({}, models));
+// If get the Hooks Api from
+// import {useState, useEffect, ...} from 'react'
+// will throw Error Hooks can only be called inside the body of a function component
+var hooksApi = {};
+var registerModel = function (models, hooks) {
+    GlobalState = __assign({}, models);
+    hooksApi = __assign({}, hooks);
 };
 var Provider = /** @class */ (function (_super) {
     __extends(Provider, _super);
@@ -89,18 +94,18 @@ var setPartialState = function (name, partialState) {
         actions: GlobalState[name].actions,
         state: __assign({}, GlobalState[name].state, partialState)
     }, _a));
-    // console.log(GlobalState)
     console.log(Object.keys(Setter.functionSetter['Home']).length, Object.keys(Setter.functionSetter['Shared']).length);
     return GlobalState;
 };
 var useStore = function (modelName) {
-    // const state = useContext(GlobalContext)
-    var _a = useState(GlobalState[modelName].state), state = _a[0], setState = _a[1];
+    // const _state = useContext(GlobalContext)
+    console.log('useStore');
+    var _a = hooksApi.useState(GlobalState[modelName].state), state = _a[0], setState = _a[1];
     var _hash = new Date().toISOString() + Math.random();
     if (!Setter.functionSetter[modelName])
         Setter.functionSetter[modelName] = [];
     Setter.functionSetter[modelName][_hash] = { setState: setState };
-    useEffect(function () {
+    hooksApi.useEffect(function () {
         return function cleanup() {
             delete Setter.functionSetter[modelName][_hash];
         };
@@ -138,7 +143,7 @@ var useStore = function (modelName) {
         return ret;
     };
     Object.keys(GlobalState[modelName].actions).map(function (key) {
-        return (updaters[key] = useCallback(function (params) { return __awaiter(_this, void 0, void 0, function () {
+        return (updaters[key] = hooksApi.useCallback(function (params) { return __awaiter(_this, void 0, void 0, function () {
             var newState;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -157,6 +162,7 @@ var useStore = function (modelName) {
         }); }, [GlobalState]));
     });
     return [state, updaters];
+    // return [state, setState]
 };
 var connect = function (modelName, mapProps) { return function (Component) {
     return /** @class */ (function (_super) {
