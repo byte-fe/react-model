@@ -56,7 +56,6 @@ const setPartialState = (name: keyof typeof GlobalState, partialState: any) => {
 
 const useStore = (modelName: keyof typeof GlobalState) => {
   // const _state = useContext(GlobalContext)
-  console.log('useStore')
   const [state, setState] = hooksApi.useState(GlobalState[modelName].state)
   const _hash = new Date().toISOString() + Math.random()
   if (!Setter.functionSetter[modelName]) Setter.functionSetter[modelName] = []

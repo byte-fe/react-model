@@ -105,7 +105,6 @@ var setPartialState = function (name, partialState) {
 };
 var useStore = function (modelName) {
     // const _state = useContext(GlobalContext)
-    console.log('useStore');
     var _a = hooksApi.useState(GlobalState[modelName].state), state = _a[0], setState = _a[1];
     var _hash = new Date().toISOString() + Math.random();
     if (!Setter.functionSetter[modelName])
