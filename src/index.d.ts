@@ -6,16 +6,13 @@ type Action<T, P = any, ActionKeys = []> = (
   params: P
 ) => Partial<T>
 
-type ProviderProps = {
-  [name: string]: ModelType<any, any>
-  setState?: Function
-}
+type ProviderProps = { [name: string]: ModelType }
 
 type Actions<T, ActionKeys> = {
   [P in keyof ActionKeys]: Action<T, ActionKeys[P], ActionKeys>
 }
 
-type ModelType<InitStateType = {}, ActionKeys = []> = {
+type ModelType<InitStateType, ActionKeys> = {
   actions: {
     [P in keyof ActionKeys]: Action<InitStateType, ActionKeys[P], ActionKeys>
   }

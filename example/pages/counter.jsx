@@ -1,6 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Provider, connect } from '../model'
-import { useStore } from '../model/index'
+import { Provider, connect } from '../../dist'
 
 const mapProps = ({ light, counter }) => ({
   lightStatus: light ? 'open' : 'close',
