@@ -6,10 +6,19 @@ The State management library for React
 
 ## Quick Start
 
+Running demo
+
 ```
 git clone https://github.com/byte-fe/react-model.git
 cd react-model/example
-npm run dev
+yarn
+yarn dev
+```
+
+install package
+
+```
+npm install git+https://github.com/byte-fe/react-model.git#master
 ```
 
 ## Core Concept
