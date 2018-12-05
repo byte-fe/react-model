@@ -19,14 +19,23 @@ npm run dev
 react-model keep the state and actions in a global store. So you need to register them before using.
 
 ```typescript
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { registerModel } from '../model'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
-registerModel({
-  Home,
-  Shared
-})
+registerModel(
+  {
+    Home,
+    Shared
+  },
+  {
+    useState,
+    useCallback,
+    useEffect,
+    useContext
+  }
+)
 ```
 
 ### useStore
