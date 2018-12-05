@@ -1,8 +1,8 @@
 {
   "name": "react-model",
-  "version": "1.0.0",
+  "version": "1.0.0-alpha",
   "description": "The State management library for React",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "module": "src/index.ts",
   "typing": "src/index.d.ts",
   "scripts": {
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@types/react": "^16.7.11",
-    "@types/react-dom": "^16.0.11"
+    "@types/react-dom": "^16.0.11",
+    "typescript": "^3.2.1"
   }
 }
