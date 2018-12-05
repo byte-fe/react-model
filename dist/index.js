@@ -1,3 +1,4 @@
+"use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
@@ -58,9 +59,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 var _this = this;
+exports.__esModule = true;
 /// <reference path="./index.d.ts" />
-import React, { PureComponent } from 'react';
-import { GlobalContext, Consumer } from './helper';
+var React = require("react");
+var react_1 = require("react");
+var helper_1 = require("./helper");
+exports.Consumer = helper_1.Consumer;
 var GlobalState = {};
 var Setter = {
     classSetter: undefined,
@@ -74,6 +78,7 @@ var registerModel = function (models, hooks) {
     GlobalState = __assign({}, models);
     hooksApi = __assign({}, hooks);
 };
+exports.registerModel = registerModel;
 var Provider = /** @class */ (function (_super) {
     __extends(Provider, _super);
     function Provider() {
@@ -84,10 +89,11 @@ var Provider = /** @class */ (function (_super) {
     Provider.prototype.render = function () {
         var children = this.props.children;
         Setter.classSetter = this.setState.bind(this);
-        return (React.createElement(GlobalContext.Provider, { value: __assign({}, GlobalState, { setState: this.setState.bind(this) }) }, children));
+        return (React.createElement(helper_1.GlobalContext.Provider, { value: __assign({}, GlobalState, { setState: this.setState.bind(this) }) }, children));
     };
     return Provider;
-}(PureComponent));
+}(react_1.PureComponent));
+exports.Provider = Provider;
 var setPartialState = function (name, partialState) {
     var _a;
     GlobalState = __assign({}, GlobalState, (_a = {}, _a[name] = {
@@ -164,6 +170,7 @@ var useStore = function (modelName) {
     return [state, updaters];
     // return [state, setState]
 };
+exports.useStore = useStore;
 var connect = function (modelName, mapProps) { return function (Component) {
     return /** @class */ (function (_super) {
         __extends(P, _super);
@@ -172,7 +179,7 @@ var connect = function (modelName, mapProps) { return function (Component) {
         }
         P.prototype.render = function () {
             var _this = this;
-            return (React.createElement(Consumer, null, function (models) {
+            return (React.createElement(helper_1.Consumer, null, function (models) {
                 var _a = models, _b = "" + modelName, _c = _a[_b], state = _c.state, actions = _c.actions, setState = _a.setState;
                 var consumerAction = function (action) { return function () {
                     var params = [];
@@ -208,6 +215,6 @@ var connect = function (modelName, mapProps) { return function (Component) {
             }));
         };
         return P;
-    }(PureComponent));
+    }(react_1.PureComponent));
 }; };
-export { Provider, Consumer, connect, useStore, registerModel };
+exports.connect = connect;

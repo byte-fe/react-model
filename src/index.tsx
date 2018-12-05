@@ -1,5 +1,6 @@
 /// <reference path="./index.d.ts" />
-import React, { PureComponent } from 'react'
+import * as React from 'react'
+import { PureComponent } from 'react'
 import { GlobalContext, Consumer } from './helper'
 
 let GlobalState: any = {}

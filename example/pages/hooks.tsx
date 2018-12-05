@@ -1,5 +1,5 @@
 import React from 'react'
-import { useStore } from '../../dist'
+import { useStore } from 'react-model'
 
 export default () => {
   console.log('Working in function')
