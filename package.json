@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "The State management library for React",
   "main": "src/index.ts",
+  "module": "src/index.ts",
   "typing": "src/index.d.ts",
   "scripts": {
     "dev": "next",
