@@ -6,16 +6,13 @@
     "experimentalDecorators": true,
     "jsx": "react",
     "lib": ["dom", "es2017"],
-    "module": "esnext",
-    "moduleResolution": "node",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "preserveConstEnums": true,
     "removeComments": false,
     "skipLibCheck": true,
     "sourceMap": false,
-    "strict": true,
-    "target": "es5"
+    "strict": true
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

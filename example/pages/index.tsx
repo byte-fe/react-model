@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState
 } from 'react'
-import { Provider, connect, registerModel } from '../../dist'
+import { Provider, connect, registerModel } from 'react-model'
 import { StateType, ActionType } from '../model/home.model'
 import J from './counter' // JS Version
 import H from './hooks'
