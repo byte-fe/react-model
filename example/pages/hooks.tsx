@@ -2,7 +2,6 @@ import React from 'react'
 import { useStore } from 'react-model'
 
 export default () => {
-  console.log('Working in function')
   const [state, actions] = useStore('Home')
   const [sharedState, sharedActions] = useStore('Shared')
 
