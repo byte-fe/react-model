@@ -8,7 +8,7 @@ The State management library for React
 
 ```
 git clone https://github.com/byte-fe/react-model.git
-cd react-model
+cd react-model/example
 npm run dev
 ```
 
