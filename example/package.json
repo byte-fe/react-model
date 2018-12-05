@@ -19,7 +19,8 @@
     "@zeit/next-typescript": "^1.1.1",
     "next": "^7.0.2",
     "react": "16.7.0-alpha.2",
-    "react-dom": "16.7.0-alpha.2"
+    "react-dom": "16.7.0-alpha.2",
+    "react-model": "git+https://github.com/byte-fe/react-model.git#develop"
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.1.6",
