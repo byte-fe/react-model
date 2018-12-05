@@ -105,7 +105,7 @@ const useStore = (modelName: keyof typeof GlobalState) => {
   return [state, updaters]
 }
 
-const connect = (modelName: keyof typeof GlobalState, mapProps: Function) => (
+const connect = (modelName: string, mapProps: Function) => (
   Component: typeof React.Component | typeof PureComponent
 ) =>
   class P extends PureComponent<{}> {
@@ -114,9 +114,9 @@ const connect = (modelName: keyof typeof GlobalState, mapProps: Function) => (
         <Consumer>
           {models => {
             const {
-              [modelName]: { state, actions },
+              [`${modelName}`]: { state, actions },
               setState
-            } = models
+            } = models as any
             const consumerAction = (action: any) => async (...params: any) => {
               const newState = await action(
                 GlobalState[modelName].state,
