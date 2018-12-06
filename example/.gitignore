@@ -1,0 +1,8 @@
+# Next.js
+.next/
+node_modules/
+
+# yarn
+*.log
+yarn.lock
+package-lock.json
