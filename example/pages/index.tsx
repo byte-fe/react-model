@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Provider, connect, registerModel } from 'react-model'
+import { Provider, connect, registerModel } from 'react-modelx'
 import { StateType, ActionType } from '../model/home.model'
 import J from './counter' // JS Version
 import H from './hooks'
