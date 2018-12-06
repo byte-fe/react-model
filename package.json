@@ -2,13 +2,11 @@
   "name": "react-model",
   "version": "1.0.0-alpha",
   "description": "The State management library for React",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./src/index.d.ts",
+  "main": "./dist/index",
+  "module": "./dist/index",
+  "types": "./src/index",
   "scripts": {
-    "dev": "next",
-    "build": "tsc src/index.tsx",
-    "start": "next start"
+    "build": "tsc src/index.tsx"
   },
   "keywords": [
     "react",
