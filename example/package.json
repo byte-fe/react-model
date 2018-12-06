@@ -1,7 +1,7 @@
 {
-  "name": "react-model-demo",
+  "name": "react-modelx-demo",
   "version": "1.0.0",
-  "description": "demo for react-model",
+  "description": "demo for react-modelx",
   "main": "index.js",
   "scripts": {
     "dev": "next",
@@ -20,7 +20,7 @@
     "next": "^7.0.2",
     "react": "16.7.0-alpha.2",
     "react-dom": "16.7.0-alpha.2",
-    "react-model": "git+https://github.com/byte-fe/react-model.git#develop"
+    "react-modelx": "^1.0.0-alpha.1"
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.1.6",
