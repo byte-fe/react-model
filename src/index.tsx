@@ -1,6 +1,12 @@
 /// <reference path="./index.d.ts" />
 import * as React from 'react'
-import { PureComponent } from 'react'
+import {
+  PureComponent,
+  useCallback,
+  useContext,
+  useEffect,
+  useState
+} from 'react'
 import { GlobalContext, Consumer } from './helper'
 
 let GlobalState: any = {}
@@ -14,7 +20,15 @@ let Setter = {
 // will throw Error Hooks can only be called inside the body of a function component
 let hooksApi: any = {}
 
-const registerModel = (models: any, hooks: any) => {
+const registerModel = (
+  models: any,
+  hooks: any = {
+    useCallback,
+    useContext,
+    useEffect,
+    useState
+  }
+) => {
   GlobalState = {
     ...models
   }
