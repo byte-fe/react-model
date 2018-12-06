@@ -70,6 +70,7 @@ var Setter = {
     classSetter: undefined,
     functionSetter: {}
 };
+var uid = Math.random(); // The unique id of hooks
 var registerModel = function (models) {
     GlobalState = __assign({}, models);
 };
@@ -95,13 +96,13 @@ var setPartialState = function (name, partialState) {
         actions: GlobalState[name].actions,
         state: __assign({}, GlobalState[name].state, partialState)
     }, _a));
-    console.log(Object.keys(Setter.functionSetter['Home']).length, Object.keys(Setter.functionSetter['Shared']).length);
     return GlobalState;
 };
 var useStore = function (modelName) {
     // const _state = useContext(GlobalContext)
     var _a = react_1.useState(GlobalState[modelName].state), state = _a[0], setState = _a[1];
-    var _hash = new Date().toISOString() + Math.random();
+    uid += 1;
+    var _hash = '' + uid;
     if (!Setter.functionSetter[modelName])
         Setter.functionSetter[modelName] = [];
     Setter.functionSetter[modelName][_hash] = { setState: setState };
@@ -159,7 +160,7 @@ var useStore = function (modelName) {
                         return [2 /*return*/];
                 }
             });
-        }); }, [GlobalState]));
+        }); }, [GlobalState[modelName]]));
     });
     return [state, updaters];
 };
