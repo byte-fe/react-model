@@ -3,7 +3,7 @@ import * as React from 'react'
 import {
   PureComponent,
   useCallback,
-  useContext,
+  // useContext,
   useEffect,
   useState
 } from 'react'
@@ -15,24 +15,10 @@ let Setter = {
   functionSetter: {} as any
 }
 
-// If get the Hooks Api from
-// import {useState, useEffect, ...} from 'react'
-// will throw Error Hooks can only be called inside the body of a function component
-let hooksApi: any = {}
-
-const registerModel = (
-  models: any,
-  hooks: any = {
-    useCallback,
-    useContext,
-    useEffect,
-    useState
-  }
-) => {
+const registerModel = (models: any) => {
   GlobalState = {
     ...models
   }
-  hooksApi = { ...hooks }
 }
 
 class Provider extends PureComponent<{}, ProviderProps> {
@@ -70,11 +56,11 @@ const setPartialState = (name: keyof typeof GlobalState, partialState: any) => {
 
 const useStore = (modelName: keyof typeof GlobalState) => {
   // const _state = useContext(GlobalContext)
-  const [state, setState] = hooksApi.useState(GlobalState[modelName].state)
+  const [state, setState] = useState(GlobalState[modelName].state)
   const _hash = new Date().toISOString() + Math.random()
   if (!Setter.functionSetter[modelName]) Setter.functionSetter[modelName] = []
   Setter.functionSetter[modelName][_hash] = { setState }
-  hooksApi.useEffect(() => {
+  useEffect(() => {
     return function cleanup() {
       delete Setter.functionSetter[modelName][_hash]
     }
@@ -104,7 +90,7 @@ const useStore = (modelName: keyof typeof GlobalState) => {
   }
   Object.keys(GlobalState[modelName].actions).map(
     key =>
-      (updaters[key] = hooksApi.useCallback(
+      (updaters[key] = useCallback(
         async (params: any) => {
           const newState = await GlobalState[modelName].actions[key](
             GlobalState[modelName].state,
@@ -124,7 +110,6 @@ const useStore = (modelName: keyof typeof GlobalState) => {
       ))
   )
   return [state, updaters]
-  // return [state, setState]
 }
 
 const connect = (modelName: string, mapProps: Function) => (

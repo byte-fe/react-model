@@ -70,19 +70,8 @@ var Setter = {
     classSetter: undefined,
     functionSetter: {}
 };
-// If get the Hooks Api from
-// import {useState, useEffect, ...} from 'react'
-// will throw Error Hooks can only be called inside the body of a function component
-var hooksApi = {};
-var registerModel = function (models, hooks) {
-    if (hooks === void 0) { hooks = {
-        useCallback: react_1.useCallback,
-        useContext: react_1.useContext,
-        useEffect: react_1.useEffect,
-        useState: react_1.useState
-    }; }
+var registerModel = function (models) {
     GlobalState = __assign({}, models);
-    hooksApi = __assign({}, hooks);
 };
 exports.registerModel = registerModel;
 var Provider = /** @class */ (function (_super) {
@@ -111,12 +100,12 @@ var setPartialState = function (name, partialState) {
 };
 var useStore = function (modelName) {
     // const _state = useContext(GlobalContext)
-    var _a = hooksApi.useState(GlobalState[modelName].state), state = _a[0], setState = _a[1];
+    var _a = react_1.useState(GlobalState[modelName].state), state = _a[0], setState = _a[1];
     var _hash = new Date().toISOString() + Math.random();
     if (!Setter.functionSetter[modelName])
         Setter.functionSetter[modelName] = [];
     Setter.functionSetter[modelName][_hash] = { setState: setState };
-    hooksApi.useEffect(function () {
+    react_1.useEffect(function () {
         return function cleanup() {
             delete Setter.functionSetter[modelName][_hash];
         };
@@ -154,7 +143,7 @@ var useStore = function (modelName) {
         return ret;
     };
     Object.keys(GlobalState[modelName].actions).map(function (key) {
-        return (updaters[key] = hooksApi.useCallback(function (params) { return __awaiter(_this, void 0, void 0, function () {
+        return (updaters[key] = react_1.useCallback(function (params) { return __awaiter(_this, void 0, void 0, function () {
             var newState;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -173,7 +162,6 @@ var useStore = function (modelName) {
         }); }, [GlobalState]));
     });
     return [state, updaters];
-    // return [state, setState]
 };
 exports.useStore = useStore;
 var connect = function (modelName, mapProps) { return function (Component) {
