@@ -6,9 +6,7 @@
   "module": "./dist/index",
   "types": "./src/index",
   "scripts": {
-    "dev": "next",
-    "build": "tsc src/index.tsx",
-    "start": "next start"
+    "build": "tsc src/index.tsx"
   },
   "keywords": [
     "react",
