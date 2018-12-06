@@ -28,23 +28,14 @@ npm install git+https://github.com/byte-fe/react-model.git#master
 react-model keep the state and actions in a global store. So you need to register them before using.
 
 ```typescript
-import { useCallback, useContext, useEffect, useState } from 'react'
-import { registerModel } from '../model'
+import { registerModel } from 'react-model'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
-registerModel(
-  {
-    Home,
-    Shared
-  },
-  {
-    useState,
-    useCallback,
-    useEffect,
-    useContext
-  }
-)
+registerModel({
+  Home,
+  Shared
+})
 ```
 
 ### useStore
@@ -53,7 +44,7 @@ The functional component in React 16.7 can use Hooks to connect the global store
 
 ```javascript
 import React from 'react'
-import { useStore } from '../model'
+import { useStore } from 'react-model'
 
 export default () => {
   const [state, actions] = useStore('Home')
@@ -80,7 +71,7 @@ The global state standalone can not effect the react class components, we need t
 
 ```jsx
 import { PureComponent } from 'react'
-import { Provider } from './model'
+import { Provider } from 'react-model'
 
 class App extends PureComponent {
   render() {
@@ -101,7 +92,7 @@ Javascript decorator version
 
 ```jsx
 import React, { PureComponent } from 'react'
-import { Provider, connect } from '../model'
+import { Provider, connect } from 'react-model'
 
 const mapProps = ({ light, counter }) => ({
   lightStatus: light ? 'open' : 'close',
@@ -130,7 +121,7 @@ TypeScript Version
 
 ```tsx
 import React, { PureComponent } from 'react'
-import { Provider, connect } from '../model'
+import { Provider, connect } from 'react-model'
 import { StateType, ActionType } from '../model/home.model'
 
 const mapProps = ({ light, counter, response }: StateType) => ({

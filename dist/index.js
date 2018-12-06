@@ -75,6 +75,12 @@ var Setter = {
 // will throw Error Hooks can only be called inside the body of a function component
 var hooksApi = {};
 var registerModel = function (models, hooks) {
+    if (hooks === void 0) { hooks = {
+        useCallback: react_1.useCallback,
+        useContext: react_1.useContext,
+        useEffect: react_1.useEffect,
+        useState: react_1.useState
+    }; }
     GlobalState = __assign({}, models);
     hooksApi = __assign({}, hooks);
 };
