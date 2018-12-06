@@ -1,10 +1,4 @@
-import React, {
-  PureComponent,
-  useCallback,
-  useContext,
-  useEffect,
-  useState
-} from 'react'
+import React, { PureComponent } from 'react'
 import { Provider, connect, registerModel } from 'react-model'
 import { StateType, ActionType } from '../model/home.model'
 import J from './counter' // JS Version
@@ -13,18 +7,10 @@ import H from './hooks'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
-registerModel(
-  {
-    Home,
-    Shared
-  },
-  {
-    useState,
-    useCallback,
-    useEffect,
-    useContext
-  }
-)
+registerModel({
+  Home,
+  Shared
+})
 
 export default class App extends PureComponent {
   render() {
