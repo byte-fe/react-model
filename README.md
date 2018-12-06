@@ -1,4 +1,4 @@
-# react-model
+# react-modelx
 
 The State management library for React
 
@@ -9,7 +9,7 @@ The State management library for React
 Running demo
 
 ```
-git clone https://github.com/byte-fe/react-model.git
+git clone https://github.com/byte-fe/react-modelx.git
 cd react-model/example
 yarn
 yarn dev
@@ -18,7 +18,7 @@ yarn dev
 install package
 
 ```
-npm install git+https://github.com/byte-fe/react-model.git#master
+npm install react-modelx
 ```
 
 ## Core Concept
@@ -28,7 +28,7 @@ npm install git+https://github.com/byte-fe/react-model.git#master
 react-model keep the state and actions in a global store. So you need to register them before using.
 
 ```typescript
-import { registerModel } from 'react-model'
+import { registerModel } from 'react-modelx'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
@@ -44,7 +44,7 @@ The functional component in React 16.7 can use Hooks to connect the global store
 
 ```javascript
 import React from 'react'
-import { useStore } from 'react-model'
+import { useStore } from 'react-modelx'
 
 export default () => {
   const [state, actions] = useStore('Home')
@@ -71,7 +71,7 @@ The global state standalone can not effect the react class components, we need t
 
 ```jsx
 import { PureComponent } from 'react'
-import { Provider } from 'react-model'
+import { Provider } from 'react-modelx'
 
 class App extends PureComponent {
   render() {
@@ -92,7 +92,7 @@ Javascript decorator version
 
 ```jsx
 import React, { PureComponent } from 'react'
-import { Provider, connect } from 'react-model'
+import { Provider, connect } from 'react-modelx'
 
 const mapProps = ({ light, counter }) => ({
   lightStatus: light ? 'open' : 'close',
@@ -121,7 +121,7 @@ TypeScript Version
 
 ```tsx
 import React, { PureComponent } from 'react'
-import { Provider, connect } from 'react-model'
+import { Provider, connect } from 'react-modelx'
 import { StateType, ActionType } from '../model/home.model'
 
 const mapProps = ({ light, counter, response }: StateType) => ({
