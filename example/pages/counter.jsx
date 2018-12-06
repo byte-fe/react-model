@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Provider, connect } from 'react-model'
+import { Provider, connect } from 'react-modelx'
 
 const mapProps = ({ light, counter }) => ({
   lightStatus: light ? 'open' : 'close',
