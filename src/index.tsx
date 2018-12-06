@@ -15,6 +15,8 @@ let Setter = {
   functionSetter: {} as any
 }
 
+let uid = Math.random() // The unique id of hooks
+
 const registerModel = (models: any) => {
   GlobalState = {
     ...models
@@ -47,17 +49,14 @@ const setPartialState = (name: keyof typeof GlobalState, partialState: any) => {
       }
     }
   }
-  console.log(
-    Object.keys(Setter.functionSetter['Home']).length,
-    Object.keys(Setter.functionSetter['Shared']).length
-  )
   return GlobalState
 }
 
 const useStore = (modelName: keyof typeof GlobalState) => {
   // const _state = useContext(GlobalContext)
   const [state, setState] = useState(GlobalState[modelName].state)
-  const _hash = new Date().toISOString() + Math.random()
+  uid += 1
+  const _hash = '' + uid
   if (!Setter.functionSetter[modelName]) Setter.functionSetter[modelName] = []
   Setter.functionSetter[modelName][_hash] = { setState }
   useEffect(() => {
@@ -106,7 +105,7 @@ const useStore = (modelName: keyof typeof GlobalState) => {
             )
           )
         },
-        [GlobalState]
+        [GlobalState[modelName]]
       ))
   )
   return [state, updaters]
