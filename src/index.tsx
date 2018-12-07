@@ -10,6 +10,8 @@ import {
 import { GlobalContext, Consumer } from './helper'
 
 let GlobalState: any = {}
+// Communicate between Provider-Consumer and Hooks
+// Use to provide backwards-compatible.
 let Setter = {
   classSetter: undefined as any,
   functionSetter: {} as any
@@ -111,7 +113,7 @@ const useStore = (modelName: keyof typeof GlobalState) => {
   return [state, updaters]
 }
 
-const connect = (modelName: string, mapProps: Function) => (
+const connect = (modelName: string, mapProps: Function | undefined) => (
   Component: typeof React.Component | typeof PureComponent
 ) =>
   class P extends PureComponent<{}> {
@@ -147,7 +149,7 @@ const connect = (modelName: string, mapProps: Function) => (
 
             return (
               <Component
-                state={mapProps(state)}
+                state={mapProps ? mapProps(state) : state}
                 actions={consumerActions(actions)}
               />
             )
