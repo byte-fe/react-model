@@ -54,6 +54,10 @@ const setPartialState = (name: keyof typeof GlobalState, partialState: any) => {
   return GlobalState
 }
 
+const getState = (modelName: keyof typeof GlobalState) => {
+  return (GlobalState as any)[modelName].state
+}
+
 const useStore = (modelName: keyof typeof GlobalState) => {
   // const _state = useContext(GlobalContext)
   const [state, setState] = useState(GlobalState[modelName].state)
@@ -73,14 +77,16 @@ const useStore = (modelName: keyof typeof GlobalState) => {
       consumerActions(GlobalState[modelName].actions),
       ...params
     )
-    setPartialState(modelName, newState)
-    setState(GlobalState[modelName].state)
-    Setter.classSetter(GlobalState)
-    Object.keys(Setter.functionSetter[modelName]).map(key =>
-      Setter.functionSetter[modelName][key].setState(
-        GlobalState[modelName].state
+    if (newState) {
+      setPartialState(modelName, newState)
+      setState(GlobalState[modelName].state)
+      Setter.classSetter(GlobalState)
+      Object.keys(Setter.functionSetter[modelName]).map(key =>
+        Setter.functionSetter[modelName][key].setState(
+          GlobalState[modelName].state
+        )
       )
-    )
+    }
   }
   const consumerActions = (actions: any) => {
     let ret: any = {}
@@ -98,16 +104,19 @@ const useStore = (modelName: keyof typeof GlobalState) => {
             consumerActions(GlobalState[modelName].actions),
             params
           )
-          setPartialState(modelName, newState)
-          setState(GlobalState[modelName].state)
-          Setter.classSetter(GlobalState)
-          Object.keys(Setter.functionSetter[modelName]).map(key =>
-            Setter.functionSetter[modelName][key].setState(
-              GlobalState[modelName].state
+          if (newState) {
+            setPartialState(modelName, newState)
+            setState(GlobalState[modelName].state)
+            Setter.classSetter(GlobalState)
+            Object.keys(Setter.functionSetter[modelName]).map(key =>
+              Setter.functionSetter[modelName][key].setState(
+                GlobalState[modelName].state
+              )
             )
-          )
+          }
         },
-        [GlobalState[modelName]]
+        []
+        // [GlobalState[modelName]]
       ))
   )
   return [state, updaters]
@@ -131,13 +140,15 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
                 consumerActions(actions),
                 ...params
               )
-              setPartialState(modelName, newState)
-              setState(GlobalState)
-              Object.keys(Setter.functionSetter[modelName]).map(key =>
-                Setter.functionSetter[modelName][key].setState(
-                  GlobalState[modelName].state
+              if (newState) {
+                setPartialState(modelName, newState)
+                setState(GlobalState)
+                Object.keys(Setter.functionSetter[modelName]).map(key =>
+                  Setter.functionSetter[modelName][key].setState(
+                    GlobalState[modelName].state
+                  )
                 )
-              )
+              }
             }
             const consumerActions = (actions: any) => {
               let ret: any = {}
@@ -159,4 +170,4 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
     }
   }
 
-export { Provider, Consumer, connect, useStore, registerModel }
+export { registerModel, Provider, Consumer, connect, useStore, getState }
