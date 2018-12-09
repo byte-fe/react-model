@@ -100,10 +100,10 @@ var setPartialState = function (name, partialState) {
     }, _a));
     return GlobalState;
 };
-var useConsumer = function (modelName) {
+var getState = function (modelName) {
     return GlobalState[modelName].state;
 };
-exports.useConsumer = useConsumer;
+exports.getState = getState;
 var useStore = function (modelName) {
     // const _state = useContext(GlobalContext)
     var _a = react_1.useState(GlobalState[modelName].state), state = _a[0], setState = _a[1];

@@ -65,6 +65,33 @@ export default () => {
 }
 ```
 
+### getState
+
+Key Point: [State variable not updating in useEffect callback](https://github.com/facebook/react/issues/14066)
+To solve it, we provide a way to get the current state of model: getState
+
+> Hint: The state returned should only used as readonly
+
+```jsx
+const BasicHook = () => {
+  const [state, actions] = useStore('Counter')
+  useEffect(() => {
+    console.log('some mounted actions from BasicHooks')
+    return () =>
+      console.log(
+        `Basic Hooks unmounted, current Counter state: ${JSON.stringify(
+          getState('Counter')
+        )}`
+      )
+  }, [])
+  return (
+    <>
+      <div>state: {JSON.stringify(state)}</div>
+    </>
+  )
+}
+```
+
 ### Provider
 
 The global state standalone can not effect the react class components, we need to provide the state to react root component.
