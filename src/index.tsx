@@ -40,7 +40,10 @@ class Provider extends PureComponent<{}, ProviderProps> {
   }
 }
 
-const setPartialState = (name: keyof typeof GlobalState, partialState: any) => {
+const setPartialState = (
+  name: keyof typeof GlobalState,
+  partialState: any = {}
+) => {
   GlobalState = {
     ...GlobalState,
     [name]: {
