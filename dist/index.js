@@ -66,6 +66,8 @@ var react_1 = require("react");
 var helper_1 = require("./helper");
 exports.Consumer = helper_1.Consumer;
 var GlobalState = {};
+// Communicate between Provider-Consumer and Hooks
+// Use to provide backwards-compatible.
 var Setter = {
     classSetter: undefined,
     functionSetter: {}
@@ -98,6 +100,10 @@ var setPartialState = function (name, partialState) {
     }, _a));
     return GlobalState;
 };
+var getState = function (modelName) {
+    return GlobalState[modelName].state;
+};
+exports.getState = getState;
 var useStore = function (modelName) {
     // const _state = useContext(GlobalContext)
     var _a = react_1.useState(GlobalState[modelName].state), state = _a[0], setState = _a[1];
@@ -125,12 +131,14 @@ var useStore = function (modelName) {
                             consumerActions(GlobalState[modelName].actions)].concat(params))];
                     case 1:
                         newState = _a.sent();
-                        setPartialState(modelName, newState);
-                        setState(GlobalState[modelName].state);
-                        Setter.classSetter(GlobalState);
-                        Object.keys(Setter.functionSetter[modelName]).map(function (key) {
-                            return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
-                        });
+                        if (newState) {
+                            setPartialState(modelName, newState);
+                            setState(GlobalState[modelName].state);
+                            Setter.classSetter(GlobalState);
+                            Object.keys(Setter.functionSetter[modelName]).map(function (key) {
+                                return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
+                            });
+                        }
                         return [2 /*return*/];
                 }
             });
@@ -151,16 +159,20 @@ var useStore = function (modelName) {
                     case 0: return [4 /*yield*/, GlobalState[modelName].actions[key](GlobalState[modelName].state, consumerActions(GlobalState[modelName].actions), params)];
                     case 1:
                         newState = _a.sent();
-                        setPartialState(modelName, newState);
-                        setState(GlobalState[modelName].state);
-                        Setter.classSetter(GlobalState);
-                        Object.keys(Setter.functionSetter[modelName]).map(function (key) {
-                            return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
-                        });
+                        if (newState) {
+                            setPartialState(modelName, newState);
+                            setState(GlobalState[modelName].state);
+                            Setter.classSetter(GlobalState);
+                            Object.keys(Setter.functionSetter[modelName]).map(function (key) {
+                                return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
+                            });
+                        }
                         return [2 /*return*/];
                 }
             });
-        }); }, [GlobalState[modelName]]));
+        }); }, []
+        // [GlobalState[modelName]]
+        ));
     });
     return [state, updaters];
 };
@@ -188,11 +200,13 @@ var connect = function (modelName, mapProps) { return function (Component) {
                                         consumerActions(actions)].concat(params))];
                                 case 1:
                                     newState = _a.sent();
-                                    setPartialState(modelName, newState);
-                                    setState(GlobalState);
-                                    Object.keys(Setter.functionSetter[modelName]).map(function (key) {
-                                        return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
-                                    });
+                                    if (newState) {
+                                        setPartialState(modelName, newState);
+                                        setState(GlobalState);
+                                        Object.keys(Setter.functionSetter[modelName]).map(function (key) {
+                                            return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
+                                        });
+                                    }
                                     return [2 /*return*/];
                             }
                         });
@@ -205,7 +219,7 @@ var connect = function (modelName, mapProps) { return function (Component) {
                     });
                     return ret;
                 };
-                return (React.createElement(Component, { state: mapProps(state), actions: consumerActions(actions) }));
+                return (React.createElement(Component, { state: mapProps ? mapProps(state) : state, actions: consumerActions(actions) }));
             }));
         };
         return P;

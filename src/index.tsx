@@ -10,6 +10,8 @@ import {
 import { GlobalContext, Consumer } from './helper'
 
 let GlobalState: any = {}
+// Communicate between Provider-Consumer and Hooks
+// Use to provide backwards-compatible.
 let Setter = {
   classSetter: undefined as any,
   functionSetter: {} as any
@@ -38,7 +40,10 @@ class Provider extends PureComponent<{}, ProviderProps> {
   }
 }
 
-const setPartialState = (name: keyof typeof GlobalState, partialState: any) => {
+const setPartialState = (
+  name: keyof typeof GlobalState,
+  partialState: any = {}
+) => {
   GlobalState = {
     ...GlobalState,
     [name]: {
@@ -50,6 +55,10 @@ const setPartialState = (name: keyof typeof GlobalState, partialState: any) => {
     }
   }
   return GlobalState
+}
+
+const getState = (modelName: keyof typeof GlobalState) => {
+  return (GlobalState as any)[modelName].state
 }
 
 const useStore = (modelName: keyof typeof GlobalState) => {
@@ -71,14 +80,16 @@ const useStore = (modelName: keyof typeof GlobalState) => {
       consumerActions(GlobalState[modelName].actions),
       ...params
     )
-    setPartialState(modelName, newState)
-    setState(GlobalState[modelName].state)
-    Setter.classSetter(GlobalState)
-    Object.keys(Setter.functionSetter[modelName]).map(key =>
-      Setter.functionSetter[modelName][key].setState(
-        GlobalState[modelName].state
+    if (newState) {
+      setPartialState(modelName, newState)
+      setState(GlobalState[modelName].state)
+      Setter.classSetter(GlobalState)
+      Object.keys(Setter.functionSetter[modelName]).map(key =>
+        Setter.functionSetter[modelName][key].setState(
+          GlobalState[modelName].state
+        )
       )
-    )
+    }
   }
   const consumerActions = (actions: any) => {
     let ret: any = {}
@@ -96,22 +107,25 @@ const useStore = (modelName: keyof typeof GlobalState) => {
             consumerActions(GlobalState[modelName].actions),
             params
           )
-          setPartialState(modelName, newState)
-          setState(GlobalState[modelName].state)
-          Setter.classSetter(GlobalState)
-          Object.keys(Setter.functionSetter[modelName]).map(key =>
-            Setter.functionSetter[modelName][key].setState(
-              GlobalState[modelName].state
+          if (newState) {
+            setPartialState(modelName, newState)
+            setState(GlobalState[modelName].state)
+            Setter.classSetter(GlobalState)
+            Object.keys(Setter.functionSetter[modelName]).map(key =>
+              Setter.functionSetter[modelName][key].setState(
+                GlobalState[modelName].state
+              )
             )
-          )
+          }
         },
-        [GlobalState[modelName]]
+        []
+        // [GlobalState[modelName]]
       ))
   )
   return [state, updaters]
 }
 
-const connect = (modelName: string, mapProps: Function) => (
+const connect = (modelName: string, mapProps: Function | undefined) => (
   Component: typeof React.Component | typeof PureComponent
 ) =>
   class P extends PureComponent<{}> {
@@ -129,13 +143,15 @@ const connect = (modelName: string, mapProps: Function) => (
                 consumerActions(actions),
                 ...params
               )
-              setPartialState(modelName, newState)
-              setState(GlobalState)
-              Object.keys(Setter.functionSetter[modelName]).map(key =>
-                Setter.functionSetter[modelName][key].setState(
-                  GlobalState[modelName].state
+              if (newState) {
+                setPartialState(modelName, newState)
+                setState(GlobalState)
+                Object.keys(Setter.functionSetter[modelName]).map(key =>
+                  Setter.functionSetter[modelName][key].setState(
+                    GlobalState[modelName].state
+                  )
                 )
-              )
+              }
             }
             const consumerActions = (actions: any) => {
               let ret: any = {}
@@ -147,7 +163,7 @@ const connect = (modelName: string, mapProps: Function) => (
 
             return (
               <Component
-                state={mapProps(state)}
+                state={mapProps ? mapProps(state) : state}
                 actions={consumerActions(actions)}
               />
             )
@@ -157,4 +173,4 @@ const connect = (modelName: string, mapProps: Function) => (
     }
   }
 
-export { Provider, Consumer, connect, useStore, registerModel }
+export { registerModel, Provider, Consumer, connect, useStore, getState }
