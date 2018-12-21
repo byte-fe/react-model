@@ -83,7 +83,7 @@ const useStore = (modelName: keyof typeof GlobalState) => {
     if (newState) {
       setPartialState(modelName, newState)
       setState(GlobalState[modelName].state)
-      Setter.classSetter(GlobalState)
+      Setter.classSetter && Setter.classSetter(GlobalState)
       Object.keys(Setter.functionSetter[modelName]).map(key =>
         Setter.functionSetter[modelName][key].setState(
           GlobalState[modelName].state
@@ -110,7 +110,7 @@ const useStore = (modelName: keyof typeof GlobalState) => {
           if (newState) {
             setPartialState(modelName, newState)
             setState(GlobalState[modelName].state)
-            Setter.classSetter(GlobalState)
+            Setter.classSetter && Setter.classSetter(GlobalState)
             Object.keys(Setter.functionSetter[modelName]).map(key =>
               Setter.functionSetter[modelName][key].setState(
                 GlobalState[modelName].state

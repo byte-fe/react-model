@@ -70,7 +70,7 @@ export default () => {
 Key Point: [State variable not updating in useEffect callback](https://github.com/facebook/react/issues/14066)
 To solve it, we provide a way to get the current state of model: getState
 
-> Hint: The state returned should only used as readonly
+> Hint: The state returned should only be used as readonly
 
 ```jsx
 const BasicHook = () => {
