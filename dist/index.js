@@ -93,6 +93,7 @@ var Provider = /** @class */ (function (_super) {
 }(react_1.PureComponent));
 exports.Provider = Provider;
 var setPartialState = function (name, partialState) {
+    if (partialState === void 0) { partialState = {}; }
     var _a;
     GlobalState = __assign({}, GlobalState, (_a = {}, _a[name] = {
         actions: GlobalState[name].actions,
@@ -134,7 +135,7 @@ var useStore = function (modelName) {
                         if (newState) {
                             setPartialState(modelName, newState);
                             setState(GlobalState[modelName].state);
-                            Setter.classSetter(GlobalState);
+                            Setter.classSetter && Setter.classSetter(GlobalState);
                             Object.keys(Setter.functionSetter[modelName]).map(function (key) {
                                 return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
                             });
@@ -162,7 +163,7 @@ var useStore = function (modelName) {
                         if (newState) {
                             setPartialState(modelName, newState);
                             setState(GlobalState[modelName].state);
-                            Setter.classSetter(GlobalState);
+                            Setter.classSetter && Setter.classSetter(GlobalState);
                             Object.keys(Setter.functionSetter[modelName]).map(function (key) {
                                 return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
                             });
