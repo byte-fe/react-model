@@ -1,12 +1,13 @@
 {
   "name": "react-modelx",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-alpha.7",
   "description": "The State management library for React",
   "main": "./dist/index",
   "module": "./dist/index",
   "types": "./src/index",
   "scripts": {
-    "build": "tsc src/index.tsx"
+    "build": "tsc src/index.tsx",
+    "publish": "tsc && npm publish"
   },
   "keywords": [
     "react-modelx",
@@ -17,13 +18,12 @@
   ],
   "author": "ArrayZoneYour <hustliyidong@gmail.com>",
   "license": "MIT",
-  "dependencies": {
-    "react": "16.7.0-alpha.2",
-    "react-dom": "16.7.0-alpha.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@types/react": "^16.7.11",
     "@types/react-dom": "^16.0.11",
+    "react": "^16.7.0-alpha.2",
+    "react-dom": "^16.7.0-alpha.2",
     "typescript": "^3.2.1"
   },
   "repository": {
