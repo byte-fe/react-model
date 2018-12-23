@@ -12,6 +12,10 @@ type Actions<T, ActionKeys> = {
   [P in keyof ActionKeys]: Action<T, ActionKeys[P], ActionKeys>
 }
 
+interface Models {
+  [name: string]: ModelType
+}
+
 type ModelType<InitStateType, ActionKeys> = {
   actions: {
     [P in keyof ActionKeys]: Action<InitStateType, ActionKeys[P], ActionKeys>
@@ -28,3 +32,10 @@ type getConsumerActionsType<T> = {
     ? (params?: ArgumentTypes<T[P]>[2]) => ReturnType<T[P]>
     : (params: ArgumentTypes<T[P]>[2]) => ReturnType<T[P]>
 }
+
+type Get<T, N extends keyof T> = T[N]
+
+type UseStore<K extends keyof M, M extends Models> = (
+  name: K,
+  models?: M
+) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
