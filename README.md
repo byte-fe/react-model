@@ -27,15 +27,34 @@ npm install react-modelx
 
 react-model keep the state and actions in a global store. So you need to register them before using.
 
+`index.ts`
+
 ```typescript
 import { registerModel } from 'react-modelx'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
-registerModel({
-  Home,
-  Shared
-})
+const models = { Home, Shared }
+
+export const {
+  useStore
+}: { useStore: UseStore<keyof typeof models, typeof models> } = registerModel(
+  models
+)
+```
+
+`index.js`
+
+```javascript
+import { registerModel } from 'react-modelx'
+import Home from '../model/home.model'
+import Shared from '../model/shared.model'
+
+const models = { Home, Shared }
+
+export const {
+  useStore
+}
 ```
 
 ### useStore
@@ -44,7 +63,7 @@ The functional component in React 16.7 can use Hooks to connect the global store
 
 ```javascript
 import React from 'react'
-import { useStore } from 'react-modelx'
+import { useStore } from './index'
 
 export default () => {
   const [state, actions] = useStore('Home')
@@ -63,6 +82,69 @@ export default () => {
     </div>
   )
 }
+```
+
+### Model
+
+Every model have their own state and actions.
+
+```typescript
+const initialState = {
+  counter: 0,
+  light: false,
+  response: {} as {
+    code: number
+    message: string
+  }
+}
+
+type StateType = typeof initialState
+type ActionsParamType = {
+  increment: number
+  openLight: undefined
+  get: undefined
+} // You only need to tag the type of params here !
+
+const Model = {
+  actions: {
+    increment: async (state, _, params) => {
+      return {
+        counter: state.counter + (params || 1)
+      }
+    },
+    openLight: async (state, actions) => {
+      await actions.increment(1) // You can use other actions within the model
+      await actions.get() // support async functions (block actions)
+      actions.get()
+      await actions.increment(1) // + 1
+      await actions.increment(1) // + 2
+      await actions.increment(1) // + 3 as expected !
+      return { light: !state.light }
+    },
+    get: async () => {
+      await new Promise((resolve, reject) =>
+        setTimeout(() => {
+          resolve()
+        }, 3000)
+      )
+      return {
+        response: {
+          code: 200,
+          message: `${new Date().toLocaleString()} open light success`
+        }
+      }
+    }
+  },
+  state: initialState
+} as ModelType<StateType, ActionsParamType> // The Modal actions type will generate automatically by the StateType and ActionParamsType
+
+export default Model
+
+type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
+type ConsumerType = { actions: ConsumerActionsType; state: StateType }
+type ActionType = ConsumerActionsType
+
+export { ConsumerType, StateType, ActionType }
 ```
 
 ### getState
@@ -91,6 +173,8 @@ const BasicHook = () => {
   )
 }
 ```
+
+## Other Concept required by Class Component
 
 ### Provider
 
@@ -181,67 +265,4 @@ export default connect(
   'Home',
   mapProps
 )(TSCounter)
-```
-
-### Model
-
-Every model have their own state and actions.
-
-```typescript
-const initialState = {
-  counter: 0,
-  light: false,
-  response: {} as {
-    code: number
-    message: string
-  }
-}
-
-type StateType = typeof initialState
-type ActionsParamType = {
-  increment: number
-  openLight: undefined
-  get: undefined
-} // You only need to tag the type of params here !
-
-const Model = {
-  actions: {
-    increment: async (state, _, params) => {
-      return {
-        counter: state.counter + (params || 1)
-      }
-    },
-    openLight: async (state, actions) => {
-      await actions.increment(1) // You can use other actions within the model
-      await actions.get() // support async functions (block actions)
-      actions.get()
-      await actions.increment(1) // + 1
-      await actions.increment(1) // + 2
-      await actions.increment(1) // + 3 as expected !
-      return { light: !state.light }
-    },
-    get: async () => {
-      await new Promise((resolve, reject) =>
-        setTimeout(() => {
-          resolve()
-        }, 3000)
-      )
-      return {
-        response: {
-          code: 200,
-          message: `${new Date().toLocaleString()} open light success`
-        }
-      }
-    }
-  },
-  state: initialState
-} as ModelType<StateType, ActionsParamType> // The Modal actions type will generate automatically by the StateType and ActionParamsType
-
-export default Model
-
-type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
-type ConsumerType = { actions: ConsumerActionsType; state: StateType }
-type ActionType = ConsumerActionsType
-
-export { ConsumerType, StateType, ActionType }
 ```
