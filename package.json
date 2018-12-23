@@ -6,8 +6,7 @@
   "module": "./dist/index",
   "types": "./src/index",
   "scripts": {
-    "build": "tsc src/index.tsx",
-    "publish": "tsc && npm publish"
+    "build": "tsc src/index.tsx"
   },
   "keywords": [
     "react-modelx",
