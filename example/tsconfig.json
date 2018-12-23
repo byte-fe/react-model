@@ -5,8 +5,7 @@
     "baseUrl": ".",
     "experimentalDecorators": true,
     "jsx": "react",
-    "lib": ["dom", "es2017"],
-    "module": "esnext",
+    "lib": ["dom", "dom.iterable", "es6", "es2015.iterable", "es5"],
     "moduleResolution": "node",
     "noEmit": true,
     "noUnusedLocals": true,
@@ -15,7 +14,6 @@
     "removeComments": false,
     "skipLibCheck": true,
     "sourceMap": true,
-    "strict": true,
-    "target": "esnext"
+    "strict": true
   }
 }
