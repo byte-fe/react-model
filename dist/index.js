@@ -75,6 +75,7 @@ var Setter = {
 var uid = Math.random(); // The unique id of hooks
 var registerModel = function (models) {
     GlobalState = __assign({}, models);
+    return { useStore: useStore };
 };
 exports.registerModel = registerModel;
 var Provider = /** @class */ (function (_super) {
@@ -177,7 +178,6 @@ var useStore = function (modelName) {
     });
     return [state, updaters];
 };
-exports.useStore = useStore;
 var connect = function (modelName, mapProps) { return function (Component) {
     return /** @class */ (function (_super) {
         __extends(P, _super);

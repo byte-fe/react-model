@@ -7,10 +7,13 @@ import H from './hooks'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
-registerModel({
-  Home,
-  Shared
-})
+const models = { Home, Shared }
+
+export const {
+  useStore
+}: { useStore: UseStore<keyof typeof models, typeof models> } = registerModel(
+  models
+)
 
 export default class App extends PureComponent {
   render() {

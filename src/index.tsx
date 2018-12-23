@@ -19,9 +19,12 @@ let Setter = {
 
 let uid = Math.random() // The unique id of hooks
 
-const registerModel = (models: any) => {
+const registerModel = (models: Models) => {
   GlobalState = {
     ...models
+  }
+  return { useStore } as {
+    useStore: UseStore<keyof typeof models, typeof models>
   }
 }
 
@@ -173,4 +176,4 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
     }
   }
 
-export { registerModel, Provider, Consumer, connect, useStore, getState }
+export { registerModel, Provider, Consumer, connect, getState }
