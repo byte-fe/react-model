@@ -1,8 +1,10 @@
-# react-modelx
+# react-modelx &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg) [![npm version](https://img.shields.io/npm/v/react-modelx.svg?style=flat)](https://www.npmjs.com/package/react-modelx) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
 The State management library for React
 
 🎉 Support Hooks Api
+
+👬 Fully TypeScript Support
 
 ## Quick Start
 
@@ -30,31 +32,25 @@ react-model keep the state and actions in a global store. So you need to registe
 `index.ts`
 
 ```typescript
-import { registerModel } from 'react-modelx'
+import { Model } from 'react-modelx'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
 const models = { Home, Shared }
 
-export const {
-  useStore
-}: { useStore: UseStore<keyof typeof models, typeof models> } = registerModel(
-  models
-)
+export const { useStore } = Model(models)
 ```
 
 `index.js`
 
 ```javascript
-import { registerModel } from 'react-modelx'
+import { Model } from 'react-modelx'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
 const models = { Home, Shared }
 
-export const {
-  useStore
-}
+export const { useStore } = Model(models)
 ```
 
 ### useStore
