@@ -16,9 +16,9 @@ type ActionsParamType = {
 
 const Model = {
   actions: {
-    increment: async (state, _, params) => {
-      return {
-        counter: state.counter + (params || 1)
+    increment: async (s, __, params) => {
+      return (state: typeof s) => {
+        state.counter += params || 1
       }
     },
     openLight: async (state, actions) => {

@@ -4,7 +4,9 @@ type Action<T, P = any, ActionKeys = []> = (
   state: T,
   actions: getConsumerActionsType<Actions<T, ActionKeys>>,
   params: P
-) => Partial<T>
+) => Partial<T> | ProduceFunc<T>
+
+type ProduceFunc = <T>(state?: T) => {}
 
 type ProviderProps = { [name: string]: ModelType }
 

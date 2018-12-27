@@ -16,7 +16,9 @@
   ],
   "author": "ArrayZoneYour <hustliyidong@gmail.com>",
   "license": "MIT",
-  "dependencies": {},
+  "dependencies": {
+    "immer": "^1.9.3"
+  },
   "devDependencies": {
     "@types/react": "^16.7.11",
     "@types/react-dom": "^16.0.11",
