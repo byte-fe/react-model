@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react'
-import { Provider, connect, registerModel } from 'react-modelx'
+import { Provider, connect, Model } from '../lib/index'
 import { StateType, ActionType } from '../model/home.model'
 import J from './counter' // JS Version
 import H from './hooks'
@@ -9,11 +9,7 @@ import Shared from '../model/shared.model'
 
 const models = { Home, Shared }
 
-export const {
-  useStore
-}: { useStore: UseStore<keyof typeof models, typeof models> } = registerModel(
-  models
-)
+export const { useStore } = Model(models)
 
 export default class App extends PureComponent {
   render() {
