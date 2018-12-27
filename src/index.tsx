@@ -19,12 +19,12 @@ let Setter = {
 
 let uid = Math.random() // The unique id of hooks
 
-const registerModel = (models: Models) => {
+const registerModel = <M extends Models>(models: M) => {
   GlobalState = {
     ...models
   }
   return { useStore } as {
-    useStore: UseStore<keyof typeof models, typeof models>
+    useStore: UseStore<keyof M, M>
   }
 }
 
@@ -114,11 +114,12 @@ const useStore = (modelName: keyof typeof GlobalState) => {
             setPartialState(modelName, newState)
             setState(GlobalState[modelName].state)
             Setter.classSetter && Setter.classSetter(GlobalState)
-            Object.keys(Setter.functionSetter[modelName]).map(key =>
-              Setter.functionSetter[modelName][key].setState(
-                GlobalState[modelName].state
-              )
-            )
+            Object.keys(Setter.functionSetter[modelName]).map(key => {
+              Setter.functionSetter[modelName][key] &&
+                Setter.functionSetter[modelName][key].setState(
+                  GlobalState[modelName].state
+                )
+            })
           }
         },
         []
@@ -149,10 +150,12 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
               if (newState) {
                 setPartialState(modelName, newState)
                 setState(GlobalState)
-                Object.keys(Setter.functionSetter[modelName]).map(key =>
-                  Setter.functionSetter[modelName][key].setState(
-                    GlobalState[modelName].state
-                  )
+                Object.keys(Setter.functionSetter[modelName]).map(
+                  key =>
+                    Setter.functionSetter[modelName][key] &&
+                    Setter.functionSetter[modelName][key].setState(
+                      GlobalState[modelName].state
+                    )
                 )
               }
             }
@@ -176,4 +179,11 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
     }
   }
 
-export { registerModel, Provider, Consumer, connect, getState }
+export {
+  registerModel as Model,
+  registerModel,
+  Provider,
+  Consumer,
+  connect,
+  getState
+}

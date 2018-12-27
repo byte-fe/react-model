@@ -5,5 +5,11 @@ node_modules/
 # Parcel
 .cache/
 
+# Example
+example/
+
 # package
 *.tgz
+
+# yarn
+yarn.lock
