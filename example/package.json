@@ -4,7 +4,7 @@
   "description": "demo for react-modelx",
   "main": "index.js",
   "scripts": {
-    "dev": "next",
+    "dev": "mkdir lib && cp ../src/* lib/ && next",
     "build": "next build",
     "start": "next start"
   },

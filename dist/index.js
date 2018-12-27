@@ -77,6 +77,7 @@ var registerModel = function (models) {
     GlobalState = __assign({}, models);
     return { useStore: useStore };
 };
+exports.Model = registerModel;
 exports.registerModel = registerModel;
 var Provider = /** @class */ (function (_super) {
     __extends(Provider, _super);
@@ -166,7 +167,8 @@ var useStore = function (modelName) {
                             setState(GlobalState[modelName].state);
                             Setter.classSetter && Setter.classSetter(GlobalState);
                             Object.keys(Setter.functionSetter[modelName]).map(function (key) {
-                                return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
+                                Setter.functionSetter[modelName][key] &&
+                                    Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
                             });
                         }
                         return [2 /*return*/];
@@ -205,7 +207,8 @@ var connect = function (modelName, mapProps) { return function (Component) {
                                         setPartialState(modelName, newState);
                                         setState(GlobalState);
                                         Object.keys(Setter.functionSetter[modelName]).map(function (key) {
-                                            return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
+                                            return Setter.functionSetter[modelName][key] &&
+                                                Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
                                         });
                                     }
                                     return [2 /*return*/];
