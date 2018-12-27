@@ -7,6 +7,7 @@ import {
   useEffect,
   useState
 } from 'react'
+import produce from 'immer'
 import { GlobalContext, Consumer } from './helper'
 
 let GlobalState: any = {}
@@ -45,17 +46,21 @@ class Provider extends PureComponent<{}, ProviderProps> {
 
 const setPartialState = (
   name: keyof typeof GlobalState,
-  partialState: any = {}
+  partialState: typeof GlobalState | Function = {}
 ) => {
-  GlobalState = {
-    ...GlobalState,
-    [name]: {
-      actions: GlobalState[name].actions,
-      state: {
-        ...GlobalState[name].state,
+  if (typeof partialState === 'function') {
+    let state = GlobalState[name].state
+    state = produce(state, partialState)
+    GlobalState = produce(GlobalState, s => {
+      s[name].state = state
+    })
+  } else {
+    GlobalState = produce(GlobalState, s => {
+      s[name].state = {
+        ...s[name].state,
         ...partialState
       }
-    }
+    })
   }
   return GlobalState
 }
