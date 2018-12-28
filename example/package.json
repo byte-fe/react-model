@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "initial": "mkdir lib",
-    "dev": " cp ../src/* lib/ && next",
+    "dev": "cp ../src/* lib/ && next",
     "build": "next build",
     "start": "next start"
   },

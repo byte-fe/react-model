@@ -63,6 +63,7 @@ exports.__esModule = true;
 /// <reference path="./index.d.ts" />
 var React = require("react");
 var react_1 = require("react");
+var immer_1 = require("immer");
 var helper_1 = require("./helper");
 exports.Consumer = helper_1.Consumer;
 var GlobalState = {};
@@ -96,11 +97,18 @@ var Provider = /** @class */ (function (_super) {
 exports.Provider = Provider;
 var setPartialState = function (name, partialState) {
     if (partialState === void 0) { partialState = {}; }
-    var _a;
-    GlobalState = __assign({}, GlobalState, (_a = {}, _a[name] = {
-        actions: GlobalState[name].actions,
-        state: __assign({}, GlobalState[name].state, partialState)
-    }, _a));
+    if (typeof partialState === 'function') {
+        var state_1 = GlobalState[name].state;
+        state_1 = immer_1["default"](state_1, partialState);
+        GlobalState = immer_1["default"](GlobalState, function (s) {
+            s[name].state = state_1;
+        });
+    }
+    else {
+        GlobalState = immer_1["default"](GlobalState, function (s) {
+            s[name].state = __assign({}, s[name].state, partialState);
+        });
+    }
     return GlobalState;
 };
 var getState = function (modelName) {
