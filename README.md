@@ -1,4 +1,4 @@
-# react-modelx &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg) [![npm version](https://img.shields.io/npm/v/react-modelx.svg?style=flat)](https://www.npmjs.com/package/react-modelx) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+# react-modelx &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg) [![npm version](https://img.shields.io/npm/v/react-modelx.svg?style=flat)](https://www.npmjs.com/package/react-modelx) [![size](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-modelx/dist/index.js?compression=gzip)](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-modelx/dist/index.js) [![install size](https://packagephobia.now.sh/badge?p=react-modelx)](https://packagephobia.now.sh/result?p=react-modelx) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
 The State management library for React
 
@@ -167,6 +167,43 @@ const BasicHook = () => {
       <div>state: {JSON.stringify(state)}</div>
     </>
   )
+}
+```
+
+## Advance Concept
+
+### immutable Actions
+
+The actions use [immer](https://github.com/mweststrate/immer) produce API to modify the Store. You can return a producer in action.
+
+TypeScript Example
+
+```ts
+// StateType and ActionsParamType definition
+// ...
+
+const Model = {
+  actions: {
+    increment: async (s, _, params) => {
+      return (state: typeof s) => {
+        state.counter += params || 1
+      }
+    }
+  }
+} as ModelType<StateType, ActionsParamType>
+```
+
+JavaScript Example
+
+```js
+const Model = {
+  actions: {
+    increment: async (s, _, params) => {
+      return (state: typeof s) => {
+        state.counter += params || 1
+      }
+    }
+  }
 }
 ```
 
