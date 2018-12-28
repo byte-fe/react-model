@@ -25,7 +25,10 @@ const registerModel = <M extends Models>(models: M) => {
     ...models
   }
   return { useStore } as {
-    useStore: UseStore<keyof M, M>
+    useStore: <K extends keyof M>(
+      name: K,
+      models?: M
+    ) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
   }
 }
 
