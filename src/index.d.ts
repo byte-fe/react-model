@@ -18,7 +18,7 @@ interface Models {
   [name: string]: ModelType
 }
 
-type ModelType<InitStateType, ActionKeys> = {
+type ModelType<InitStateType = {}, ActionKeys = {}> = {
   actions: {
     [P in keyof ActionKeys]: Action<InitStateType, ActionKeys[P], ActionKeys>
   }
@@ -36,8 +36,3 @@ type getConsumerActionsType<T> = {
 }
 
 type Get<T, N extends keyof T> = T[N]
-
-type UseStore<K extends keyof M, M extends Models> = (
-  name: K,
-  models?: M
-) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
