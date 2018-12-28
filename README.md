@@ -13,8 +13,9 @@ Running demo
 ```
 git clone https://github.com/byte-fe/react-modelx.git
 cd react-model/example
-yarn
-yarn dev
+npm i
+npm run initial
+npm run dev
 ```
 
 install package
