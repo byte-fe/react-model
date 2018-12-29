@@ -14,10 +14,10 @@ type ActionsParamType = {
   get: undefined
 }
 
-const Model = {
+const Model: ModelType<StateType, ActionsParamType> = {
   actions: {
-    increment: async (s, __, params) => {
-      return (state: typeof s) => {
+    increment: async (_, __, params) => {
+      return (state: typeof _) => {
         state.counter += params || 1
       }
     },
@@ -50,7 +50,7 @@ const Model = {
     }
   },
   state: initialState
-} as ModelType<StateType, ActionsParamType>
+}
 
 export default Model
 

@@ -183,15 +183,20 @@ TypeScript Example
 // StateType and ActionsParamType definition
 // ...
 
-const Model = {
+const Model: ModelType<StateType, ActionsParamType> = {
   actions: {
     increment: async (s, _, params) => {
+      // issue: https://github.com/Microsoft/TypeScript/issues/29196
+      // async function return produce need define type manually.
       return (state: typeof s) => {
         state.counter += params || 1
       }
+    },
+    decrease: (s, _, params) => s => {
+      s.counter += params || 1
     }
   }
-} as ModelType<StateType, ActionsParamType>
+}
 ```
 
 JavaScript Example
