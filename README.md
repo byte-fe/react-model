@@ -8,15 +8,7 @@ The State management library for React
 
 ## Quick Start
 
-Running demo
-
-```
-git clone https://github.com/byte-fe/react-modelx.git
-cd react-model/example
-npm i
-npm run initial
-npm run dev
-```
+[Next.js + react-modelx work around](https://github.com/ArrayZoneYour/react-modelx-experiment)
 
 install package
 
@@ -30,21 +22,7 @@ npm install react-modelx
 
 react-model keep the state and actions in a global store. So you need to register them before using.
 
-`index.ts`
-
 ```typescript
-import { Model } from 'react-modelx'
-import Home from '../model/home.model'
-import Shared from '../model/shared.model'
-
-const models = { Home, Shared }
-
-export const { useStore } = Model(models)
-```
-
-`index.js`
-
-```javascript
 import { Model } from 'react-modelx'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
@@ -102,7 +80,7 @@ type ActionsParamType = {
   get: undefined
 } // You only need to tag the type of params here !
 
-const Model = {
+const Model: ModelType<StateType, ActionsParamType> = {
   actions: {
     increment: async (state, _, params) => {
       return {
@@ -133,7 +111,7 @@ const Model = {
     }
   },
   state: initialState
-} as ModelType<StateType, ActionsParamType> // The Modal actions type will generate automatically by the StateType and ActionParamsType
+}
 
 export default Model
 
@@ -205,7 +183,7 @@ JavaScript Example
 const Model = {
   actions: {
     increment: async (s, _, params) => {
-      return (state: typeof s) => {
+      return state => {
         state.counter += params || 1
       }
     }
