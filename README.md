@@ -8,7 +8,7 @@ The State management library for React
 
 ## Quick Start
 
-[Next.js + react-modelx work around](https://github.com/ArrayZoneYour/react-modelx-experiment)
+[Next.js + react-modelx work around](https://github.com/byte-fe/react-modelx-experiment)
 
 install package
 
@@ -191,7 +191,52 @@ const Model = {
 }
 ```
 
-## Other Concept required by Class Component
+### Middleware
+
+We always want to try catch all the actions, add common request params, connect Redux devtools and so on. We Provide the middleware pattern for developer to register their own Middleware to satisfy the specific requirement.
+
+```tsx
+// Under the hook
+const tryCatch: Middleware<{}> = (context, restMiddlewares) => {
+  const { next } = context
+  next(restMiddlewares).catch((e: any) => console.log(e))
+}
+
+// ...
+
+let actionMiddlewares = [
+  tryCatch,
+  getNewState,
+  setNewState,
+  stateUpdater,
+  communicator,
+  devToolsListener
+]
+
+// ...
+// How we execute an action
+const consumerAction = (action: Action) => async (params: any) => {
+  const context: Context = {
+    modelName,
+    setState,
+    actionName: action.name,
+    next: () => {},
+    newState: null,
+    params,
+    consumerActions,
+    action
+  }
+  applyMiddlewares(actionMiddlewares, context)
+}
+
+// ...
+
+export { ... , actionMiddlewares}
+```
+
+⚙️ You can override the actionMiddlewares and insert your middleware to specific position
+
+## Other Concept required by Class Component ( Not First Class, Welcome to PR )
 
 ### Provider
 
