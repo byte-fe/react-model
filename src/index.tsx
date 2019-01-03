@@ -12,11 +12,21 @@ let Setter = {
   functionSetter: {} as any
 }
 
+let devTools: any
+let withDevTools: any
+
 let uid = Math.random() // The unique id of hooks
 
 const Model = <M extends Models>(models: M) => {
   GlobalState = {
     ...models
+  }
+  withDevTools =
+    typeof window !== 'undefined' &&
+    (window as any).__REDUX_DEVTOOLS_EXTENSION__
+  if (withDevTools) {
+    devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__
+    devTools.connect()
   }
   return { useStore } as {
     useStore: <K extends keyof M>(
@@ -52,20 +62,6 @@ const getState = (modelName: keyof typeof GlobalState) => {
 }
 
 // -- Middlewares --
-const stateUpdater: Middleware = (context, restMiddlewares) => {
-  const { setState, modelName, next } = context
-  setState(GlobalState[modelName].state)
-  next(restMiddlewares)
-}
-
-const communicator: Middleware<{}> = (context, restMiddlewares) => {
-  const { modelName, next } = context
-  Setter.classSetter && Setter.classSetter(GlobalState)
-  Object.keys(Setter.functionSetter[modelName]).map(key =>
-    Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state)
-  )
-  next(restMiddlewares)
-}
 
 const tryCatch: Middleware<{}> = (context, restMiddlewares) => {
   const { next } = context
@@ -90,12 +86,35 @@ const setNewState: Middleware<{}> = (context, restMiddlewares) => {
   }
 }
 
-const actionMiddlewares = [
+const stateUpdater: Middleware = (context, restMiddlewares) => {
+  const { setState, modelName, next } = context
+  setState(GlobalState[modelName].state)
+  next(restMiddlewares)
+}
+
+const devToolsListener: Middleware = (context, restMiddlewares) => {
+  if (withDevTools) {
+    devTools.send(`${context.modelName}_${context.actionName}`, GlobalState)
+  }
+  context.next(restMiddlewares)
+}
+
+const communicator: Middleware<{}> = (context, restMiddlewares) => {
+  const { modelName, next } = context
+  Setter.classSetter && Setter.classSetter(GlobalState)
+  Object.keys(Setter.functionSetter[modelName]).map(key =>
+    Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state)
+  )
+  next(restMiddlewares)
+}
+
+let actionMiddlewares = [
   tryCatch,
   getNewState,
   setNewState,
   stateUpdater,
-  communicator
+  communicator,
+  devToolsListener
 ]
 
 const applyMiddlewares = (middlewares: Middleware[], context: Context) => {
