@@ -73,9 +73,18 @@ var Setter = {
     classSetter: undefined,
     functionSetter: {}
 };
+var devTools;
+var withDevTools;
 var uid = Math.random(); // The unique id of hooks
 var Model = function (models) {
     GlobalState = __assign({}, models);
+    withDevTools =
+        typeof window !== 'undefined' &&
+            window.__REDUX_DEVTOOLS_EXTENSION__;
+    if (withDevTools) {
+        devTools = window.__REDUX_DEVTOOLS_EXTENSION__;
+        devTools.connect();
+    }
     return { useStore: useStore };
 };
 exports.Model = Model;
@@ -100,19 +109,6 @@ var getState = function (modelName) {
 };
 exports.getState = getState;
 // -- Middlewares --
-var stateUpdater = function (context, restMiddlewares) {
-    var setState = context.setState, modelName = context.modelName, next = context.next;
-    setState(GlobalState[modelName].state);
-    next(restMiddlewares);
-};
-var communicator = function (context, restMiddlewares) {
-    var modelName = context.modelName, next = context.next;
-    Setter.classSetter && Setter.classSetter(GlobalState);
-    Object.keys(Setter.functionSetter[modelName]).map(function (key) {
-        return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
-    });
-    next(restMiddlewares);
-};
 var tryCatch = function (context, restMiddlewares) {
     var next = context.next;
     next(restMiddlewares)["catch"](function (e) { return console.log(e); });
@@ -139,12 +135,32 @@ var setNewState = function (context, restMiddlewares) {
         next(restMiddlewares);
     }
 };
+var stateUpdater = function (context, restMiddlewares) {
+    var setState = context.setState, modelName = context.modelName, next = context.next;
+    setState(GlobalState[modelName].state);
+    next(restMiddlewares);
+};
+var devToolsListener = function (context, restMiddlewares) {
+    if (withDevTools) {
+        devTools.send(context.modelName + "_" + context.actionName, GlobalState);
+    }
+    context.next(restMiddlewares);
+};
+var communicator = function (context, restMiddlewares) {
+    var modelName = context.modelName, next = context.next;
+    Setter.classSetter && Setter.classSetter(GlobalState);
+    Object.keys(Setter.functionSetter[modelName]).map(function (key) {
+        return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
+    });
+    next(restMiddlewares);
+};
 var actionMiddlewares = [
     tryCatch,
     getNewState,
     setNewState,
     stateUpdater,
-    communicator
+    communicator,
+    devToolsListener
 ];
 exports.actionMiddlewares = actionMiddlewares;
 var applyMiddlewares = function (middlewares, context) {
