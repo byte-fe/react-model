@@ -74,27 +74,11 @@ var Setter = {
     functionSetter: {}
 };
 var uid = Math.random(); // The unique id of hooks
-var registerModel = function (models) {
+var Model = function (models) {
     GlobalState = __assign({}, models);
     return { useStore: useStore };
 };
-exports.Model = registerModel;
-exports.registerModel = registerModel;
-var Provider = /** @class */ (function (_super) {
-    __extends(Provider, _super);
-    function Provider() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.state = GlobalState;
-        return _this;
-    }
-    Provider.prototype.render = function () {
-        var children = this.props.children;
-        Setter.classSetter = this.setState.bind(this);
-        return (React.createElement(helper_1.GlobalContext.Provider, { value: __assign({}, GlobalState, { setState: this.setState.bind(this) }) }, children));
-    };
-    return Provider;
-}(react_1.PureComponent));
-exports.Provider = Provider;
+exports.Model = Model;
 var setPartialState = function (name, partialState) {
     if (partialState === void 0) { partialState = {}; }
     if (typeof partialState === 'function') {
@@ -115,6 +99,62 @@ var getState = function (modelName) {
     return GlobalState[modelName].state;
 };
 exports.getState = getState;
+// -- Middlewares --
+var stateUpdater = function (context, restMiddlewares) {
+    var setState = context.setState, modelName = context.modelName, next = context.next;
+    setState(GlobalState[modelName].state);
+    next(restMiddlewares);
+};
+var communicator = function (context, restMiddlewares) {
+    var modelName = context.modelName, next = context.next;
+    Setter.classSetter && Setter.classSetter(GlobalState);
+    Object.keys(Setter.functionSetter[modelName]).map(function (key) {
+        return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
+    });
+    next(restMiddlewares);
+};
+var tryCatch = function (context, restMiddlewares) {
+    var next = context.next;
+    next(restMiddlewares)["catch"](function (e) { return console.log(e); });
+};
+var getNewState = function (context, restMiddlewares) { return __awaiter(_this, void 0, void 0, function () {
+    var action, modelName, consumerActions, params, next, _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                action = context.action, modelName = context.modelName, consumerActions = context.consumerActions, params = context.params, next = context.next;
+                _a = context;
+                return [4 /*yield*/, action(GlobalState[modelName].state, consumerActions(GlobalState[modelName].actions), params)];
+            case 1:
+                _a.newState = _b.sent();
+                next(restMiddlewares);
+                return [2 /*return*/];
+        }
+    });
+}); };
+var setNewState = function (context, restMiddlewares) {
+    var modelName = context.modelName, newState = context.newState, next = context.next;
+    if (newState) {
+        setPartialState(modelName, newState);
+        next(restMiddlewares);
+    }
+};
+var actionMiddlewares = [
+    tryCatch,
+    getNewState,
+    setNewState,
+    stateUpdater,
+    communicator
+];
+exports.actionMiddlewares = actionMiddlewares;
+var applyMiddlewares = function (middlewares, context) {
+    context.next = function (restMiddlewares) {
+        return restMiddlewares.length > 0 &&
+            restMiddlewares[0](context, restMiddlewares.slice(1));
+    };
+    middlewares.length > 0 && middlewares[0](context, middlewares.slice(1));
+};
+// -----------
 var useStore = function (modelName) {
     // const _state = useContext(GlobalContext)
     var _a = react_1.useState(GlobalState[modelName].state), state = _a[0], setState = _a[1];
@@ -129,32 +169,23 @@ var useStore = function (modelName) {
         };
     });
     var updaters = {};
-    var consumerAction = function (action) { return function () {
-        var params = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            params[_i] = arguments[_i];
-        }
-        return __awaiter(_this, void 0, void 0, function () {
-            var newState;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, action.apply(void 0, [GlobalState[modelName].state,
-                            consumerActions(GlobalState[modelName].actions)].concat(params))];
-                    case 1:
-                        newState = _a.sent();
-                        if (newState) {
-                            setPartialState(modelName, newState);
-                            setState(GlobalState[modelName].state);
-                            Setter.classSetter && Setter.classSetter(GlobalState);
-                            Object.keys(Setter.functionSetter[modelName]).map(function (key) {
-                                return Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
-                            });
-                        }
-                        return [2 /*return*/];
-                }
-            });
+    var consumerAction = function (action) { return function (params) { return __awaiter(_this, void 0, void 0, function () {
+        var context;
+        return __generator(this, function (_a) {
+            context = {
+                modelName: modelName,
+                setState: setState,
+                actionName: action.name,
+                next: function () { },
+                newState: null,
+                params: params,
+                consumerActions: consumerActions,
+                action: action
+            };
+            applyMiddlewares(actionMiddlewares, context);
+            return [2 /*return*/];
         });
-    }; };
+    }); }; };
     var consumerActions = function (actions) {
         var ret = {};
         Object.keys(actions).map(function (key) {
@@ -164,23 +195,20 @@ var useStore = function (modelName) {
     };
     Object.keys(GlobalState[modelName].actions).map(function (key) {
         return (updaters[key] = react_1.useCallback(function (params) { return __awaiter(_this, void 0, void 0, function () {
-            var newState;
+            var context;
             return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0: return [4 /*yield*/, GlobalState[modelName].actions[key](GlobalState[modelName].state, consumerActions(GlobalState[modelName].actions), params)];
-                    case 1:
-                        newState = _a.sent();
-                        if (newState) {
-                            setPartialState(modelName, newState);
-                            setState(GlobalState[modelName].state);
-                            Setter.classSetter && Setter.classSetter(GlobalState);
-                            Object.keys(Setter.functionSetter[modelName]).map(function (key) {
-                                Setter.functionSetter[modelName][key] &&
-                                    Setter.functionSetter[modelName][key].setState(GlobalState[modelName].state);
-                            });
-                        }
-                        return [2 /*return*/];
-                }
+                context = {
+                    modelName: modelName,
+                    setState: setState,
+                    actionName: key,
+                    next: function () { },
+                    newState: null,
+                    params: params,
+                    consumerActions: consumerActions,
+                    action: GlobalState[modelName].actions[key]
+                };
+                applyMiddlewares(actionMiddlewares, context);
+                return [2 /*return*/];
             });
         }); }, []
         // [GlobalState[modelName]]
@@ -188,6 +216,24 @@ var useStore = function (modelName) {
     });
     return [state, updaters];
 };
+// Bridge API
+// Use to migrate from old class component.
+// These APIs won't be updated for advance feature.
+var Provider = /** @class */ (function (_super) {
+    __extends(Provider, _super);
+    function Provider() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.state = GlobalState;
+        return _this;
+    }
+    Provider.prototype.render = function () {
+        var children = this.props.children;
+        Setter.classSetter = this.setState.bind(this);
+        return (React.createElement(helper_1.GlobalContext.Provider, { value: __assign({}, GlobalState, { setState: this.setState.bind(this) }) }, children));
+    };
+    return Provider;
+}(react_1.PureComponent));
+exports.Provider = Provider;
 var connect = function (modelName, mapProps) { return function (Component) {
     return /** @class */ (function (_super) {
         __extends(P, _super);
