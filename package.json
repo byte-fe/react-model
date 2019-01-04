@@ -1,12 +1,12 @@
 {
   "name": "react-modelx",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "description": "The State management library for React",
-  "main": "./dist/index",
-  "module": "./dist/index",
+  "main": "./dist/react-modelx",
+  "module": "./dist/react-modelx",
   "types": "./src/index",
   "scripts": {
-    "build": "tsc src/index.tsx"
+    "build": "microbundle -o ./dist --sourcemap false"
   },
   "keywords": [
     "react",
@@ -22,6 +22,7 @@
     "react-dom": "^16.7.0-alpha.2"
   },
   "devDependencies": {
+    "@types/node": "^10.12.18",
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",
     "immer": "^1.9.3",
@@ -34,8 +35,5 @@
   "bugs": {
     "url": "https://github.com/byte-fe/react-modelx/issues"
   },
-  "homepage": "https://github.com/byte-fe/react-modelx#readme",
-  "dependencies": {
-    "@types/node": "^10.12.18"
-  }
+  "homepage": "https://github.com/byte-fe/react-modelx#readme"
 }
