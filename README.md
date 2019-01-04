@@ -34,7 +34,7 @@ export const { useStore } = Model(models)
 
 ### useStore
 
-The functional component in React 16.7 can use Hooks to connect the global store.
+The functional component in React 16.7.0-alpha.2 can use Hooks to connect the global store.
 
 ```javascript
 import React from 'react'

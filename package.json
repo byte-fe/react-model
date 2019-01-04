@@ -1,6 +1,6 @@
 {
   "name": "react-modelx",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "The State management library for React",
   "main": "./dist/index",
   "module": "./dist/index",
@@ -34,5 +34,8 @@
   "bugs": {
     "url": "https://github.com/byte-fe/react-modelx/issues"
   },
-  "homepage": "https://github.com/byte-fe/react-modelx#readme"
+  "homepage": "https://github.com/byte-fe/react-modelx#readme",
+  "dependencies": {
+    "@types/node": "^10.12.18"
+  }
 }

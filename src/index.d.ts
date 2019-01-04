@@ -42,8 +42,8 @@ type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 
 type getConsumerActionsType<A extends Actions<any, any>> = {
   [P in keyof A]: ArgumentTypes<A[P]>[2] extends undefined
-    ? <K extends keyof A>(params?: ArgumentTypes<A[K]>[2]) => ReturnType<A[K]>
-    : <K extends keyof A>(params: ArgumentTypes<A[K]>[2]) => ReturnType<A[K]>
+    ? (params?: ArgumentTypes<A[P]>[2]) => ReturnType<A[P]>
+    : (params: ArgumentTypes<A[P]>[2]) => ReturnType<A[P]>
 }
 
 type Get<Object, K extends keyof Object> = Object[K]
