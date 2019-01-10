@@ -16,11 +16,12 @@ const Model = <M extends Models>(models: M) => {
     Global.devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__
     Global.devTools.connect()
   }
-  return { useStore } as {
+  return { useStore, getState } as {
     useStore: <K extends keyof M>(
       name: K,
       models?: M
     ) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
+    getState: <K extends keyof M>(modelName: K) => Readonly<Get<M[K], 'state'>>
   }
 }
 

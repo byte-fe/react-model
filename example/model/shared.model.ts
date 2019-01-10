@@ -14,7 +14,7 @@ type ActionsParamType = {
   get: undefined
 }
 
-const Model = {
+const Model: ModelType<StateType, ActionsParamType> = {
   actions: {
     increment: (state, _, params) => {
       return {
@@ -30,7 +30,7 @@ const Model = {
     get: () => ({ response: { code: 200, message: 'open light success' } })
   },
   state: initialState
-} as ModelType<StateType, ActionsParamType>
+}
 
 export default Model
 

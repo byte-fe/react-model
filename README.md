@@ -6,6 +6,10 @@ The State management library for React
 
 👬 Fully TypeScript Support
 
+📦 gzip bundle < 2KB with microbundle
+
+⚙️ Middlewares Pipline ( redux-devtools support ... )
+
 ## Quick Start
 
 [Next.js + react-modelx work around](https://github.com/byte-fe/react-modelx-experiment)
@@ -29,7 +33,7 @@ import Shared from '../model/shared.model'
 
 const models = { Home, Shared }
 
-export const { useStore } = Model(models)
+export const { useStore, getState } = Model(models)
 ```
 
 ### useStore
@@ -115,11 +119,11 @@ const Model: ModelType<StateType, ActionsParamType> = {
 
 export default Model
 
-type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
-type ConsumerType = { actions: ConsumerActionsType; state: StateType }
-type ActionType = ConsumerActionsType
-
-export { ConsumerType, StateType, ActionType }
+// You need these types when use Class Components.
+// type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
+// type ConsumerType = { actions: ConsumerActionsType; state: StateType }
+// type ActionType = ConsumerActionsType
+// export { ConsumerType, StateType, ActionType }
 ```
 
 ### getState
@@ -130,6 +134,8 @@ To solve it, we provide a way to get the current state of model: getState
 > Hint: The state returned should only be used as readonly
 
 ```jsx
+import { useStore, getState } from './index'
+
 const BasicHook = () => {
   const [state, actions] = useStore('Counter')
   useEffect(() => {
