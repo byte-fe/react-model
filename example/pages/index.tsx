@@ -9,7 +9,7 @@ import Shared from '../model/shared.model'
 
 const models = { Home, Shared }
 
-export const { useStore } = Model(models)
+export const { useStore, getState } = Model(models)
 
 export default class App extends PureComponent {
   render() {
