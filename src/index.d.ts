@@ -34,6 +34,7 @@ type ModelType<InitStateType = {}, ActionKeys = {}> = {
     [P in keyof ActionKeys]: Action<InitStateType, ActionKeys[P], ActionKeys>
   }
   state: { [P in keyof InitStateType]: InitStateType[P] }
+  asyncState?: () => Promise<Partial<InitStateType>>
 }
 
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
