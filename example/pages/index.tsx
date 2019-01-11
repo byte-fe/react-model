@@ -1,24 +1,18 @@
 import React, { PureComponent } from 'react'
-import { Provider, connect, Model } from '../lib/index'
+import { Provider, connect } from '../lib/index'
 import { StateType, ActionType } from '../model/home.model'
 import J from './counter' // JS Version
 import H from './hooks'
 
-import Home from '../model/home.model'
-import Shared from '../model/shared.model'
-
-const models = { Home, Shared }
-
-export const { useStore, getState } = Model(models)
-
 export default class App extends PureComponent {
   render() {
+    console.log((this.props as any).initialState)
     return (
       <Provider>
-        <T />
-        <J />
-        <H />
-        <H />
+        {/* <T /> */}
+        {/* <J /> */}
+        <H {...this.props} />
+        <H {...this.props} />
       </Provider>
     )
   }

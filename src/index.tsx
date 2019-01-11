@@ -5,10 +5,33 @@ import { PureComponent, useCallback, useEffect, useState } from 'react'
 import { GlobalContext, Consumer, setPartialState } from './helper'
 import { actionMiddlewares, applyMiddlewares } from './middlewares'
 
-const Model = <M extends Models>(models: M) => {
-  Global.State = {
-    ...models
-  }
+const getInitialState = async () => {
+  await Promise.all(
+    Object.keys(Global.State).map(async modelName => {
+      const model = Global.State[modelName]
+      const asyncState = model.asyncState ? await model.asyncState() : {}
+      Global.State[modelName].state = {
+        ...Global.State[modelName].state,
+        ...asyncState
+      }
+    })
+  )
+  return Global.State
+}
+
+const Model = <M extends Models>(models: M, initialModels?: M) => {
+  Global.State = initialModels
+    ? Object.keys(models).reduce((o: any, key) => {
+        o[key] = {
+          actions: models[key].actions,
+          state: { ...models[key].state, ...initialModels[key].state }
+        }
+        return o
+      }, {})
+    : {
+        ...models
+      }
+
   Global.withDevTools =
     typeof window !== 'undefined' &&
     (window as any).__REDUX_DEVTOOLS_EXTENSION__
@@ -16,12 +39,13 @@ const Model = <M extends Models>(models: M) => {
     Global.devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__
     Global.devTools.connect()
   }
-  return { useStore, getState } as {
+  return { useStore, getState, getInitialState } as {
     useStore: <K extends keyof M>(
       name: K,
       models?: M
     ) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
     getState: <K extends keyof M>(modelName: K) => Readonly<Get<M[K], 'state'>>
+    getInitialState: typeof getInitialState
   }
 }
 
@@ -154,4 +178,12 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
     }
   }
 
-export { actionMiddlewares, Model, Provider, Consumer, connect, getState }
+export {
+  actionMiddlewares,
+  Model,
+  Provider,
+  Consumer,
+  connect,
+  getState,
+  getInitialState
+}

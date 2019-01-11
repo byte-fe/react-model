@@ -1,6 +1,6 @@
 {
   "name": "react-modelx",
-  "version": "1.1.3",
+  "version": "1.2.0-alpha.0",
   "description": "The State management library for React",
   "main": "./dist/react-modelx",
   "module": "./dist/react-modelx",
@@ -18,8 +18,8 @@
   "license": "MIT",
   "peerDependencies": {
     "immer": "^1.9.3",
-    "react": "^16.7.0-alpha.2",
-    "react-dom": "^16.7.0-alpha.2"
+    "react": "^16.8.0-alpha.0",
+    "react-dom": "^16.8.0-alpha.0"
   },
   "devDependencies": {
     "@types/node": "^10.12.18",
