@@ -197,6 +197,80 @@ const Model = {
 }
 ```
 
+### SSR with Next.js (WIP 🚧)
+
+`shared.model.ts`
+
+```ts
+const initialState = {
+  counter: 0
+}
+
+const Model: ModelType<StateType, ActionsParamType> = {
+  actions: {
+    increment: (state, _, params) => {
+      return {
+        counter: state.counter + (params || 1)
+      }
+    }
+  },
+  // Provide for SSR
+  asyncState: async () => {
+    await waitFor(4000)
+    return { counter: 500 }
+  },
+  state: initialState
+}
+```
+
+`_app.tsx`
+
+```tsx
+import Home from '../model/home.model'
+import Shared from '../model/shared.model'
+export const { getInitialState } = Model({ Home, Shared })
+
+const MyApp = (props: AppProps & DefaultAppIProps & RouterProps) => {
+  const initialModel = Model({ Home, Shared }, (props as any).initialModels) // TypeScript Support will release later.
+  const { Component, pageProps, router } = props
+  return (
+    <Container>
+      <Component {...pageProps} {...initialModel} />
+    </Container>
+  )
+}
+
+MyApp.getInitialProps = async (context: NextAppContext) => {
+  context
+  const initialModels = await getInitialState()
+  return {
+    initialModels
+  }
+}
+```
+
+`hooks/index.tsx`
+
+```tsx
+export default (props: any) => {
+  const { useStore, getState } = props // TypeScript Support will release later.
+  const [state, actions] = useStore('Home')
+  const [sharedState, sharedActions] = useStore('Shared')
+
+  return (
+    <div>
+      Home model value: {JSON.stringify(state)}
+      Shared model value: {JSON.stringify(sharedState)}
+      <button
+        onClick={e => {
+          actions.increment(33)
+        }}
+      >
+    </div>
+  )
+}
+```
+
 ### Middleware
 
 We always want to try catch all the actions, add common request params, connect Redux devtools and so on. We Provide the middleware pattern for developer to register their own Middleware to satisfy the specific requirement.

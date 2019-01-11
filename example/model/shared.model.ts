@@ -1,13 +1,20 @@
 const initialState = {
   counter: 0,
   light: false,
-  response: {} as {
-    code: number
-    message: string
+  response: {}
+}
+
+const waitFor = (ms: number) => new Promise(r => setTimeout(r, ms))
+
+type StateType = {
+  counter: number
+  light: boolean
+  response: {
+    code?: number
+    message?: string
   }
 }
 
-type StateType = typeof initialState
 type ActionsParamType = {
   increment: number
   openLight: undefined
@@ -28,6 +35,10 @@ const Model: ModelType<StateType, ActionsParamType> = {
       return { light: !state.light }
     },
     get: () => ({ response: { code: 200, message: 'open light success' } })
+  },
+  asyncState: async () => {
+    await waitFor(4000)
+    return { counter: 500 }
   },
   state: initialState
 }
