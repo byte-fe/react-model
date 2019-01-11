@@ -316,7 +316,7 @@ export { ... , actionMiddlewares}
 
 ⚙️ You can override the actionMiddlewares and insert your middleware to specific position
 
-## Other Concept required by Class Component ( Not First Class, Welcome to PR )
+## Other Concept required by Class Component ( Not First Class, ONLY SUPPORT ON CSR, Welcome to PR )
 
 ### Provider
 

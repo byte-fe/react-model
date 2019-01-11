@@ -33,7 +33,7 @@ type ModelType<InitStateType = {}, ActionKeys = {}> = {
   actions: {
     [P in keyof ActionKeys]: Action<InitStateType, ActionKeys[P], ActionKeys>
   }
-  state: { [P in keyof InitStateType]: InitStateType[P] }
+  state: Partial<InitStateType>
   asyncState?: () => Promise<Partial<InitStateType>>
 }
 
