@@ -10,6 +10,24 @@ The State management library for React
 
 ⚙️ Middlewares Pipline ( redux-devtools support ... )
 
+---
+
+## Table of Contents
+
+- [Quick Start](#quick-start)
+- [Core Concept](#core-concept)
+  - [Model Register](#model-register)
+  - [useStore](#usestore)
+  - [Model](#model)
+  - [getState](#getstate)
+- [Advance Concept](#advance-concept)
+  - [immutable Actions](#immutable-actions)
+  - [SSR with Next.js](#ssr-with-nextjs)
+  - [Middleware](#middleware)
+- [Other Concept required by Class Component ( Not First Class, ONLY SUPPORT ON CSR, Welcome to PR )](#other-concept-required-by-class-component--not-first-class-only-support-on-csr-welcome-to-pr-)
+  - [Provider](#provider)
+  - [connect](#connect)
+
 ## Quick Start
 
 [Next.js + react-modelx work around](https://github.com/byte-fe/react-modelx-experiment)
@@ -33,8 +51,13 @@ import Shared from '../model/shared.model'
 
 const models = { Home, Shared }
 
-export const { useStore, getState } = Model(models)
+// CSR export
+// export const { useStore, getState } = Model(models)
+// SSR export
+export type ModelProps = ModelsProps<typeof models>
 ```
+
+[⇧ back to top](#table-of-contents)
 
 ### useStore
 
@@ -42,9 +65,16 @@ The functional component in React 16.7.0-alpha.2 can use Hooks to connect the gl
 
 ```javascript
 import React from 'react'
+// CSR
 import { useStore } from './index'
+// SSR
+// import { ModelProps } from '../index.model'
 
+// CSR
 export default () => {
+  // SSR
+  // export default (props: ModelProps) => {
+  //   const { useStore, getState } = props
   const [state, actions] = useStore('Home')
   const [sharedState, sharedActions] = useStore('Shared')
 
@@ -62,6 +92,8 @@ export default () => {
   )
 }
 ```
+
+[⇧ back to top](#table-of-contents)
 
 ### Model
 
@@ -119,6 +151,8 @@ const Model: ModelType<StateType, ActionsParamType> = {
 
 export default Model
 
+[⇧ back to top](#table-of-contents)
+
 // You need these types when use Class Components.
 // type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
 // type ConsumerType = { actions: ConsumerActionsType; state: StateType }
@@ -154,6 +188,8 @@ const BasicHook = () => {
   )
 }
 ```
+
+[⇧ back to top](#table-of-contents)
 
 ## Advance Concept
 
@@ -197,7 +233,9 @@ const Model = {
 }
 ```
 
-### SSR with Next.js (WIP 🚧)
+[⇧ back to top](#table-of-contents)
+
+### SSR with Next.js
 
 `shared.model.ts`
 
@@ -252,7 +290,8 @@ MyApp.getInitialProps = async (context: NextAppContext) => {
 `hooks/index.tsx`
 
 ```tsx
-export default (props: any) => {
+import { ModelProps } from '../index.model'
+export default (props: ModelProps) => {
   const { useStore, getState } = props // TypeScript Support will release later.
   const [state, actions] = useStore('Home')
   const [sharedState, sharedActions] = useStore('Shared')
@@ -270,6 +309,8 @@ export default (props: any) => {
   )
 }
 ```
+
+[⇧ back to top](#table-of-contents)
 
 ### Middleware
 
@@ -316,6 +357,8 @@ export { ... , actionMiddlewares}
 
 ⚙️ You can override the actionMiddlewares and insert your middleware to specific position
 
+[⇧ back to top](#table-of-contents)
+
 ## Other Concept required by Class Component ( Not First Class, ONLY SUPPORT ON CSR, Welcome to PR )
 
 ### Provider
@@ -336,6 +379,8 @@ class App extends PureComponent {
   }
 }
 ```
+
+[⇧ back to top](#table-of-contents)
 
 ### connect
 
@@ -408,3 +453,5 @@ export default connect(
   mapProps
 )(TSCounter)
 ```
+
+[⇧ back to top](#table-of-contents)

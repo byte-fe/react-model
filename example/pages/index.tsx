@@ -1,16 +1,13 @@
 import React, { PureComponent } from 'react'
 import { Provider, connect } from '../lib/index'
+import { ModelProps } from '../model/index.model'
 import { StateType, ActionType } from '../model/home.model'
-import J from './counter' // JS Version
 import H from './hooks'
 
-export default class App extends PureComponent {
+export default class App extends PureComponent<ModelProps> {
   render() {
-    console.log((this.props as any).initialState)
     return (
       <Provider>
-        {/* <T /> */}
-        {/* <J /> */}
         <H {...this.props} />
         <H {...this.props} />
       </Provider>
