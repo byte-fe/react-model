@@ -1,6 +1,7 @@
 import React from 'react'
+import { ModelProps } from '../model/index.model'
 
-export default (props: any) => {
+export default (props: ModelProps) => {
   const { useStore, getState } = props
   const [state, actions] = useStore('Home')
   const [sharedState, sharedActions] = useStore('Shared')
