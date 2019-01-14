@@ -29,11 +29,11 @@ interface Models {
   [name: string]: ModelType
 }
 
-type ModelType<InitStateType = {}, ActionKeys = {}> = {
+type ModelType<InitStateType = any, ActionKeys = any> = {
   actions: {
     [P in keyof ActionKeys]: Action<InitStateType, ActionKeys[P], ActionKeys>
   }
-  state: Partial<InitStateType>
+  state: InitStateType
   asyncState?: () => Promise<Partial<InitStateType>>
 }
 
@@ -50,3 +50,11 @@ type getConsumerActionsType<A extends Actions<any, any>> = {
 type Get<Object, K extends keyof Object> = Object[K]
 
 type ProviderProps = { [name: string]: ModelType }
+
+type ModelsProps<M extends Models> = {
+  useStore: <K extends keyof M>(
+    name: K,
+    models?: M
+  ) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
+  getState: <K extends keyof M>(modelName: K) => Readonly<Get<M[K], 'state'>>
+}
