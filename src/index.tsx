@@ -5,6 +5,8 @@ import { PureComponent, useCallback, useEffect, useState } from 'react'
 import { GlobalContext, Consumer, setPartialState } from './helper'
 import { actionMiddlewares, applyMiddlewares } from './middlewares'
 
+// TODO: Cross Model communication
+
 const getInitialState = async () => {
   await Promise.all(
     Object.keys(Global.State).map(async modelName => {
