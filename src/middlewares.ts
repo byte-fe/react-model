@@ -44,10 +44,12 @@ const devToolsListener: Middleware = (context, restMiddlewares) => {
 const communicator: Middleware<{}> = (context, restMiddlewares) => {
   const { modelName, next } = context
   Global.Setter.classSetter && Global.Setter.classSetter(Global.State)
-  Object.keys(Global.Setter.functionSetter[modelName]).map(key =>
-    Global.Setter.functionSetter[modelName][key].setState(
-      Global.State[modelName].state
-    )
+  Object.keys(Global.Setter.functionSetter[modelName]).map(
+    key =>
+      Global.Setter.functionSetter[modelName][key] &&
+      Global.Setter.functionSetter[modelName][key].setState(
+        Global.State[modelName].state
+      )
   )
   next(restMiddlewares)
 }
