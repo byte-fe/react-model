@@ -151,14 +151,14 @@ const Model: ModelType<StateType, ActionsParamType> = {
 
 export default Model
 
-[⇧ back to top](#table-of-contents)
-
 // You need these types when use Class Components.
 // type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
 // type ConsumerType = { actions: ConsumerActionsType; state: StateType }
 // type ActionType = ConsumerActionsType
 // export { ConsumerType, StateType, ActionType }
 ```
+
+[⇧ back to top](#table-of-contents)
 
 ### getState
 
