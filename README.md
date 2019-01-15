@@ -1,4 +1,4 @@
-# react-modelx &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg) [![npm version](https://img.shields.io/npm/v/react-modelx.svg?style=flat)](https://www.npmjs.com/package/react-modelx) [![size](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-modelx/dist/react-modelx.js?compression=gzip)](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-modelx/dist/react-modelx.js) [![install size](https://packagephobia.now.sh/badge?p=react-modelx)](https://packagephobia.now.sh/result?p=react-modelx) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
+# react-model &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg) [![npm version](https://img.shields.io/npm/v/react-model.svg?style=flat)](https://www.npmjs.com/package/react-model) [![size](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-model/dist/react-model.js?compression=gzip)](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-model/dist/react-model.js) [![install size](https://packagephobia.now.sh/badge?p=react-model)](https://packagephobia.now.sh/result?p=react-model) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
 The State management library for React
 
@@ -30,12 +30,12 @@ The State management library for React
 
 ## Quick Start
 
-[Next.js + react-modelx work around](https://github.com/byte-fe/react-modelx-experiment)
+[Next.js + react-model work around](https://github.com/byte-fe/react-model-experiment)
 
 install package
 
 ```
-npm install react-modelx
+npm install react-model
 ```
 
 ## Core Concept
@@ -47,7 +47,7 @@ react-model keep the state and actions in a global store. So you need to registe
 `model/index.model.ts`
 
 ```typescript
-import { Model } from 'react-modelx'
+import { Model } from 'react-model'
 import Home from '../model/home.model'
 import Shared from '../model/shared.model'
 
@@ -370,7 +370,7 @@ The global state standalone can not effect the react class components, we need t
 
 ```jsx
 import { PureComponent } from 'react'
-import { Provider } from 'react-modelx'
+import { Provider } from 'react-model'
 
 class App extends PureComponent {
   render() {
@@ -393,7 +393,7 @@ Javascript decorator version
 
 ```jsx
 import React, { PureComponent } from 'react'
-import { Provider, connect } from 'react-modelx'
+import { Provider, connect } from 'react-model'
 
 const mapProps = ({ light, counter }) => ({
   lightStatus: light ? 'open' : 'close',
@@ -422,7 +422,7 @@ TypeScript Version
 
 ```tsx
 import React, { PureComponent } from 'react'
-import { Provider, connect } from 'react-modelx'
+import { Provider, connect } from 'react-model'
 import { StateType, ActionType } from '../model/home.model'
 
 const mapProps = ({ light, counter, response }: StateType) => ({
