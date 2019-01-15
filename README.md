@@ -44,6 +44,8 @@ npm install react-modelx
 
 react-model keep the state and actions in a global store. So you need to register them before using.
 
+`model/index.model.ts`
+
 ```typescript
 import { Model } from 'react-modelx'
 import Home from '../model/home.model'
@@ -51,10 +53,8 @@ import Shared from '../model/shared.model'
 
 const models = { Home, Shared }
 
-// CSR export
-// export const { useStore, getState } = Model(models)
-// SSR export
-export type ModelProps = ModelsProps<typeof models>
+export const { getInitialState, useStore, getState } = Model(models)
+export type Models = typeof models
 ```
 
 [⇧ back to top](#table-of-contents)
@@ -63,18 +63,12 @@ export type ModelProps = ModelsProps<typeof models>
 
 The functional component in React 16.7.0-alpha.2 can use Hooks to connect the global store.
 
-```javascript
+```tsx
 import React from 'react'
-// CSR
-import { useStore } from './index'
-// SSR
-// import { ModelProps } from '../index.model'
+import { useStore } from '../index.model'
 
 // CSR
 export default () => {
-  // SSR
-  // export default (props: ModelProps) => {
-  //   const { useStore, getState } = props
   const [state, actions] = useStore('Home')
   const [sharedState, sharedActions] = useStore('Shared')
 
@@ -151,7 +145,7 @@ const Model: ModelType<StateType, ActionsParamType> = {
 
 export default Model
 
-// You need these types when use Class Components.
+// You can use these types when use Class Components.
 // type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
 // type ConsumerType = { actions: ConsumerActionsType; state: StateType }
 // type ActionType = ConsumerActionsType
@@ -168,7 +162,7 @@ To solve it, we provide a way to get the current state of model: getState
 > Hint: The state returned should only be used as readonly
 
 ```jsx
-import { useStore, getState } from './index'
+import { useStore, getState } from '../model/index.model'
 
 const BasicHook = () => {
   const [state, actions] = useStore('Counter')
@@ -264,25 +258,26 @@ const Model: ModelType<StateType, ActionsParamType> = {
 `_app.tsx`
 
 ```tsx
-import Home from '../model/home.model'
-import Shared from '../model/shared.model'
+import { models, getInitialState, Models } from '../model/index.model'
 
-let initialModel: any
+let persistModel: any
 
-const models = { Home, Shared }
+interface ModelsProps {
+  initialModels: Models
+  persistModel: Models
+}
 
-export const { getInitialState, useStore, getState } = Model(models)
 const MyApp = props => {
   if (!(process as any).browser) {
-    initialModel = Model(models, (props as any).initialModels) // TypeScript Support will release later.
+    persistModel = Model(models, props.initialModels) // TypeScript Support will release later.
   } else {
-    initialModel =
-      (props as any).initialModel || Model(models, (props as any).initialModels)
+    persistModel =
+      (props as any).persistModel || Model(models, props.initialModels)
   }
   const { Component, pageProps, router } = props
   return (
     <Container>
-      <Component {...pageProps} useStore={useStore} getState={getState} />
+      <Component {...pageProps} />
     </Container>
   )
 }
@@ -292,7 +287,7 @@ MyApp.getInitialProps = async (context: NextAppContext) => {
     const initialModels = await getInitialState()
     return { initialModels }
   } else {
-    return { initialModel }
+    return { persistModel }
   }
 }
 ```
@@ -300,9 +295,8 @@ MyApp.getInitialProps = async (context: NextAppContext) => {
 `hooks/index.tsx`
 
 ```tsx
-import { ModelProps } from '../index.model'
-export default (props: ModelProps) => {
-  const { useStore, getState } = props // TypeScript Support will release later.
+import { useStore, getState } from '../index.model'
+export default () => {
   const [state, actions] = useStore('Home')
   const [sharedState, sharedActions] = useStore('Shared')
 
