@@ -267,12 +267,11 @@ interface ModelsProps {
   persistModel: Models
 }
 
-const MyApp = props => {
+const MyApp = (props: ModelsProps) => {
   if (!(process as any).browser) {
-    persistModel = Model(models, props.initialModels) // TypeScript Support will release later.
+    persistModel = Model(models, props.initialModels)
   } else {
-    persistModel =
-      (props as any).persistModel || Model(models, props.initialModels)
+    persistModel = props.persistModel || Model(models, props.initialModels)
   }
   const { Component, pageProps, router } = props
   return (
