@@ -1,5 +1,5 @@
 import Global from './global'
-import { setPartialState } from './helper'
+import { setPartialState, timeout, getCache } from './helper'
 // -- Middlewares --
 
 const tryCatch: Middleware<{}> = (context, restMiddlewares) => {
@@ -14,6 +14,29 @@ const getNewState: Middleware<{}> = async (context, restMiddlewares) => {
     consumerActions(Global.State[modelName].actions),
     params
   )
+  next(restMiddlewares)
+}
+
+const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
+  context,
+  restMiddlewares
+) => {
+  const {
+    action,
+    modelName,
+    consumerActions,
+    params,
+    next,
+    actionName
+  } = context
+  context.newState = await Promise.race([
+    action(
+      Global.State[modelName].state,
+      consumerActions(Global.State[modelName].actions),
+      params
+    ),
+    timeout(maxTime, getCache(modelName, actionName))
+  ])
   next(restMiddlewares)
 }
 
@@ -63,6 +86,16 @@ let actionMiddlewares = [
   devToolsListener
 ]
 
+const middlewares = {
+  tryCatch,
+  getNewState,
+  getNewStateWithCache,
+  setNewState,
+  stateUpdater,
+  communicator,
+  devToolsListener
+}
+
 const applyMiddlewares = (middlewares: Middleware[], context: Context) => {
   context.next = (restMiddlewares: Middleware[]) =>
     restMiddlewares.length > 0 &&
@@ -70,4 +103,4 @@ const applyMiddlewares = (middlewares: Middleware[], context: Context) => {
   middlewares.length > 0 && middlewares[0](context, middlewares.slice(1))
 }
 
-export { actionMiddlewares, applyMiddlewares }
+export { actionMiddlewares, applyMiddlewares, middlewares }

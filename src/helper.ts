@@ -27,4 +27,19 @@ const setPartialState = (
   return Global.State
 }
 
-export { Consumer, GlobalContext, setPartialState }
+const timeout = (ms: number, data: any) =>
+  new Promise(resolve =>
+    setTimeout(() => {
+      console.log(ms)
+      resolve(data)
+    }, ms)
+  )
+
+const getCache = (modelName: string, actionName: string) => {
+  const JSONString = localStorage.getItem(
+    `__REACT_MODELX__${modelName}_${actionName}`
+  )
+  return JSONString ? JSON.parse(JSONString) : null
+}
+
+export { Consumer, GlobalContext, setPartialState, timeout, getCache }
