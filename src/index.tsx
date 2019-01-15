@@ -69,7 +69,10 @@ const useStore = (modelName: string) => {
     }
   })
   const updaters: any = {}
-  const consumerAction = (action: Action) => async (params: any) => {
+  const consumerAction = (action: Action) => async (
+    params: any,
+    middlewareConfig?: any
+  ) => {
     const context: Context = {
       modelName,
       setState,
@@ -77,6 +80,7 @@ const useStore = (modelName: string) => {
       next: () => {},
       newState: null,
       params,
+      middlewareConfig,
       consumerActions,
       action
     }
@@ -92,7 +96,7 @@ const useStore = (modelName: string) => {
   Object.keys(Global.State[modelName].actions).map(
     key =>
       (updaters[key] = useCallback(
-        async (params: any) => {
+        async (params: any, middlewareConfig?: any) => {
           const context: Context = {
             modelName,
             setState,
@@ -100,6 +104,7 @@ const useStore = (modelName: string) => {
             next: () => {},
             newState: null,
             params,
+            middlewareConfig,
             consumerActions,
             action: Global.State[modelName].actions[key]
           }

@@ -2,7 +2,8 @@
 type Action<S = {}, P = any, ActionKeys = {}> = (
   state: S,
   actions: getConsumerActionsType<Actions<S, ActionKeys>>,
-  params: P
+  params: P,
+  middlewareConfig?: Object
 ) => Partial<S> | Promise<Partial<S>> | ProduceFunc<S> | Promise<ProduceFunc<S>>
 
 type ProduceFunc<S> = (state: S) => void
@@ -17,6 +18,7 @@ interface Context<S = {}> {
   action: Action
   consumerActions: (actions: Actions) => getConsumerActionsType<Actions>
   params: Object
+  middlewareConfig?: Object
   actionName: string
   modelName: string
   next: Function
@@ -43,8 +45,14 @@ type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
 
 type getConsumerActionsType<A extends Actions<any, any>> = {
   [P in keyof A]: ArgumentTypes<A[P]>[2] extends undefined
-    ? (params?: ArgumentTypes<A[P]>[2]) => ReturnType<A[P]>
-    : (params: ArgumentTypes<A[P]>[2]) => ReturnType<A[P]>
+    ? (
+        params?: ArgumentTypes<A[P]>[2],
+        middlewareConfig?: ArgumentTypes<A[P]>[3]
+      ) => ReturnType<A[P]>
+    : (
+        params: ArgumentTypes<A[P]>[2],
+        middlewareConfig?: ArgumentTypes<A[P]>[3]
+      ) => ReturnType<A[P]>
 }
 
 type Get<Object, K extends keyof Object> = Object[K]
