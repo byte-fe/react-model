@@ -1,9 +1,9 @@
 {
-  "name": "react-modelx",
-  "version": "2.0.2-unstable.0",
+  "name": "react-model",
+  "version": "2.0.2",
   "description": "The State management library for React",
-  "main": "./dist/react-modelx",
-  "module": "./dist/react-modelx",
+  "main": "./dist/react-model",
+  "module": "./dist/react-model",
   "types": "./src/index",
   "scripts": {
     "build": "microbundle -o ./dist --sourcemap false"
@@ -30,10 +30,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/byte-fe/react-modelx"
+    "url": "git+https://github.com/byte-fe/react-model"
   },
   "bugs": {
-    "url": "https://github.com/byte-fe/react-modelx/issues"
+    "url": "https://github.com/byte-fe/react-model/issues"
   },
-  "homepage": "https://github.com/byte-fe/react-modelx#readme"
+  "homepage": "https://github.com/byte-fe/react-model#readme"
 }
