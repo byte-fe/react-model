@@ -35,6 +35,20 @@ const timeout = (ms: number, data: any) =>
     }, ms)
   )
 
+const getInitialState = async <T>(context?: T) => {
+  await Promise.all(
+    Object.keys(Global.State).map(async modelName => {
+      const model = Global.State[modelName]
+      const asyncState = model.asyncState ? await model.asyncState(context) : {}
+      Global.State[modelName].state = {
+        ...Global.State[modelName].state,
+        ...asyncState
+      }
+    })
+  )
+  return Global.State
+}
+
 const getCache = (modelName: string, actionName: string) => {
   const JSONString = localStorage.getItem(
     `__REACT_MODELX__${modelName}_${actionName}`
@@ -42,4 +56,11 @@ const getCache = (modelName: string, actionName: string) => {
   return JSONString ? JSON.parse(JSONString) : null
 }
 
-export { Consumer, GlobalContext, setPartialState, timeout, getCache }
+export {
+  Consumer,
+  GlobalContext,
+  setPartialState,
+  timeout,
+  getCache,
+  getInitialState
+}
