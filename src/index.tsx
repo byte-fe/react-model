@@ -2,24 +2,15 @@
 import * as React from 'react'
 import Global from './global'
 import { PureComponent, useCallback, useEffect, useState } from 'react'
-import { GlobalContext, Consumer, setPartialState } from './helper'
+import {
+  GlobalContext,
+  Consumer,
+  setPartialState,
+  getInitialState
+} from './helper'
 import { actionMiddlewares, applyMiddlewares } from './middlewares'
 
 // TODO: Cross Model communication
-
-const getInitialState = async () => {
-  await Promise.all(
-    Object.keys(Global.State).map(async modelName => {
-      const model = Global.State[modelName]
-      const asyncState = model.asyncState ? await model.asyncState() : {}
-      Global.State[modelName].state = {
-        ...Global.State[modelName].state,
-        ...asyncState
-      }
-    })
-  )
-  return Global.State
-}
 
 const Model = <M extends Models>(models: M, initialModels?: M) => {
   Global.State = initialModels

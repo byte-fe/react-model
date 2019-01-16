@@ -1,6 +1,6 @@
 {
-  "name": "react-model",
-  "version": "2.0.2",
+  "name": "react-modelx",
+  "version": "2.0.5-unstable.0",
   "description": "The State management library for React",
   "main": "./dist/react-model",
   "module": "./dist/react-model",
@@ -16,8 +16,10 @@
   ],
   "author": "ArrayZoneYour <hustliyidong@gmail.com>",
   "license": "MIT",
+  "dependencies": {
+    "immer": "^1.9.3"
+  },
   "peerDependencies": {
-    "immer": "^1.9.3",
     "react": "^16.8.0-alpha.0",
     "react-dom": "^16.8.0-alpha.0"
   },
@@ -25,7 +27,6 @@
     "@types/node": "^10.12.18",
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",
-    "immer": "^1.9.3",
     "typescript": "^3.2.1"
   },
   "repository": {
