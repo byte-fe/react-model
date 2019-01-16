@@ -247,7 +247,7 @@ const Model: ModelType<StateType, ActionsParamType> = {
     }
   },
   // Provide for SSR
-  asyncState: async () => {
+  asyncState: async context => {
     await waitFor(4000)
     return { counter: 500 }
   },
@@ -283,7 +283,7 @@ const MyApp = (props: ModelsProps) => {
 
 MyApp.getInitialProps = async (context: NextAppContext) => {
   if (!(process as any).browser) {
-    const initialModels = await getInitialState()
+    const initialModels = await getInitialState(context)
     return { initialModels }
   } else {
     return { persistModel }
