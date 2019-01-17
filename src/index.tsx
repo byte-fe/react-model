@@ -75,7 +75,7 @@ const useStore = (modelName: string) => {
       consumerActions,
       action
     }
-    applyMiddlewares(actionMiddlewares, context)
+    await applyMiddlewares(actionMiddlewares, context)
   }
   const consumerActions = (actions: any) => {
     let ret: any = {}
