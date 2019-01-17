@@ -268,9 +268,9 @@ interface ModelsProps {
 }
 
 const MyApp = (props: ModelsProps) => {
-  if (!(process as any).browser) {
-    persistModel = Model(models, props.initialModels)
-  } else {
+  if ((process as any).browser) {
+    // First come in: initialModels
+    // After that: persistModel
     persistModel = props.persistModel || Model(models, props.initialModels)
   }
   const { Component, pageProps, router } = props
