@@ -268,9 +268,9 @@ interface ModelsProps {
 }
 
 const MyApp = (props: ModelsProps) => {
-  if (!(process as any).browser) {
-    persistModel = Model(models, props.initialModels)
-  } else {
+  if ((process as any).browser) {
+    // First come in: initialModels
+    // After that: persistModel
     persistModel = props.persistModel || Model(models, props.initialModels)
   }
   const { Component, pageProps, router } = props
@@ -320,10 +320,10 @@ export default () => {
 We always want to try catch all the actions, add common request params, connect Redux devtools and so on. We Provide the middleware pattern for developer to register their own Middleware to satisfy the specific requirement.
 
 ```tsx
-// Under the hook
-const tryCatch: Middleware<{}> = (context, restMiddlewares) => {
+// Under the hood
+const tryCatch: Middleware<{}> = async (context, restMiddlewares) => {
   const { next } = context
-  next(restMiddlewares).catch((e: any) => console.log(e))
+  await next(restMiddlewares).catch((e: any) => console.log(e))
 }
 
 // ...
@@ -350,7 +350,7 @@ const consumerAction = (action: Action) => async (params: any) => {
     consumerActions,
     action
   }
-  applyMiddlewares(actionMiddlewares, context)
+  await applyMiddlewares(actionMiddlewares, context)
 }
 
 // ...

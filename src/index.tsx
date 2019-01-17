@@ -75,7 +75,7 @@ const useStore = (modelName: string) => {
       consumerActions,
       action
     }
-    applyMiddlewares(actionMiddlewares, context)
+    await applyMiddlewares(actionMiddlewares, context)
   }
   const consumerActions = (actions: any) => {
     let ret: any = {}
@@ -99,7 +99,7 @@ const useStore = (modelName: string) => {
             consumerActions,
             action: Global.State[modelName].actions[key]
           }
-          applyMiddlewares(actionMiddlewares, context)
+          await applyMiddlewares(actionMiddlewares, context)
         },
         []
         // [Global.State[modelName]]
