@@ -35,14 +35,24 @@ const timeout = (ms: number, data: any) =>
     }, ms)
   )
 
-const getInitialState = async <T>(context?: T) => {
+const getInitialState = async <T extends { modelName?: string | string[] }>(
+  context: T
+) => {
   await Promise.all(
     Object.keys(Global.State).map(async modelName => {
-      const model = Global.State[modelName]
-      const asyncState = model.asyncState ? await model.asyncState(context) : {}
-      Global.State[modelName].state = {
-        ...Global.State[modelName].state,
-        ...asyncState
+      if (
+        !context.modelName ||
+        modelName === context.modelName ||
+        context.modelName.indexOf(modelName) !== -1
+      ) {
+        const model = Global.State[modelName]
+        const asyncState = model.asyncState
+          ? await model.asyncState(context)
+          : {}
+        Global.State[modelName].state = {
+          ...Global.State[modelName].state,
+          ...asyncState
+        }
       }
     })
   )
