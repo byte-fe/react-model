@@ -318,6 +318,15 @@ export default () => {
 }
 ```
 
+`benchmark.tsx`
+
+```tsx
+// ...
+Benchmark.getInitialProps = async () => {
+  return await getInitialState({ modelName: 'Todo' })
+}
+```
+
 [⇧ back to top](#table-of-contents)
 
 ### Middleware
