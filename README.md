@@ -283,7 +283,12 @@ const MyApp = (props: ModelsProps) => {
 
 MyApp.getInitialProps = async (context: NextAppContext) => {
   if (!(process as any).browser) {
-    const initialModels = await getInitialState(context)
+    const initialModels = context.Component.getInitialProps
+      ? await context.Component.getInitialProps(context.ctx)
+      await getInitialState() // get all model initialState
+      // : await getInitialState({ modelName: 'Home' }) // get Home initialState only
+      // : await getInitialState({ modelName: ['Home', 'Todo'] }) // get multi initialState
+      // : await getInitialState({ data }) // You can also pass some public data as asyncData params.
     return { initialModels }
   } else {
     return { persistModel }
