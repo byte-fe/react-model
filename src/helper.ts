@@ -36,11 +36,12 @@ const timeout = (ms: number, data: any) =>
   )
 
 const getInitialState = async <T extends { modelName?: string | string[] }>(
-  context: T
+  context?: T
 ) => {
   await Promise.all(
     Object.keys(Global.State).map(async modelName => {
       if (
+        !context ||
         !context.modelName ||
         modelName === context.modelName ||
         context.modelName.indexOf(modelName) !== -1
