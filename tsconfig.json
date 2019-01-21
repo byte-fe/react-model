@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
-    "allowJs": true,
+    "allowJs": false,
+    "target": "es6",
     "allowSyntheticDefaultImports": true,
     "outDir": "./dist",
     "experimentalDecorators": true,
