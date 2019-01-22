@@ -63,6 +63,7 @@ export type Models = typeof models
 
 The functional component in React 16.8.0-alpha.1 can use Hooks to connect the global store.
 The actions return from useStore can invoke the dom changes.
+
 Best Practice: Dont use useStore on the Top like the example below because it will reload the whole components. You should use useStore on the subComponents which need it.
 
 ```tsx
@@ -160,6 +161,7 @@ export default Model
 
 Key Point: [State variable not updating in useEffect callback](https://github.com/facebook/react/issues/14066)
 To solve it, we provide a way to get the current state of model: getState
+
 Note: the getState method cannot invoke the dom changes automatically by itself.
 
 > Hint: The state returned should only be used as readonly
