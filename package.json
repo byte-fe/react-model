@@ -1,6 +1,6 @@
 {
-  "name": "react-modelx",
-  "version": "2.0.12",
+  "name": "react-model",
+  "version": "2.0.13",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "types": "./src/index",
