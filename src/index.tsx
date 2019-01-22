@@ -47,8 +47,7 @@ const getState = (modelName: keyof typeof Global.State) => {
 }
 
 const useStore = (modelName: string) => {
-  // const _state = useContext(GlobalContext)
-  const [state, setState] = useState(Global.State[modelName].state)
+  const setState = useState(Global.State[modelName].state)[1]
   Global.uid += 1
   const _hash = '' + Global.uid
   if (!Global.Setter.functionSetter[modelName])
@@ -105,7 +104,7 @@ const useStore = (modelName: string) => {
         // [Global.State[modelName]]
       ))
   )
-  return [state, updaters]
+  return [getState(modelName), updaters]
 }
 
 // Bridge API
