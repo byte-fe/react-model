@@ -1,6 +1,6 @@
 {
-  "name": "react-model",
-  "version": "2.0.13",
+  "name": "react-modelx",
+  "version": "2.1.0-unstable.0",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "types": "./src/index",
@@ -26,7 +26,7 @@
     "@types/node": "^10.12.18",
     "@types/react": "^16.7.18",
     "@types/react-dom": "^16.0.11",
-    "typescript": "^3.2.1"
+    "typescript": "^3.2.4"
   },
   "repository": {
     "type": "git",
