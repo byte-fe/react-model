@@ -77,14 +77,13 @@ const communicator: Middleware<{}> = async (context, restMiddlewares) => {
   await next(restMiddlewares)
 }
 
-let actionMiddlewares = [
-  tryCatch,
-  getNewState,
-  setNewState,
-  stateUpdater,
-  communicator,
-  devToolsListener
-]
+let actionMiddlewares = [getNewState, setNewState, stateUpdater, communicator]
+
+if (process.env.NODE_ENV === 'production') {
+  actionMiddlewares = [tryCatch, ...actionMiddlewares]
+} else {
+  actionMiddlewares = [...actionMiddlewares, devToolsListener]
+}
 
 const middlewares = {
   tryCatch,
