@@ -12,9 +12,20 @@ The State management library for React
 
 ---
 
+## Quick Start
+
+[CodeSandbox: TodoMVC](https://codesandbox.io/s/moyxon99jx)
+
+[Next.js + react-model work around](https://github.com/byte-fe/react-model-experiment)
+
+install package
+
+```
+npm install react-model
+```
+
 ## Table of Contents
 
-- [Quick Start](#quick-start)
 - [Core Concept](#core-concept)
   - [Model Register](#model-register)
   - [useStore](#usestore)
@@ -27,16 +38,6 @@ The State management library for React
 - [Other Concept required by Class Component ( Not First Class, ONLY SUPPORT ON CSR, Welcome to PR )](#other-concept-required-by-class-component--not-first-class-only-support-on-csr-welcome-to-pr-)
   - [Provider](#provider)
   - [connect](#connect)
-
-## Quick Start
-
-[Next.js + react-model work around](https://github.com/byte-fe/react-model-experiment)
-
-install package
-
-```
-npm install react-model
-```
 
 ## Core Concept
 
