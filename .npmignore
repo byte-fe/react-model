@@ -13,6 +13,7 @@ example/
 
 # yarn
 yarn.lock
+package-lock.json
 
 # VSCode
 .vscode/
