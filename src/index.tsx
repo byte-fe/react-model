@@ -35,7 +35,7 @@ const Model = <M extends Models>(models: M, initialModels?: M) => {
   return { useStore, getState, getInitialState } as {
     useStore: <K extends keyof M>(
       name: K,
-      models?: M
+      depActions?: (keyof Get<M[K], 'actions'>)[]
     ) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
     getState: <K extends keyof M>(modelName: K) => Readonly<Get<M[K], 'state'>>
     getInitialState: typeof getInitialState
@@ -46,13 +46,13 @@ const getState = (modelName: keyof typeof Global.State) => {
   return (Global.State as any)[modelName].state
 }
 
-const useStore = (modelName: string) => {
+const useStore = (modelName: string, depActions?: string[]) => {
   const setState = useState(Global.State[modelName].state)[1]
   Global.uid += 1
   const _hash = '' + Global.uid
   if (!Global.Setter.functionSetter[modelName])
     Global.Setter.functionSetter[modelName] = []
-  Global.Setter.functionSetter[modelName][_hash] = { setState }
+  Global.Setter.functionSetter[modelName][_hash] = { setState, depActions }
   useEffect(() => {
     return function cleanup() {
       delete Global.Setter.functionSetter[modelName][_hash]
