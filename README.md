@@ -62,10 +62,8 @@ export type Models = typeof models
 
 ### useStore
 
-The functional component in React 16.8.0-alpha.1 can use Hooks to connect the global store.
+The functional component in React ^16.8.0 can use Hooks to connect the global store.
 The actions return from useStore can invoke the dom changes.
-
-Best Practice: Dont use useStore on the Top like the example below because it will reload the whole components. You should use useStore on the subComponents which need it.
 
 ```tsx
 import React from 'react'
@@ -90,6 +88,13 @@ export default () => {
   )
 }
 ```
+
+optional solution on huge dataset (example: TodoList(10000+ Todos)):
+
+1. use useStore on the subComponents which need it.
+2. [use useStore with depActions and React.memo to prevent child components rerender frequently.](https://github.com/ArrayZoneYour/react-model-todomvc/blob/master/src/components/TodoItem.tsx)
+
+[Demo Repo](https://github.com/ArrayZoneYour/react-model-todomvc)
 
 [⇧ back to top](#table-of-contents)
 
