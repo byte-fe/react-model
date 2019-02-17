@@ -18,6 +18,10 @@ package-lock.json
 # VSCode
 .vscode/
 
+# Test
+__test__/
+jest.config.js
+
 # microbundle
 .rts2_cache_cjs/
 .rts2_cache_es/
