@@ -22,3 +22,6 @@ dist/
 # yarn
 yarn.lock
 package-lock.json
+
+# Jest
+coverage/

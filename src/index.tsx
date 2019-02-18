@@ -8,7 +8,7 @@ import {
   setPartialState,
   getInitialState
 } from './helper'
-import { actionMiddlewares, applyMiddlewares } from './middlewares'
+import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
 // TODO: Cross Model communication
 
@@ -178,6 +178,7 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
 export {
   actionMiddlewares,
   Model,
+  middlewares,
   Provider,
   Consumer,
   connect,
