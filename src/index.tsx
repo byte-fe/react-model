@@ -1,7 +1,7 @@
 /// <reference path="./index.d.ts" />
 import * as React from 'react'
 import Global from './global'
-import { PureComponent, useCallback, useEffect, useState } from 'react'
+import { PureComponent, useEffect, useState } from 'react'
 import {
   GlobalContext,
   Consumer,
@@ -85,24 +85,20 @@ const useStore = (modelName: string, depActions?: string[]) => {
   }
   Object.keys(Global.State[modelName].actions).map(
     key =>
-      (updaters[key] = useCallback(
-        async (params: any, middlewareConfig?: any) => {
-          const context: Context = {
-            modelName,
-            setState,
-            actionName: key,
-            next: () => {},
-            newState: null,
-            params,
-            middlewareConfig,
-            consumerActions,
-            action: Global.State[modelName].actions[key]
-          }
-          await applyMiddlewares(actionMiddlewares, context)
-        },
-        []
-        // [Global.State[modelName]]
-      ))
+      (updaters[key] = async (params: any, middlewareConfig?: any) => {
+        const context: Context = {
+          modelName,
+          setState,
+          actionName: key,
+          next: () => {},
+          newState: null,
+          params,
+          middlewareConfig,
+          consumerActions,
+          action: Global.State[modelName].actions[key]
+        }
+        await applyMiddlewares(actionMiddlewares, context)
+      })
   )
   return [getState(modelName), updaters]
 }
@@ -117,7 +113,7 @@ class Provider extends PureComponent<{}, ProviderProps> {
     Global.Setter.classSetter = this.setState.bind(this)
     return (
       <GlobalContext.Provider
-        value={{ ...Global.State, setState: this.setState.bind(this) }}
+        value={{ ...this.state, setState: this.setState.bind(this) }}
       >
         {children}
       </GlobalContext.Provider>
@@ -146,13 +142,14 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
               if (newState) {
                 setPartialState(modelName, newState)
                 setState(Global.State)
-                Object.keys(Global.Setter.functionSetter[modelName]).map(
-                  key =>
-                    Global.Setter.functionSetter[modelName][key] &&
-                    Global.Setter.functionSetter[modelName][key].setState(
-                      Global.State[modelName].state
-                    )
-                )
+                Global.Setter.functionSetter[modelName] &&
+                  Object.keys(Global.Setter.functionSetter[modelName]).map(
+                    key =>
+                      Global.Setter.functionSetter[modelName][key] &&
+                      Global.Setter.functionSetter[modelName][key].setState(
+                        Global.State[modelName].state
+                      )
+                  )
               }
             }
             const consumerActions = (actions: any) => {

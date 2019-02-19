@@ -54,7 +54,6 @@ export const ErrorCounter: ModelType<CounterState, CounterActionParams> = {
   actions: {
     increment: async () => {
       throw 'error'
-      return {}
     }
   }
 }

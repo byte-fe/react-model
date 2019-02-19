@@ -1,7 +1,6 @@
 /// <reference path="../index.d.ts" />
 import 'react-testing-library/cleanup-after-each'
 process.env.NODE_ENV = 'production'
-console.log(process.env)
 import { Model } from '../../src'
 import { ErrorCounter } from '..'
 import { testHook } from 'react-testing-library'
