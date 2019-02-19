@@ -2,7 +2,7 @@
 import 'react-testing-library/cleanup-after-each'
 import * as React from 'react'
 import { Model, Provider, connect } from '../src'
-import { Counter } from '.'
+import { Counter } from './'
 import { render, fireEvent, testHook } from 'react-testing-library'
 import { timeout } from '../src/helper'
 

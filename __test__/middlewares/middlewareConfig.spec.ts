@@ -2,7 +2,7 @@
 import 'react-testing-library/cleanup-after-each'
 import { testHook } from 'react-testing-library'
 import { Model } from '../../src'
-import { Counter } from '..'
+import { Counter } from '../'
 
 describe('middleware: ', () => {
   test("actions' middlewareConfig", async () => {
