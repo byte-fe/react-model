@@ -1,7 +1,7 @@
 /// <reference path="./index.d.ts" />
 import { testHook } from 'react-testing-library'
 import { Model } from '../src'
-import { Counter } from '.'
+import { Counter, AsyncCounter } from '.'
 
 describe('useStore', () => {
   test('return default initial values', () => {
@@ -33,5 +33,12 @@ describe('useStore', () => {
     })
     await actions.add(3)
     expect(state).toEqual({ count: 3 })
+  })
+  test('use initialModels', async () => {
+    const { getInitialState } = Model({ AsyncCounter })
+    const initialModels = await getInitialState()
+    const { getState } = Model({ AsyncCounter }, initialModels)
+    const state = getState('AsyncCounter')
+    expect(state.count).toBe(1)
   })
 })
