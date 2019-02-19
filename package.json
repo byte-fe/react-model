@@ -1,14 +1,13 @@
 {
   "name": "react-model",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "types": "./src/index",
   "scripts": {
     "build": "microbundle -o ./dist --sourcemap false",
     "test": "jest --silent",
-    "test:coverage": "jest --collect-coverage --silent",
-    "test:badges": "jest --coverage --silent  && jest-coverage-badges --output './badges'"
+    "test:coverage": "jest --collect-coverage --silent"
   },
   "keywords": [
     "react",
