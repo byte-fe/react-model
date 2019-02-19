@@ -1,5 +1,5 @@
 {
-  "name": "react-modelx",
+  "name": "react-model",
   "version": "2.2.1",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",

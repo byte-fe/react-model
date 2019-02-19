@@ -1,3 +1,12 @@
+type FunctionSetter = {
+  [modelName: string]: {
+    [actionName: string]: {
+      setState: React.Dispatch<any>
+      depActions?: string[]
+    }
+  }
+}
+
 // Very Sad, Promise<ProduceFunc<S>> can not work with Partial<S> | ProduceFunc<S>
 type Action<S = {}, P = any, ActionKeys = {}> = (
   state: S,

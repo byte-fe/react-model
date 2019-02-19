@@ -51,7 +51,7 @@ const useStore = (modelName: string, depActions?: string[]) => {
   Global.uid += 1
   const _hash = '' + Global.uid
   if (!Global.Setter.functionSetter[modelName])
-    Global.Setter.functionSetter[modelName] = []
+    Global.Setter.functionSetter[modelName] = {}
   Global.Setter.functionSetter[modelName][_hash] = { setState, depActions }
   useEffect(() => {
     return function cleanup() {
