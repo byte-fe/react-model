@@ -3,6 +3,7 @@
     "allowJs": false,
     "target": "es6",
     "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
     "outDir": "./dist",
     "experimentalDecorators": true,
     "jsx": "react",

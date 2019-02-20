@@ -1,3 +1,8 @@
+type Setter = {
+  classSetter: ClassSetter
+  functionSetter: FunctionSetter
+}
+
 type FunctionSetter = {
   [modelName: string]: {
     [actionName: string]: {
@@ -6,6 +11,8 @@ type FunctionSetter = {
     }
   }
 }
+
+type ClassSetter = React.Dispatch<any> | undefined
 
 // Very Sad, Promise<ProduceFunc<S>> can not work with Partial<S> | ProduceFunc<S>
 type Action<S = {}, P = any, ActionKeys = {}> = (
