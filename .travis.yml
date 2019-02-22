@@ -5,6 +5,8 @@ node_js:
   - '9'
   - '10'
   - 'lts/*'
+before_script:
+  - npm install react@latest react-dom@latest
 scripts:
   - npm install codecov -g
 after_success:

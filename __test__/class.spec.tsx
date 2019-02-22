@@ -31,11 +31,11 @@ describe('class component', () => {
     Model({ Counter })
     const { container } = render(
       <Provider>
-        <button>Increment</button>
+        <Button />
       </Provider>
     )
     const button = container.firstChild
-    expect(button!.textContent).toBe('Increment')
+    expect(button!.textContent).toBe('0')
   })
   test('Consumer', async () => {
     Model({ Counter })
