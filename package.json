@@ -1,11 +1,12 @@
 {
   "name": "react-model",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "types": "./src/index",
   "scripts": {
     "build": "microbundle -o ./dist --sourcemap false",
+    "commit": "npx git-cz",
     "test": "jest --silent",
     "test:coverage": "jest --collect-coverage --silent"
   },
@@ -18,13 +19,11 @@
   "author": "ArrayZoneYour <hustliyidong@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "immer": "^2.0.0",
-    "react": "^16.8.2",
-    "react-dom": "^16.8.2"
+    "immer": "^2.0.0"
   },
   "peerDependencies": {
-    "react": "^16.8.0",
-    "react-dom": "^16.8.0"
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.5",
