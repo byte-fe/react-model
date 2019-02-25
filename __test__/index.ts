@@ -20,6 +20,17 @@ export const Counter: ModelType<
   }
 }
 
+export const Theme: ModelType<ThemeState, ThemeActionParams> = {
+  state: {
+    theme: 'dark'
+  },
+  actions: {
+    changeTheme: state => ({
+      theme: state.theme === 'dark' ? 'light' : 'dark'
+    })
+  }
+}
+
 export const AsyncCounter: ModelType<CounterState, CounterActionParams> = {
   state: { count: 0 },
   asyncState: async (context: { count?: number }) => ({
