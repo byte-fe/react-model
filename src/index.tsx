@@ -118,11 +118,14 @@ class Provider extends PureComponent<{}, ProviderProps> {
   }
 }
 
-const connect = (modelName: string, mapProps: Function | undefined) => (
-  Component: typeof React.Component | typeof PureComponent
-) =>
-  class P extends PureComponent<{}> {
+const connect = (
+  modelName: string,
+  mapState?: Function | undefined,
+  mapActions?: Function | undefined
+) => (Component: typeof React.Component | typeof PureComponent) =>
+  class P extends PureComponent<any> {
     render() {
+      const { state: prevState = {}, actions: prevActions = {} } = this.props
       return (
         <Consumer>
           {models => {
@@ -158,8 +161,16 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
 
             return (
               <Component
-                state={mapProps ? mapProps(state) : state}
-                actions={consumerActions(actions)}
+                state={{
+                  ...prevState,
+                  ...(mapState ? mapState(state) : state)
+                }}
+                actions={{
+                  ...prevActions,
+                  ...(mapActions
+                    ? mapActions(consumerActions(actions))
+                    : consumerActions(actions))
+                }}
               />
             )
           }}
