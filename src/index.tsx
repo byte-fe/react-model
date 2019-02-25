@@ -2,12 +2,7 @@
 import * as React from 'react'
 import Global from './global'
 import { PureComponent, useEffect, useState } from 'react'
-import {
-  GlobalContext,
-  Consumer,
-  setPartialState,
-  getInitialState
-} from './helper'
+import { GlobalContext, Consumer, getInitialState } from './helper'
 import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
 // TODO: Cross Model communication
@@ -64,6 +59,7 @@ const useStore = (modelName: string, depActions?: string[]) => {
     middlewareConfig?: any
   ) => {
     const context: Context = {
+      type: 'function',
       modelName,
       setState,
       actionName: action.name,
@@ -87,6 +83,7 @@ const useStore = (modelName: string, depActions?: string[]) => {
     key =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
         const context: Context = {
+          type: 'function',
           modelName,
           setState,
           actionName: key,
@@ -133,24 +130,23 @@ const connect = (modelName: string, mapProps: Function | undefined) => (
               [`${modelName}`]: { state, actions },
               setState
             } = models as any
-            const consumerAction = (action: any) => async (...params: any) => {
-              const newState = await action(
-                Global.State[modelName].state,
-                consumerActions(actions),
-                ...params
-              )
-              if (newState) {
-                setPartialState(modelName, newState)
-                setState(Global.State)
-                Global.Setter.functionSetter[modelName] &&
-                  Object.keys(Global.Setter.functionSetter[modelName]).map(
-                    key =>
-                      Global.Setter.functionSetter[modelName][key] &&
-                      Global.Setter.functionSetter[modelName][key].setState(
-                        Global.State[modelName].state
-                      )
-                  )
+            const consumerAction = (action: Action) => async (
+              params: any,
+              middlewareConfig?: any
+            ) => {
+              const context: Context = {
+                type: 'class',
+                action,
+                consumerActions,
+                params,
+                middlewareConfig,
+                actionName: action.name,
+                modelName,
+                next: () => {},
+                newState: null,
+                setState
               }
+              await applyMiddlewares(actionMiddlewares, context)
             }
             const consumerActions = (actions: any) => {
               let ret: any = {}

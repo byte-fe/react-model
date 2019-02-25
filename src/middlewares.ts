@@ -50,7 +50,7 @@ const setNewState: Middleware<{}> = async (context, restMiddlewares) => {
 
 const stateUpdater: Middleware = async (context, restMiddlewares) => {
   const { setState, modelName, next } = context
-  setState(Global.State[modelName].state)
+  context.type !== 'class' && setState(Global.State[modelName].state)
   await next(restMiddlewares)
 }
 
@@ -66,15 +66,22 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
 
 const communicator: Middleware<{}> = async (context, restMiddlewares) => {
   const { modelName, next, actionName } = context
-  Global.Setter.classSetter && Global.Setter.classSetter(Global.State)
-  Object.keys(Global.Setter.functionSetter[modelName]).map(key => {
-    const setter = Global.Setter.functionSetter[modelName][key]
-    if (setter) {
-      if (!setter.depActions || setter.depActions.indexOf(actionName) !== -1) {
-        setter.setState(Global.State[modelName].state)
+  if (Global.Setter.classSetter) {
+    Global.Setter.classSetter(Global.State)
+  }
+  if (Global.Setter.functionSetter[modelName]) {
+    Object.keys(Global.Setter.functionSetter[modelName]).map(key => {
+      const setter = Global.Setter.functionSetter[modelName][key]
+      if (setter) {
+        if (
+          !setter.depActions ||
+          setter.depActions.indexOf(actionName) !== -1
+        ) {
+          setter.setState(Global.State[modelName].state)
+        }
       }
-    }
-  })
+    })
+  }
   await next(restMiddlewares)
 }
 
