@@ -22,8 +22,8 @@ export const Counter: ModelType<
 
 export const AsyncCounter: ModelType<CounterState, CounterActionParams> = {
   state: { count: 0 },
-  asyncState: async () => ({
-    count: 1
+  asyncState: async (context: { count?: number }) => ({
+    count: context ? context.count || 1 : 1
   }),
   actions: {
     increment: (_, __, params) => {
