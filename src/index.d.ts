@@ -31,6 +31,7 @@ type Actions<S = {}, ActionKeys = {}> = {
 type Dispatch<A> = (value: A) => void
 type SetStateAction<S> = S | ((prevState: S) => S)
 interface Context<S = {}> {
+  type: 'function' | 'class'
   action: Action
   consumerActions: (actions: Actions) => getConsumerActionsType<Actions>
   params: Object
@@ -52,7 +53,7 @@ type ModelType<InitStateType = any, ActionKeys = any> = {
     [P in keyof ActionKeys]: Action<InitStateType, ActionKeys[P], ActionKeys>
   }
   state: InitStateType
-  asyncState?: () => Promise<Partial<InitStateType>>
+  asyncState?: (context?: any) => Promise<Partial<InitStateType>>
 }
 
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
