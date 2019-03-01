@@ -1,6 +1,6 @@
 {
   "name": "react-model",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "types": "./src/index",
