@@ -161,6 +161,7 @@ const connect = (
 
             return (
               <Component
+                {...this.props}
                 state={{
                   ...prevState,
                   ...(mapState ? mapState(state) : state)
