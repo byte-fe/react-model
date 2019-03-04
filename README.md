@@ -12,6 +12,10 @@ The State management library for React
 
 ☂️ 100% test coverage, safe on production
 
+🐛 Debug easily on test environment
+
+![Debug Easily](https://github.com/byte-fe/react-model-experiment/raw/0974f43bae2b3778ecc8fc65c1143ec1c50914c9/images/debug.jpg)
+
 ---
 
 ## Quick Start
