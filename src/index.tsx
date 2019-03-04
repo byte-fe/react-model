@@ -5,8 +5,6 @@ import { PureComponent, useEffect, useState } from 'react'
 import { GlobalContext, Consumer, getInitialState } from './helper'
 import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
-// TODO: Cross Model communication
-
 const Model = <M extends Models>(models: M, initialModels?: M) => {
   Global.State = initialModels
     ? Object.keys(models).reduce((o: any, key) => {
@@ -27,18 +25,69 @@ const Model = <M extends Models>(models: M, initialModels?: M) => {
     Global.devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__
     Global.devTools.connect()
   }
-  return { useStore, getState, getInitialState } as {
+  return { useStore, getState, getInitialState, getActions } as {
     useStore: <K extends keyof M>(
       name: K,
       depActions?: (keyof Get<M[K], 'actions'>)[]
     ) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
     getState: <K extends keyof M>(modelName: K) => Readonly<Get<M[K], 'state'>>
+    getActions: <K extends keyof M>(
+      modelName: K
+    ) => Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
     getInitialState: typeof getInitialState
   }
 }
 
 const getState = (modelName: keyof typeof Global.State) => {
   return (Global.State as any)[modelName].state
+}
+
+const getActions = (modelName: string) => {
+  const updaters: any = {}
+  const consumerAction = (action: Action) => async (
+    params: any,
+    middlewareConfig?: any
+  ) => {
+    const context: Context = {
+      type: 'outer',
+      modelName,
+      setState: () => {},
+      actionName: action.name,
+      next: () => {},
+      newState: null,
+      params,
+      middlewareConfig,
+      consumerActions,
+      action
+    }
+    await applyMiddlewares(actionMiddlewares, context)
+  }
+  const consumerActions = (actions: any) => {
+    let ret: any = {}
+    Object.keys(actions).map((key: string) => {
+      ret[key] = consumerAction(actions[key])
+    })
+    return ret
+  }
+  Object.keys(Global.State[modelName].actions).map(
+    key =>
+      (updaters[key] = async (params: any, middlewareConfig?: any) => {
+        const context: Context = {
+          type: 'function',
+          modelName,
+          setState: () => {},
+          actionName: key,
+          next: () => {},
+          newState: null,
+          params,
+          middlewareConfig,
+          consumerActions,
+          action: Global.State[modelName].actions[key]
+        }
+        await applyMiddlewares(actionMiddlewares, context)
+      })
+  )
+  return updaters
 }
 
 const useStore = (modelName: string, depActions?: string[]) => {

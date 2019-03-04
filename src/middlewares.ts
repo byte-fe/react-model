@@ -50,7 +50,7 @@ const setNewState: Middleware<{}> = async (context, restMiddlewares) => {
 
 const stateUpdater: Middleware = async (context, restMiddlewares) => {
   const { setState, modelName, next } = context
-  context.type !== 'class' && setState(Global.State[modelName].state)
+  context.type === 'function' && setState(Global.State[modelName].state)
   await next(restMiddlewares)
 }
 

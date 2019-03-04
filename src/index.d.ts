@@ -31,7 +31,7 @@ type Actions<S = {}, ActionKeys = {}> = {
 type Dispatch<A> = (value: A) => void
 type SetStateAction<S> = S | ((prevState: S) => S)
 interface Context<S = {}> {
-  type: 'function' | 'class'
+  type: 'function' | 'class' | 'outer'
   action: Action
   consumerActions: (actions: Actions) => getConsumerActionsType<Actions>
   params: Object
