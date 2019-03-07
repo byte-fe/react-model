@@ -2,13 +2,15 @@
 
 The State management library for React
 
-🎉 Support Hooks Api
+🎉 Support Both Class and Hooks Api
 
 👬 Fully TypeScript Support
 
-📦 gzip bundle < 2KB with microbundle
+📦 gzip bundle ~2KB with microbundle
 
 ⚙️ Middlewares Pipline ( redux-devtools support ... )
+
+⚔ 100% test coverage, safe on production
 
 ---
 
@@ -31,6 +33,7 @@ npm install react-model
   - [useStore](#usestore)
   - [Model](#model)
   - [getState](#getstate)
+  - [getActions](#getactions)
 - [Advance Concept](#advance-concept)
   - [immutable Actions](#immutable-actions)
   - [SSR with Next.js](#ssr-with-nextjs)
@@ -54,7 +57,7 @@ import Shared from '../model/shared.model'
 
 const models = { Home, Shared }
 
-export const { getInitialState, useStore, getState } = Model(models)
+export const { getInitialState, useStore, getState, getActions } = Model(models)
 export type Models = typeof models
 ```
 
@@ -64,6 +67,10 @@ export type Models = typeof models
 
 The functional component in React ^16.8.0 can use Hooks to connect the global store.
 The actions return from useStore can invoke the dom changes.
+
+The execution of actions returned by useStore will invoke the rerender of current component first.
+
+It's the only difference between the actions returned by useStore and getActions now.
 
 ```tsx
 import React from 'react'
@@ -166,6 +173,7 @@ export default Model
 ### getState
 
 Key Point: [State variable not updating in useEffect callback](https://github.com/facebook/react/issues/14066)
+
 To solve it, we provide a way to get the current state of model: getState
 
 Note: the getState method cannot invoke the dom changes automatically by itself.
@@ -196,11 +204,40 @@ const BasicHook = () => {
 
 [⇧ back to top](#table-of-contents)
 
+### getActions
+
+You can call other models' actions with getActions api
+
+getActions can be used in both class components and functional components.
+
+```js
+import { getActions } from './index.model'
+
+const sharedActions = getActions('Shared')
+const counterActions = getActions('Counter')
+
+const model = {
+  state: {},
+  actions: {
+    crossModelCall: () => {
+      sharedActions.changeTheme('dark')
+      counterActions.increment(9)
+    }
+  }
+}
+
+export default model
+```
+
+[⇧ back to top](#table-of-contents)
+
 ## Advance Concept
 
 ### immutable Actions
 
 The actions use [immer](https://github.com/mweststrate/immer) produce API to modify the Store. You can return a producer in action.
+
+Using function as return value can make your code cleaner when you modify the deep nested value.
 
 TypeScript Example
 
