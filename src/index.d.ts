@@ -20,7 +20,13 @@ type Action<S = {}, P = any, ActionKeys = {}> = (
   actions: getConsumerActionsType<Actions<S, ActionKeys>>,
   params: P,
   middlewareConfig?: Object
-) => Partial<S> | Promise<Partial<S>> | ProduceFunc<S> | Promise<ProduceFunc<S>>
+) =>
+  | Partial<S>
+  | Promise<Partial<S>>
+  | ProduceFunc<S>
+  | Promise<ProduceFunc<S>>
+  | void
+  | Promise<void>
 
 type ProduceFunc<S> = (state: S) => void
 

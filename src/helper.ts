@@ -8,7 +8,7 @@ const Consumer = GlobalContext.Consumer
 
 const setPartialState = (
   name: keyof typeof Global.State,
-  partialState: typeof Global.State | Function = {}
+  partialState: typeof Global.State | Function
 ) => {
   if (typeof partialState === 'function') {
     let state = Global.State[name].state

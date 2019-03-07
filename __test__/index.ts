@@ -1,4 +1,5 @@
 /// <reference path="./index.d.ts" />
+/// <reference path="../src/index.d.ts" />
 import { timeout } from '../src/helper'
 
 export const ActionsTester: ModelType<ActionTesterState, ActionTesterParams> = {
@@ -21,7 +22,6 @@ export const ActionsTester: ModelType<ActionTesterState, ActionTesterParams> = {
     getData: async (_, actions) => {
       await actions.get()
       actions.parse()
-      return {}
     }
   }
 }
@@ -61,6 +61,17 @@ export const AsyncCounter: ModelType<CounterState, CounterActionParams> = {
   asyncState: async (context: { count?: number }) => ({
     count: context ? context.count || 1 : 1
   }),
+  actions: {
+    increment: (_, __, params) => {
+      return state => {
+        state.count += params
+      }
+    }
+  }
+}
+
+export const AsyncNull: ModelType<CounterState, CounterActionParams> = {
+  state: { count: 0 },
   actions: {
     increment: (_, __, params) => {
       return state => {
