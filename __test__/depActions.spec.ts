@@ -1,8 +1,7 @@
-/// <reference path="../index.d.ts" />
-import 'react-testing-library/cleanup-after-each'
+/// <reference path="./index.d.ts" />
 import { testHook } from 'react-testing-library'
-import { Model } from '../../src'
-import { Counter } from '..'
+import { Model } from '../src'
+import { Counter } from '.'
 
 describe('', () => {
   test('communicator', async () => {
@@ -11,7 +10,7 @@ describe('', () => {
     const { useStore, getActions } = Model({ Counter })
     const actions = getActions('Counter')
     testHook(() => {
-      ;[stateFirst, actionsFirst] = useStore('Counter')
+      ;[stateFirst, actionsFirst] = useStore('Counter', ['add'])
     })
     testHook(() => {
       ;[stateSecond, actionsSecond] = useStore('Counter')
@@ -22,10 +21,10 @@ describe('', () => {
     expect(stateFirst.count).toBe(3)
     expect(stateSecond.count).toBe(3)
     await actionsSecond.increment(4)
-    expect(stateFirst.count).toBe(7)
+    expect(stateFirst.count).toBe(3)
     expect(stateSecond.count).toBe(7)
     await actions.increment(4)
-    expect(stateFirst.count).toBe(11)
+    expect(stateFirst.count).toBe(3)
     expect(stateSecond.count).toBe(11)
   })
 })

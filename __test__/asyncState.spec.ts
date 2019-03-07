@@ -1,7 +1,7 @@
 /// <reference path="./index.d.ts" />
 import 'react-testing-library/cleanup-after-each'
 import { Model } from '../src'
-import { AsyncCounter } from '.'
+import { AsyncCounter, AsyncNull } from '.'
 
 describe('asyncState', () => {
   test('asyncState accept context params with error modelName', async () => {
@@ -27,5 +27,11 @@ describe('asyncState', () => {
     await getInitialState({ count: 3, modelName: 'AsyncCounter' })
     const state = getState('AsyncCounter')
     expect(state.count).toBe(3)
+  })
+  test('asyncState work without asyncState', async () => {
+    const { getInitialState, getState } = Model({ AsyncNull })
+    await getInitialState()
+    const state = getState('AsyncNull')
+    expect(state.count).toBe(0)
   })
 })
