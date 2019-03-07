@@ -27,7 +27,7 @@ const setPartialState = (
   return Global.State
 }
 
-const timeout = (ms: number, data: any) =>
+const timeout = <T>(ms: number, data: T): Promise<T> =>
   new Promise(resolve =>
     setTimeout(() => {
       console.log(ms)

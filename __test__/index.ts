@@ -1,6 +1,31 @@
 /// <reference path="./index.d.ts" />
 import { timeout } from '../src/helper'
 
+export const ActionsTester: ModelType<ActionTesterState, ActionTesterParams> = {
+  state: {
+    response: {
+      data: {}
+    },
+    data: {}
+  },
+  actions: {
+    get: async () => {
+      const response = await timeout(9, { code: 0, data: { counter: 1000 } })
+      return { response }
+    },
+    parse: () => {
+      return state => {
+        state.data = state.response.data
+      }
+    },
+    getData: async (_, actions) => {
+      await actions.get()
+      actions.parse()
+      return {}
+    }
+  }
+}
+
 export const Counter: ModelType<
   CounterState,
   CounterActionParams & ExtraActionParams

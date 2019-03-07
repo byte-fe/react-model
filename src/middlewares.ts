@@ -49,8 +49,8 @@ const setNewState: Middleware<{}> = async (context, restMiddlewares) => {
 }
 
 const stateUpdater: Middleware = async (context, restMiddlewares) => {
-  const { setState, modelName, next } = context
-  context.type === 'function' && setState(Global.State[modelName].state)
+  const { modelName, next } = context
+  context.type === 'function' && context.setState(Global.State[modelName].state)
   await next(restMiddlewares)
 }
 
@@ -105,13 +105,13 @@ const middlewares = {
 
 const applyMiddlewares = async (
   middlewares: Middleware[],
-  context: Context
+  context: BaseContext
 ) => {
   context.next = (restMiddlewares: Middleware[]) =>
     restMiddlewares.length > 0 &&
-    restMiddlewares[0](context, restMiddlewares.slice(1))
+    restMiddlewares[0](<Context>context, restMiddlewares.slice(1))
   if (middlewares.length > 0) {
-    await middlewares[0](context, middlewares.slice(1))
+    await middlewares[0](<Context>context, middlewares.slice(1))
   }
 }
 

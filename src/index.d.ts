@@ -30,18 +30,31 @@ type Actions<S = {}, ActionKeys = {}> = {
 
 type Dispatch<A> = (value: A) => void
 type SetStateAction<S> = S | ((prevState: S) => S)
-interface Context<S = {}> {
-  type: 'function' | 'class' | 'outer'
+
+interface BaseContext<S = {}> {
   action: Action
   consumerActions: (actions: Actions) => getConsumerActionsType<Actions>
   params: Object
   middlewareConfig?: Object
   actionName: string
   modelName: string
-  next: Function
+  next?: Function
   newState: Object | null
+}
+
+interface InnerContext<S = {}> extends BaseContext<S> {
+  type: 'function' | 'class'
   setState: Dispatch<SetStateAction<S>>
 }
+
+interface OuterContext<S = {}> extends BaseContext<S> {
+  type: 'outer'
+}
+
+type Context<S = {}> = (InnerContext<S> | OuterContext<S>) & {
+  next: Function
+}
+
 type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
 
 interface Models {

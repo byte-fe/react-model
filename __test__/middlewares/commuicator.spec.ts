@@ -8,7 +8,8 @@ describe('', () => {
   test('communicator', async () => {
     let stateFirst: any, stateSecond: any
     let actionsFirst: any, actionsSecond: any
-    const { useStore } = Model({ Counter })
+    const { useStore, getActions } = Model({ Counter })
+    const actions = getActions('Counter')
     testHook(() => {
       ;[stateFirst, actionsFirst] = useStore('Counter')
     })
@@ -23,5 +24,8 @@ describe('', () => {
     await actionsSecond.increment(4)
     expect(stateFirst.count).toBe(7)
     expect(stateSecond.count).toBe(7)
+    await actions.increment(4)
+    expect(stateFirst.count).toBe(11)
+    expect(stateSecond.count).toBe(11)
   })
 })

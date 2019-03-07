@@ -48,12 +48,10 @@ const getActions = (modelName: string) => {
     params: any,
     middlewareConfig?: any
   ) => {
-    const context: Context = {
+    const context: OuterContext = {
       type: 'outer',
       modelName,
-      setState: () => {},
       actionName: action.name,
-      next: () => {},
       newState: null,
       params,
       middlewareConfig,
@@ -72,12 +70,11 @@ const getActions = (modelName: string) => {
   Object.keys(Global.State[modelName].actions).map(
     key =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
-        const context: Context = {
+        const context: InnerContext = {
           type: 'function',
           modelName,
           setState: () => {},
           actionName: key,
-          next: () => {},
           newState: null,
           params,
           middlewareConfig,
@@ -107,12 +104,11 @@ const useStore = (modelName: string, depActions?: string[]) => {
     params: any,
     middlewareConfig?: any
   ) => {
-    const context: Context = {
+    const context: InnerContext = {
       type: 'function',
       modelName,
       setState,
       actionName: action.name,
-      next: () => {},
       newState: null,
       params,
       middlewareConfig,
@@ -131,12 +127,11 @@ const useStore = (modelName: string, depActions?: string[]) => {
   Object.keys(Global.State[modelName].actions).map(
     key =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
-        const context: Context = {
+        const context: InnerContext = {
           type: 'function',
           modelName,
           setState,
           actionName: key,
-          next: () => {},
           newState: null,
           params,
           middlewareConfig,
@@ -186,7 +181,7 @@ const connect = (
               params: any,
               middlewareConfig?: any
             ) => {
-              const context: Context = {
+              const context: InnerContext = {
                 type: 'class',
                 action,
                 consumerActions,
@@ -194,7 +189,6 @@ const connect = (
                 middlewareConfig,
                 actionName: action.name,
                 modelName,
-                next: () => {},
                 newState: null,
                 setState
               }
