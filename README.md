@@ -38,7 +38,7 @@ npm install react-model
   - [immutable Actions](#immutable-actions)
   - [SSR with Next.js](#ssr-with-nextjs)
   - [Middleware](#middleware)
-- [Other Concept required by Class Component ( Not First Class, ONLY SUPPORT ON CSR, Welcome to PR )](#other-concept-required-by-class-component--not-first-class-only-support-on-csr-welcome-to-pr-)
+- [Other Concept required by Class Component](#other-concept-required-by-class-component)
   - [Provider](#provider)
   - [connect](#connect)
 
@@ -424,7 +424,7 @@ export { ... , actionMiddlewares}
 
 [⇧ back to top](#table-of-contents)
 
-## Other Concept required by Class Component ( Not First Class, ONLY SUPPORT ON CSR, Welcome to PR )
+## Other Concept required by Class Component
 
 ### Provider
 
