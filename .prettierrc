@@ -18,8 +18,16 @@
       "options": { "parser": "json", "trailingComma": "none" }
     },
     {
+      "files": "*.ts",
+      "options": { "parser": "typescript", "trailingComma": "none" }
+    },
+    {
+      "files": "*.tsx",
+      "options": { "parser": "typescript", "trailingComma": "none" }
+    },
+    {
       "files": "*.json",
-      "options": { "trailingComma": "none" }
+      "options": { "parser": "json", "trailingComma": "none" }
     }
   ]
 }
