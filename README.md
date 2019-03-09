@@ -1,16 +1,16 @@
-# react-model &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg) [![npm version](https://img.shields.io/npm/v/react-model.svg?style=flat)](https://www.npmjs.com/package/react-model) [![Build Status](https://travis-ci.org/byte-fe/react-model.svg?branch=master)](https://travis-ci.org/byte-fe/react-model) [![size](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-model/dist/react-model.js?compression=gzip)](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-model/dist/react-model.js) [![downloads](https://img.shields.io/npm/dt/react-model.svg)](https://www.npmjs.com/package/react-model) [![Coverage Status](https://codecov.io/gh/byte-fe/react-model/branch/master/graph/badge.svg)](https://codecov.io/gh/byte-fe/react-model) [![Greenkeeper badge](https://badges.greenkeeper.io/byte-fe/react-model.svg)](https://greenkeeper.io/) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg) [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+# react-model &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg) [![npm version](https://img.shields.io/npm/v/react-model.svg?style=flat)](https://www.npmjs.com/package/react-model) [![minified size](https://badgen.net/bundlephobia/min/react)](https://bundlephobia.com/result?p=react-model) [![Build Status](https://travis-ci.org/byte-fe/react-model.svg?branch=master)](https://travis-ci.org/byte-fe/react-model) [![size](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-model/dist/react-model.js?compression=gzip)](http://img.badgesize.io/https://cdn.jsdelivr.net/npm/react-model/dist/react-model.js) [![downloads](https://img.shields.io/npm/dt/react-model.svg)](https://www.npmjs.com/package/react-model) [![Coverage Status](https://codecov.io/gh/byte-fe/react-model/branch/master/graph/badge.svg)](https://codecov.io/gh/byte-fe/react-model) [![Greenkeeper badge](https://badges.greenkeeper.io/byte-fe/react-model.svg)](https://greenkeeper.io/) ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
 
 The State management library for React
 
 🎉 Support Both Class and Hooks Api
 
-👬 Fully TypeScript Support
+⚔ Fully TypeScript Support
 
-📦 gzip bundle ~2KB with microbundle
+📦 built with microbundle
 
 ⚙️ Middlewares Pipline ( redux-devtools support ... )
 
-⚔ 100% test coverage, safe on production
+☂️ 100% test coverage, safe on production
 
 ---
 
