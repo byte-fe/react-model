@@ -7,7 +7,7 @@ import { TimeoutCounter } from '..'
 describe('getNewStateWithCache: ', () => {
   test('cache when timeout', async () => {
     let state: any, actions: any
-    actionMiddlewares[0] = middlewares.getNewStateWithCache(3000)
+    actionMiddlewares[1] = middlewares.getNewStateWithCache(3000)
     const { useStore } = Model({ TimeoutCounter })
     testHook(() => {
       ;[state, actions] = useStore('TimeoutCounter')

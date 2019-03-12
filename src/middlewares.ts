@@ -57,13 +57,36 @@ const stateUpdater: Middleware = async (context, restMiddlewares) => {
 }
 
 const devToolsListener: Middleware = async (context, restMiddlewares) => {
+  console.group(
+    `%c ${
+      context.modelName
+    } State Change %c ${new Date().toLocaleTimeString()}`,
+    'color: gray; font-weight: lighter;',
+    'color: black; font-weight: bold;'
+  )
+  console.log(
+    '%c Previous',
+    `color: #9E9E9E; font-weight: bold`,
+    Global.State[context.modelName]
+  )
+  console.log(
+    '%c Action',
+    `color: #03A9F4; font-weight: bold`,
+    context.actionName
+  )
+  await context.next(restMiddlewares)
   if (Global.withDevTools) {
     Global.devTools.send(
       `${context.modelName}_${context.actionName}`,
       Global.State
     )
   }
-  await context.next(restMiddlewares)
+  console.log(
+    '%c Next',
+    `color: #4CAF50; font-weight: bold`,
+    Global.State[context.modelName]
+  )
+  console.groupEnd()
 }
 
 const communicator: Middleware<{}> = async (context, restMiddlewares) => {
@@ -92,7 +115,7 @@ let actionMiddlewares = [getNewState, setNewState, stateUpdater, communicator]
 if (process.env.NODE_ENV === 'production') {
   actionMiddlewares = [tryCatch, ...actionMiddlewares]
 } else {
-  actionMiddlewares = [...actionMiddlewares, devToolsListener]
+  actionMiddlewares = [devToolsListener, ...actionMiddlewares]
 }
 
 const middlewares = {
