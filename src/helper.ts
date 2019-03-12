@@ -6,6 +6,19 @@ const initialProviderState: ProviderProps = {}
 const GlobalContext = createContext(initialProviderState)
 const Consumer = GlobalContext.Consumer
 
+// console.group polyfill
+if (!console.group) {
+  const groups: any[] = []
+  const hr = '-'.repeat(80) // 80 dashes row line
+  console.group = function logGroupStart(label: any) {
+    groups.push(label)
+    console.log('%c \nBEGIN GROUP: %c', hr, label)
+    console.groupEnd = function logGroupEnd() {
+      console.log('END GROUP: %c\n%c', groups.pop(), hr)
+    }
+  }
+}
+
 const setPartialState = (
   name: keyof typeof Global.State,
   partialState: typeof Global.State | Function
