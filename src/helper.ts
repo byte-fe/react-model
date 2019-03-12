@@ -6,6 +6,9 @@ const initialProviderState: ProviderProps = {}
 const GlobalContext = createContext(initialProviderState)
 const Consumer = GlobalContext.Consumer
 
+const consoleGrouper = console.group || console.log
+const consoleGroupEnder = console.groupEnd || console.log
+
 const setPartialState = (
   name: keyof typeof Global.State,
   partialState: typeof Global.State | Function
@@ -68,6 +71,8 @@ const getCache = (modelName: string, actionName: string) => {
 export {
   Consumer,
   GlobalContext,
+  consoleGrouper,
+  consoleGroupEnder,
   setPartialState,
   timeout,
   getCache,
