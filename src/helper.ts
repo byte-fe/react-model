@@ -6,8 +6,18 @@ const initialProviderState: ProviderProps = {}
 const GlobalContext = createContext(initialProviderState)
 const Consumer = GlobalContext.Consumer
 
-const consoleGrouper = console.group || console.log
-const consoleGroupEnder = console.groupEnd || console.log
+// console.group polyfill
+if (!console.group) {
+  const groups: any[] = []
+  const hr = '-'.repeat(80) // 80 dashes row line
+  console.group = function logGroupStart(label: any) {
+    groups.push(label)
+    console.log('%c \nBEGIN GROUP: %c', hr, label)
+    console.groupEnd = function logGroupEnd() {
+      console.log('END GROUP: %c\n%c', groups.pop(), hr)
+    }
+  }
+}
 
 const setPartialState = (
   name: keyof typeof Global.State,
@@ -71,8 +81,6 @@ const getCache = (modelName: string, actionName: string) => {
 export {
   Consumer,
   GlobalContext,
-  consoleGrouper,
-  consoleGroupEnder,
   setPartialState,
   timeout,
   getCache,

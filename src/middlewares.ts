@@ -1,11 +1,5 @@
 import Global from './global'
-import {
-  setPartialState,
-  timeout,
-  getCache,
-  consoleGrouper,
-  consoleGroupEnder
-} from './helper'
+import { setPartialState, timeout, getCache } from './helper'
 // -- Middlewares --
 
 const tryCatch: Middleware<{}> = async (context, restMiddlewares) => {
@@ -63,7 +57,7 @@ const stateUpdater: Middleware = async (context, restMiddlewares) => {
 }
 
 const devToolsListener: Middleware = async (context, restMiddlewares) => {
-  consoleGrouper(
+  console.group(
     `%c ${
       context.modelName
     } State Change %c ${new Date().toLocaleTimeString()}`,
@@ -92,7 +86,7 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
     `color: #4CAF50; font-weight: bold`,
     Global.State[context.modelName]
   )
-  consoleGroupEnder()
+  console.groupEnd()
 }
 
 const communicator: Middleware<{}> = async (context, restMiddlewares) => {
