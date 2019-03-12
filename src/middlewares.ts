@@ -56,6 +56,14 @@ const stateUpdater: Middleware = async (context, restMiddlewares) => {
   await next(restMiddlewares)
 }
 
+const PubSub: Middleware = async (context, restMiddlewares) => {
+  const { modelName, actionName, next } = context
+  if (Global.subscriptions[`${modelName}_${actionName}`]) {
+    Global.subscriptions[`${modelName}_${actionName}`]()
+  }
+  await next(restMiddlewares)
+}
+
 const devToolsListener: Middleware = async (context, restMiddlewares) => {
   console.group(
     `%c ${
@@ -110,7 +118,13 @@ const communicator: Middleware<{}> = async (context, restMiddlewares) => {
   await next(restMiddlewares)
 }
 
-let actionMiddlewares = [getNewState, setNewState, stateUpdater, communicator]
+let actionMiddlewares = [
+  getNewState,
+  setNewState,
+  stateUpdater,
+  communicator,
+  PubSub
+]
 
 if (process.env.NODE_ENV === 'production') {
   actionMiddlewares = [tryCatch, ...actionMiddlewares]

@@ -25,7 +25,7 @@ const Model = <M extends Models>(models: M, initialModels?: M) => {
     Global.devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__
     Global.devTools.connect()
   }
-  return { useStore, getState, getInitialState, getActions } as {
+  return { useStore, getState, getInitialState, getActions, subscribe } as {
     useStore: <K extends keyof M>(
       name: K,
       depActions?: (keyof Get<M[K], 'actions'>)[]
@@ -35,7 +35,20 @@ const Model = <M extends Models>(models: M, initialModels?: M) => {
       modelName: K
     ) => Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
     getInitialState: typeof getInitialState
+    subscribe: <K extends keyof M>(
+      modelName: K,
+      actionName: keyof Get<M[K], 'actions'> | keyof Get<M[K], 'actions'>,
+      callback: Function
+    ) => void
   }
+}
+
+const subscribe = (
+  modelName: string,
+  actionName: string,
+  callback: Function
+) => {
+  Global.subscriptions[`${modelName}_${actionName}`] = callback
 }
 
 const getState = (modelName: keyof typeof Global.State) => {

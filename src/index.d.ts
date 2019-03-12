@@ -102,3 +102,7 @@ type ModelsProps<M extends Models> = {
   ) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
   getState: <K extends keyof M>(modelName: K) => Readonly<Get<M[K], 'state'>>
 }
+
+type Subscriptions = {
+  [key: string]: Function
+}

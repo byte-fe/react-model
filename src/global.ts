@@ -8,9 +8,11 @@ let Setter: Setter = {
   functionSetter: {}
 }
 
+let subscriptions: Subscriptions = {}
+
 let devTools: any
 let withDevTools: boolean = false
 
 let uid = Math.random() // The unique id of hooks
 
-export default { Setter, State, devTools, withDevTools, uid }
+export default { Setter, State, devTools, withDevTools, uid, subscriptions }
