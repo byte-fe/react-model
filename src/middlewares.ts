@@ -67,7 +67,7 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
   console.log(
     '%c Previous',
     `color: #9E9E9E; font-weight: bold`,
-    Global.State[context.modelName]
+    Global.State[context.modelName].state
   )
   console.log(
     '%c Action',
@@ -84,7 +84,7 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
   console.log(
     '%c Next',
     `color: #4CAF50; font-weight: bold`,
-    Global.State[context.modelName]
+    Global.State[context.modelName].state
   )
   console.groupEnd()
 }
