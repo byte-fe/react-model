@@ -1,6 +1,6 @@
 {
   "name": "react-model",
-  "version": "2.4.1",
+  "version": "2.5.1",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "module": "./dist/react-model.esm.js",
@@ -31,7 +31,6 @@
     "@types/react-dom": "^16.8.0",
     "commitizen": "^3.0.7",
     "cz-conventional-changelog": "^2.1.0",
-    "dotenv": "^7.0.0",
     "husky": "^1.3.1",
     "jest": "^24.1.0",
     "prettier": "^1.16.4",

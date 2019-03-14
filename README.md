@@ -45,6 +45,8 @@ npm install react-model
 - [Other Concept required by Class Component](#other-concept-required-by-class-component)
   - [Provider](#provider)
   - [connect](#connect)
+- [FAQ](#faq)
+  - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger?)
 
 ## Core Concept
 
@@ -524,3 +526,19 @@ export default connect(
 ```
 
 [⇧ back to top](#table-of-contents)
+
+## FAQ
+
+### How can I disable the console debugger?
+
+Just remove consoleDebugger middleware.
+
+```typescript
+import { actionMiddlewares } from 'react-model'
+// Find the index of middleware
+const consoleDebuggerMiddlewareIndex = actionMiddlewares.indexOf(
+  middlewares.consoleDebugger
+)
+// Remove it
+actionMiddlewares.splice(consoleDebuggerMiddlewareIndex, 1)
+```

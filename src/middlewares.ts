@@ -56,7 +56,15 @@ const stateUpdater: Middleware = async (context, restMiddlewares) => {
   await next(restMiddlewares)
 }
 
-const devToolsListener: Middleware = async (context, restMiddlewares) => {
+const subscription: Middleware = async (context, restMiddlewares) => {
+  const { modelName, actionName, next } = context
+  if (Global.subscriptions[`${modelName}_${actionName}`]) {
+    Global.subscriptions[`${modelName}_${actionName}`]()
+  }
+  await next(restMiddlewares)
+}
+
+const consoleDebugger: Middleware = async (context, restMiddlewares) => {
   console.group(
     `%c ${
       context.modelName
@@ -67,7 +75,7 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
   console.log(
     '%c Previous',
     `color: #9E9E9E; font-weight: bold`,
-    Global.State[context.modelName]
+    Global.State[context.modelName].state
   )
   console.log(
     '%c Action',
@@ -75,18 +83,22 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
     context.actionName
   )
   await context.next(restMiddlewares)
+  console.log(
+    '%c Next',
+    `color: #4CAF50; font-weight: bold`,
+    Global.State[context.modelName].state
+  )
+  console.groupEnd()
+}
+
+const devToolsListener: Middleware = async (context, restMiddlewares) => {
+  await context.next(restMiddlewares)
   if (Global.withDevTools) {
     Global.devTools.send(
       `${context.modelName}_${context.actionName}`,
       Global.State
     )
   }
-  console.log(
-    '%c Next',
-    `color: #4CAF50; font-weight: bold`,
-    Global.State[context.modelName]
-  )
-  console.groupEnd()
 }
 
 const communicator: Middleware<{}> = async (context, restMiddlewares) => {
@@ -110,12 +122,18 @@ const communicator: Middleware<{}> = async (context, restMiddlewares) => {
   await next(restMiddlewares)
 }
 
-let actionMiddlewares = [getNewState, setNewState, stateUpdater, communicator]
+let actionMiddlewares = [
+  getNewState,
+  setNewState,
+  stateUpdater,
+  communicator,
+  subscription
+]
 
 if (process.env.NODE_ENV === 'production') {
   actionMiddlewares = [tryCatch, ...actionMiddlewares]
 } else {
-  actionMiddlewares = [devToolsListener, ...actionMiddlewares]
+  actionMiddlewares = [consoleDebugger, devToolsListener, ...actionMiddlewares]
 }
 
 const middlewares = {
@@ -125,7 +143,9 @@ const middlewares = {
   setNewState,
   stateUpdater,
   communicator,
-  devToolsListener
+  subscription,
+  devToolsListener,
+  consoleDebugger
 }
 
 const applyMiddlewares = async (

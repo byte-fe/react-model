@@ -39,7 +39,7 @@ export const Counter: ModelType<
     },
     add: (state, __, params) => {
       return {
-        count: state.count += params
+        count: state.count + params
       }
     }
   }
