@@ -3,7 +3,7 @@ import 'react-testing-library/cleanup-after-each'
 process.env.NODE_ENV = 'production'
 import { Model } from '../../src'
 import { ErrorCounter } from '..'
-import { testHook } from 'react-testing-library'
+import { testHook } from 'react-hooks-testing-library'
 
 describe('tryCatch', () => {
   test("catch actions' error in production", async () => {
