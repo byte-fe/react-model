@@ -2,8 +2,9 @@
 import 'react-testing-library/cleanup-after-each'
 import * as React from 'react'
 import { Model, Provider, connect } from '../../src'
-import { Counter } from '..'
-import { render, fireEvent, testHook } from 'react-testing-library'
+import { Counter } from '../index'
+import { render, fireEvent } from 'react-testing-library'
+import { testHook } from 'react-hooks-testing-library'
 import { timeout } from '../../src/helper'
 
 const Button = connect(

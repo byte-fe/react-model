@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 import { Model, middlewares } from '../../src'
-import { testHook } from 'react-testing-library'
+import { testHook } from 'react-hooks-testing-library'
 import { actionMiddlewares } from '../../src'
 import { TimeoutCounter } from '..'
 

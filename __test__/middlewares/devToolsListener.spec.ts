@@ -4,7 +4,7 @@ import 'react-testing-library/cleanup-after-each'
   connect: () => {},
   send: () => {}
 }
-import { testHook } from 'react-testing-library'
+import { testHook } from 'react-hooks-testing-library'
 import { Model } from '../../src'
 import { Counter } from '..'
 

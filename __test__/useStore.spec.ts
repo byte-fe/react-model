@@ -1,5 +1,5 @@
 /// <reference path="./index.d.ts" />
-import { testHook } from 'react-testing-library'
+import { testHook } from 'react-hooks-testing-library'
 import { Model } from '../src'
 import { Counter, AsyncCounter } from '.'
 
