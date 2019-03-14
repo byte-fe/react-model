@@ -2,7 +2,7 @@
 import 'react-testing-library/cleanup-after-each'
 import { Model } from '../../src'
 import { Counter } from '..'
-import { testHook } from 'react-testing-library'
+import { testHook } from 'react-hooks-testing-library'
 
 describe('PubSub', () => {
   test('run callback when specific action run', async () => {
