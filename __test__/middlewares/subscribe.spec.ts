@@ -4,7 +4,7 @@ import { Model } from '../../src'
 import { Counter } from '..'
 import { testHook } from 'react-hooks-testing-library'
 
-describe('PubSub', () => {
+describe('Subscribe middleware', () => {
   test('run callback when specific action run', async () => {
     let actions: any
     let count = 0
