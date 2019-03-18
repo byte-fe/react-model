@@ -12,3 +12,4 @@ scripts:
 after_success:
   - npm run test:coverage
   - codecov -f coverage/*.json
+  - bash <(curl -s https://codecov.io/bash)
