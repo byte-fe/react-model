@@ -1,6 +1,5 @@
 let State: any = {}
 // Communicate between Provider-Consumer and Hooks
-// Use to provide backwards-compatible.
 let Setter: Setter = {
   // classSetter stores the setState from Provider, invoke the classSetter.setState can update the state of Global Provider.
   classSetter: undefined,
