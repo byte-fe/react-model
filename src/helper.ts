@@ -2,7 +2,7 @@ import produce from 'immer'
 import { createContext } from 'react'
 import Global from './global'
 
-const initialProviderState: ProviderProps = {}
+const initialProviderState: Global['State'] = {}
 const GlobalContext = createContext(initialProviderState)
 const Consumer = GlobalContext.Consumer
 
@@ -20,19 +20,19 @@ if (!console.group) {
 }
 
 const setPartialState = (
-  name: keyof typeof Global.State,
-  partialState: typeof Global.State | Function
+  name: keyof typeof Global['State'],
+  partialState: typeof Global['State'] | Function
 ) => {
   if (typeof partialState === 'function') {
-    let state = Global.State[name].state
+    let state = Global.State[name]
     state = produce(state, partialState)
     Global.State = produce(Global.State, s => {
-      s[name].state = state
+      s[name] = state
     })
   } else {
     Global.State = produce(Global.State, s => {
-      s[name].state = {
-        ...s[name].state,
+      s[name] = {
+        ...s[name],
         ...partialState
       }
     })
@@ -57,12 +57,10 @@ const getInitialState = async <T extends any>(context?: T) => {
         modelName === context.modelName ||
         context.modelName.indexOf(modelName) !== -1
       ) {
-        const model = Global.State[modelName]
-        const asyncState = model.asyncState
-          ? await model.asyncState(context)
-          : {}
-        Global.State[modelName].state = {
-          ...Global.State[modelName].state,
+        const asyncGetter = Global.AsyncState[modelName]
+        const asyncState = asyncGetter ? await asyncGetter(context) : {}
+        Global.State[modelName] = {
+          ...Global.State[modelName],
           ...asyncState
         }
       }
