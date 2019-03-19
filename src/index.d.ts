@@ -126,5 +126,5 @@ type ModelsProps<M extends Models> = {
 }
 
 type Subscriptions = {
-  [key: string]: Function
+  [key: string]: Function[]
 }
