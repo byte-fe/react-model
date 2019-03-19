@@ -24,6 +24,11 @@ interface Global {
   AsyncState: {
     [modelName: string]: undefined | ((context?: any) => Promise<Partial<any>>)
   }
+  subscriptions: Subscriptions
+  Setter: Setter
+  devTools: any
+  withDevTools: boolean
+  uid: number
 }
 
 type ClassSetter = React.Dispatch<any> | undefined
@@ -67,6 +72,7 @@ interface BaseContext<S = {}> {
   modelName: string
   next?: Function
   newState: Global['State'] | Function | null
+  Global: Global
 }
 
 interface InnerContext<S = {}> extends BaseContext<S> {

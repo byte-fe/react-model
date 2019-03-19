@@ -1,14 +1,13 @@
-import Global from './global'
 import { setPartialState, timeout, getCache } from './helper'
 // -- Middlewares --
 
-const tryCatch: Middleware<{}> = async (context, restMiddlewares) => {
+const tryCatch: Middleware = async (context, restMiddlewares) => {
   const { next } = context
   await next(restMiddlewares).catch((e: any) => console.log(e))
 }
 
-const getNewState: Middleware<{}> = async (context, restMiddlewares) => {
-  const { action, modelName, consumerActions, params, next } = context
+const getNewState: Middleware = async (context, restMiddlewares) => {
+  const { action, modelName, consumerActions, params, next, Global } = context
   context.newState =
     (await action(
       Global.State[modelName],
@@ -24,6 +23,7 @@ const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
 ) => {
   const {
     action,
+    Global,
     modelName,
     consumerActions,
     params,
@@ -51,7 +51,7 @@ const setNewState: Middleware = async (context, restMiddlewares) => {
 }
 
 const stateUpdater: Middleware = async (context, restMiddlewares) => {
-  const { modelName, next } = context
+  const { modelName, next, Global } = context
   context.type === 'function' &&
     context.setState &&
     context.setState(Global.State[modelName])
@@ -59,7 +59,7 @@ const stateUpdater: Middleware = async (context, restMiddlewares) => {
 }
 
 const subscription: Middleware = async (context, restMiddlewares) => {
-  const { modelName, actionName, next } = context
+  const { modelName, actionName, next, Global } = context
   if (Global.subscriptions[`${modelName}_${actionName}`]) {
     Global.subscriptions[`${modelName}_${actionName}`]()
   }
@@ -67,6 +67,7 @@ const subscription: Middleware = async (context, restMiddlewares) => {
 }
 
 const consoleDebugger: Middleware = async (context, restMiddlewares) => {
+  const { Global } = context
   console.group(
     `%c ${
       context.modelName
@@ -94,6 +95,7 @@ const consoleDebugger: Middleware = async (context, restMiddlewares) => {
 }
 
 const devToolsListener: Middleware = async (context, restMiddlewares) => {
+  const { Global } = context
   await context.next(restMiddlewares)
   if (Global.withDevTools) {
     Global.devTools.send(
@@ -103,8 +105,8 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
   }
 }
 
-const communicator: Middleware<{}> = async (context, restMiddlewares) => {
-  const { modelName, next, actionName } = context
+const communicator: Middleware = async (context, restMiddlewares) => {
+  const { modelName, next, actionName, Global } = context
   if (Global.Setter.classSetter) {
     Global.Setter.classSetter(Global.State)
   }

@@ -70,6 +70,7 @@ const getActions = (modelName: string, baseContext: Partial<Context>) => {
           middlewareConfig,
           consumerActions,
           action: action,
+          Global,
           ...baseContext
         }
         await applyMiddlewares(actionMiddlewares, context)
