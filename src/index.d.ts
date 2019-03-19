@@ -51,9 +51,16 @@ type Actions<S = {}, ActionKeys = {}> = {
 type Dispatch<A> = (value: A) => void
 type SetStateAction<S> = S | ((prevState: S) => S)
 
+interface ModelContext {
+  modelName: string
+}
+
 interface BaseContext<S = {}> {
   action: Action
-  consumerActions: (actions: Actions) => getConsumerActionsType<Actions>
+  consumerActions: (
+    actions: Actions,
+    modelContext: ModelContext
+  ) => getConsumerActionsType<Actions>
   params: Object
   middlewareConfig?: Object
   actionName: string
@@ -63,15 +70,12 @@ interface BaseContext<S = {}> {
 }
 
 interface InnerContext<S = {}> extends BaseContext<S> {
-  type: 'function' | 'class'
-  setState: Dispatch<SetStateAction<S>>
+  // Actions with function type context will always invoke current component's reload.
+  type?: 'function' | 'outer' | 'class'
+  setState?: Dispatch<SetStateAction<S>>
 }
 
-interface OuterContext<S = {}> extends BaseContext<S> {
-  type: 'outer'
-}
-
-type Context<S = {}> = (InnerContext<S> | OuterContext<S>) & {
+type Context<S = {}> = (InnerContext<S>) & {
   next: Function
 }
 

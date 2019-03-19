@@ -12,7 +12,7 @@ const getNewState: Middleware<{}> = async (context, restMiddlewares) => {
   context.newState =
     (await action(
       Global.State[modelName],
-      consumerActions(Global.Actions[modelName]),
+      consumerActions(Global.Actions[modelName], { modelName }),
       params
     )) || null
   await next(restMiddlewares)
@@ -34,7 +34,7 @@ const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
     (await Promise.race([
       action(
         Global.State[modelName],
-        consumerActions(Global.Actions[modelName]),
+        consumerActions(Global.Actions[modelName], { modelName }),
         params
       ),
       timeout(maxTime, getCache(modelName, actionName))
@@ -52,7 +52,9 @@ const setNewState: Middleware = async (context, restMiddlewares) => {
 
 const stateUpdater: Middleware = async (context, restMiddlewares) => {
   const { modelName, next } = context
-  context.type === 'function' && context.setState(Global.State[modelName])
+  context.type === 'function' &&
+    context.setState &&
+    context.setState(Global.State[modelName])
   await next(restMiddlewares)
 }
 
