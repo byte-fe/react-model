@@ -7,12 +7,12 @@ import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
 const Model = <M extends Models>(models: M, initialState?: Global['State']) => {
   Global.State = initialState || {}
-  Object.keys(models).forEach(name => {
+  Object.entries(models).forEach(([name, model]) => {
     if (!Global.State[name]) {
-      Global.State[name] = models[name].state
+      Global.State[name] = model.state
     }
-    Global.Actions[name] = models[name].actions
-    Global.AsyncState[name] = models[name].asyncState
+    Global.Actions[name] = model.actions
+    Global.AsyncState[name] = model.asyncState
   })
 
   Global.withDevTools =
@@ -70,15 +70,15 @@ const getActions = (modelName: string) => {
     }
     await applyMiddlewares(actionMiddlewares, context)
   }
-  const consumerActions = (actions: any) => {
+  const consumerActions = (actions: Actions) => {
     let ret: any = {}
-    Object.keys(actions).map((key: string) => {
-      ret[key] = consumerAction(actions[key])
+    Object.entries<Action>(actions).forEach(([key, action]) => {
+      ret[key] = consumerAction(action)
     })
     return ret
   }
-  Object.keys(Global.Actions[modelName]).map(
-    key =>
+  Object.entries(Global.Actions[modelName]).forEach(
+    ([key, action]) =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
         const context: InnerContext = {
           type: 'function',
@@ -89,7 +89,7 @@ const getActions = (modelName: string) => {
           params,
           middlewareConfig,
           consumerActions,
-          action: Global.Actions[modelName][key]
+          action: action
         }
         await applyMiddlewares(actionMiddlewares, context)
       })
@@ -127,15 +127,15 @@ const useStore = (modelName: string, depActions?: string[]) => {
     }
     await applyMiddlewares(actionMiddlewares, context)
   }
-  const consumerActions = (actions: any) => {
+  const consumerActions = (actions: Actions) => {
     let ret: any = {}
-    Object.keys(actions).map((key: string) => {
-      ret[key] = consumerAction(actions[key])
+    Object.entries<Action>(actions).forEach(([key, action]) => {
+      ret[key] = consumerAction(action)
     })
     return ret
   }
-  Object.keys(Global.Actions[modelName]).map(
-    key =>
+  Object.entries(Global.Actions[modelName]).map(
+    ([key, action]) =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
         const context: InnerContext = {
           type: 'function',
@@ -146,7 +146,7 @@ const useStore = (modelName: string, depActions?: string[]) => {
           params,
           middlewareConfig,
           consumerActions,
-          action: Global.Actions[modelName][key]
+          action: action
         }
         await applyMiddlewares(actionMiddlewares, context)
       })
