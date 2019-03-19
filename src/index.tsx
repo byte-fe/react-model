@@ -5,18 +5,15 @@ import { PureComponent, useEffect, useState } from 'react'
 import { GlobalContext, Consumer, getInitialState } from './helper'
 import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
-const Model = <M extends Models>(models: M, initialModels?: M) => {
-  Global.State = initialModels
-    ? Object.keys(models).reduce((o: any, key) => {
-        o[key] = {
-          actions: models[key].actions,
-          state: { ...models[key].state, ...initialModels[key].state }
-        }
-        return o
-      }, {})
-    : {
-        ...models
-      }
+const Model = <M extends Models>(models: M, initialState?: Global['State']) => {
+  Global.State = initialState || {}
+  Object.entries(models).forEach(([name, model]) => {
+    if (!Global.State[name]) {
+      Global.State[name] = model.state
+    }
+    Global.Actions[name] = model.actions
+    Global.AsyncState[name] = model.asyncState
+  })
 
   Global.withDevTools =
     typeof window !== 'undefined' &&
@@ -52,7 +49,7 @@ const subscribe = (
 }
 
 const getState = (modelName: keyof typeof Global.State) => {
-  return (Global.State as any)[modelName].state
+  return Global.State[modelName]
 }
 
 const getActions = (modelName: string) => {
@@ -73,15 +70,15 @@ const getActions = (modelName: string) => {
     }
     await applyMiddlewares(actionMiddlewares, context)
   }
-  const consumerActions = (actions: any) => {
+  const consumerActions = (actions: Actions) => {
     let ret: any = {}
-    Object.keys(actions).map((key: string) => {
-      ret[key] = consumerAction(actions[key])
+    Object.entries<Action>(actions).forEach(([key, action]) => {
+      ret[key] = consumerAction(action)
     })
     return ret
   }
-  Object.keys(Global.State[modelName].actions).map(
-    key =>
+  Object.entries(Global.Actions[modelName]).forEach(
+    ([key, action]) =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
         const context: InnerContext = {
           type: 'function',
@@ -92,7 +89,7 @@ const getActions = (modelName: string) => {
           params,
           middlewareConfig,
           consumerActions,
-          action: Global.State[modelName].actions[key]
+          action: action
         }
         await applyMiddlewares(actionMiddlewares, context)
       })
@@ -101,7 +98,7 @@ const getActions = (modelName: string) => {
 }
 
 const useStore = (modelName: string, depActions?: string[]) => {
-  const setState = useState(Global.State[modelName].state)[1]
+  const setState = useState(Global.State[modelName])[1]
   Global.uid += 1
   const _hash = '' + Global.uid
   if (!Global.Setter.functionSetter[modelName])
@@ -130,15 +127,15 @@ const useStore = (modelName: string, depActions?: string[]) => {
     }
     await applyMiddlewares(actionMiddlewares, context)
   }
-  const consumerActions = (actions: any) => {
+  const consumerActions = (actions: Actions) => {
     let ret: any = {}
-    Object.keys(actions).map((key: string) => {
-      ret[key] = consumerAction(actions[key])
+    Object.entries<Action>(actions).forEach(([key, action]) => {
+      ret[key] = consumerAction(action)
     })
     return ret
   }
-  Object.keys(Global.State[modelName].actions).map(
-    key =>
+  Object.entries(Global.Actions[modelName]).map(
+    ([key, action]) =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
         const context: InnerContext = {
           type: 'function',
@@ -149,7 +146,7 @@ const useStore = (modelName: string, depActions?: string[]) => {
           params,
           middlewareConfig,
           consumerActions,
-          action: Global.State[modelName].actions[key]
+          action: action
         }
         await applyMiddlewares(actionMiddlewares, context)
       })
@@ -160,7 +157,7 @@ const useStore = (modelName: string, depActions?: string[]) => {
 // Bridge API
 // Use to migrate from old class component.
 // These APIs won't be updated for advance feature.
-class Provider extends PureComponent<{}, ProviderProps> {
+class Provider extends PureComponent<{}, Global['State']> {
   state = Global.State
   render() {
     const { children } = this.props
@@ -186,10 +183,8 @@ const connect = (
       return (
         <Consumer>
           {models => {
-            const {
-              [`${modelName}`]: { state, actions },
-              setState
-            } = models as any
+            const { [`${modelName}`]: state, setState } = models as any
+            const actions = Global.Actions[modelName]
             const consumerAction = (action: Action) => async (
               params: any,
               middlewareConfig?: any

@@ -11,8 +11,8 @@ const getNewState: Middleware<{}> = async (context, restMiddlewares) => {
   const { action, modelName, consumerActions, params, next } = context
   context.newState =
     (await action(
-      Global.State[modelName].state,
-      consumerActions(Global.State[modelName].actions),
+      Global.State[modelName],
+      consumerActions(Global.Actions[modelName]),
       params
     )) || null
   await next(restMiddlewares)
@@ -33,8 +33,8 @@ const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
   context.newState =
     (await Promise.race([
       action(
-        Global.State[modelName].state,
-        consumerActions(Global.State[modelName].actions),
+        Global.State[modelName],
+        consumerActions(Global.Actions[modelName]),
         params
       ),
       timeout(maxTime, getCache(modelName, actionName))
@@ -42,7 +42,7 @@ const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
   await next(restMiddlewares)
 }
 
-const setNewState: Middleware<{}> = async (context, restMiddlewares) => {
+const setNewState: Middleware = async (context, restMiddlewares) => {
   const { modelName, newState, next } = context
   if (newState) {
     setPartialState(modelName, newState)
@@ -52,7 +52,7 @@ const setNewState: Middleware<{}> = async (context, restMiddlewares) => {
 
 const stateUpdater: Middleware = async (context, restMiddlewares) => {
   const { modelName, next } = context
-  context.type === 'function' && context.setState(Global.State[modelName].state)
+  context.type === 'function' && context.setState(Global.State[modelName])
   await next(restMiddlewares)
 }
 
@@ -75,7 +75,7 @@ const consoleDebugger: Middleware = async (context, restMiddlewares) => {
   console.log(
     '%c Previous',
     `color: #9E9E9E; font-weight: bold`,
-    Global.State[context.modelName].state
+    Global.State[context.modelName]
   )
   console.log(
     '%c Action',
@@ -86,7 +86,7 @@ const consoleDebugger: Middleware = async (context, restMiddlewares) => {
   console.log(
     '%c Next',
     `color: #4CAF50; font-weight: bold`,
-    Global.State[context.modelName].state
+    Global.State[context.modelName]
   )
   console.groupEnd()
 }
@@ -114,7 +114,7 @@ const communicator: Middleware<{}> = async (context, restMiddlewares) => {
           !setter.depActions ||
           setter.depActions.indexOf(actionName) !== -1
         ) {
-          setter.setState(Global.State[modelName].state)
+          setter.setState(Global.State[modelName])
         }
       }
     })

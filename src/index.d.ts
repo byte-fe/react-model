@@ -12,6 +12,20 @@ type FunctionSetter = {
   }
 }
 
+interface Global {
+  Actions: {
+    [modelName: string]: {
+      [actionName: string]: Action
+    }
+  }
+  State: {
+    [modelName: string]: any
+  }
+  AsyncState: {
+    [modelName: string]: undefined | ((context?: any) => Promise<Partial<any>>)
+  }
+}
+
 type ClassSetter = React.Dispatch<any> | undefined
 
 // Very Sad, Promise<ProduceFunc<S>> can not work with Partial<S> | ProduceFunc<S>
@@ -45,7 +59,7 @@ interface BaseContext<S = {}> {
   actionName: string
   modelName: string
   next?: Function
-  newState: Object | null
+  newState: Global['State'] | Function | null
 }
 
 interface InnerContext<S = {}> extends BaseContext<S> {
@@ -92,8 +106,6 @@ type getConsumerActionsType<A extends Actions<any, any>> = {
 }
 
 type Get<Object, K extends keyof Object> = Object[K]
-
-type ProviderProps = { [name: string]: ModelType }
 
 type ModelsProps<M extends Models> = {
   useStore: <K extends keyof M>(

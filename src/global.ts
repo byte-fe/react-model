@@ -1,4 +1,6 @@
-let State: any = {}
+let State: Global['State'] = {}
+let Actions: Global['Actions'] = {}
+let AsyncState: Global['AsyncState'] = {}
 // Communicate between Provider-Consumer and Hooks
 let Setter: Setter = {
   // classSetter stores the setState from Provider, invoke the classSetter.setState can update the state of Global Provider.
@@ -14,4 +16,13 @@ let withDevTools: boolean = false
 
 let uid = Math.random() // The unique id of hooks
 
-export default { Setter, State, devTools, withDevTools, uid, subscriptions }
+export default {
+  Actions,
+  AsyncState,
+  Setter,
+  State,
+  devTools,
+  withDevTools,
+  uid,
+  subscriptions
+}
