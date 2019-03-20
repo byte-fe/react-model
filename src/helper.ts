@@ -28,6 +28,7 @@ const consumerAction = (
     type: 'outer',
     modelName: modelContext.modelName,
     actionName: action.name,
+    Global,
     newState: null,
     params,
     middlewareConfig,
