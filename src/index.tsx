@@ -20,6 +20,11 @@ const Model = <M extends Models>(models: M, initialState?: Global['State']) => {
     Global.AsyncState[name] = model.asyncState
   })
 
+  const actions = Object.keys(models).reduce(
+    (o, modelName) => ({ ...o, name: getActions(modelName) }),
+    {}
+  )
+
   Global.withDevTools =
     typeof window !== 'undefined' &&
     (window as any).__REDUX_DEVTOOLS_EXTENSION__
@@ -27,7 +32,15 @@ const Model = <M extends Models>(models: M, initialState?: Global['State']) => {
     Global.devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__
     Global.devTools.connect()
   }
-  return { useStore, getState, getInitialState, getActions, subscribe } as {
+  return {
+    actions,
+    useStore,
+    getState,
+    getInitialState,
+    getActions,
+    subscribe,
+    unsubscribe
+  } as {
     useStore: <K extends keyof M>(
       name: K,
       depActions?: (keyof Get<M[K], 'actions'>)[]
@@ -39,25 +52,59 @@ const Model = <M extends Models>(models: M, initialState?: Global['State']) => {
     getInitialState: typeof getInitialState
     subscribe: <K extends keyof M>(
       modelName: K,
-      actionName: keyof Get<M[K], 'actions'> | keyof Get<M[K], 'actions'>,
+      actionName: keyof Get<M[K], 'actions'> | (keyof Get<M[K], 'actions'>)[],
       callback: Function
     ) => void
+    unsubscribe: <K extends keyof M>(
+      modelName: K,
+      actionName: keyof Get<M[K], 'actions'> | (keyof Get<M[K], 'actions'>)[]
+    ) => void
+    actions: {
+      [K in keyof M]: Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
+    }
   }
+}
+
+const unsubscribe = (modelName: string, actions: string | string[]) => {
+  subscribe(modelName, actions, undefined)
 }
 
 const subscribe = (
   modelName: string,
-  actionName: string,
-  callback: Function
+  actions: string | string[],
+  callback?: Function
 ) => {
-  Global.subscriptions[`${modelName}_${actionName}`] = callback
+  if (Array.isArray(actions)) {
+    actions.forEach(actionName => {
+      if (!Global.subscriptions[`${modelName}_${actionName}`]) {
+        Global.subscriptions[`${modelName}_${actionName}`] = []
+      }
+      if (callback) {
+        Global.subscriptions[`${modelName}_${actionName}`].push(callback)
+      } else {
+        Global.subscriptions[`${modelName}_${actionName}`] = []
+      }
+    })
+  } else {
+    if (!Global.subscriptions[`${modelName}_${actions}`]) {
+      Global.subscriptions[`${modelName}_${actions}`] = []
+    }
+    if (callback) {
+      Global.subscriptions[`${modelName}_${actions}`].push(callback)
+    } else {
+      Global.subscriptions[`${modelName}_${actions}`] = []
+    }
+  }
 }
 
 const getState = (modelName: keyof typeof Global.State) => {
   return Global.State[modelName]
 }
 
-const getActions = (modelName: string, baseContext: Partial<Context>) => {
+const getActions = (
+  modelName: string,
+  baseContext: Partial<Context> = { type: 'outer' }
+) => {
   const updaters: any = {}
   Object.entries(Global.Actions[modelName]).forEach(
     ([key, action]) =>

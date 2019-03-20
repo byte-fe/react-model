@@ -60,9 +60,11 @@ const stateUpdater: Middleware = async (context, restMiddlewares) => {
 
 const subscription: Middleware = async (context, restMiddlewares) => {
   const { modelName, actionName, next, Global } = context
-  if (Global.subscriptions[`${modelName}_${actionName}`]) {
-    Global.subscriptions[`${modelName}_${actionName}`]()
-  }
+  const subscriptions = Global.subscriptions[`${modelName}_${actionName}`]
+  subscriptions &&
+    subscriptions.forEach(callback => {
+      callback()
+    })
   await next(restMiddlewares)
 }
 
