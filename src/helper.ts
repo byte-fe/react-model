@@ -1,6 +1,7 @@
 import produce from 'immer'
 import { createContext } from 'react'
 import Global from './global'
+import { applyMiddlewares, actionMiddlewares } from './middlewares'
 
 const initialProviderState: Global['State'] = {}
 const GlobalContext = createContext(initialProviderState)
@@ -17,6 +18,34 @@ if (!console.group) {
       console.log('END GROUP: %c\n%c', groups.pop(), hr)
     }
   }
+}
+
+const consumerAction = (
+  action: Action,
+  modelContext: { modelName: string }
+) => async (params: any, middlewareConfig?: any) => {
+  const context: InnerContext = {
+    type: 'outer',
+    modelName: modelContext.modelName,
+    actionName: action.name,
+    newState: null,
+    params,
+    middlewareConfig,
+    consumerActions,
+    action
+  }
+  await applyMiddlewares(actionMiddlewares, context)
+}
+
+const consumerActions = (
+  actions: Actions,
+  modelContext: { modelName: string }
+) => {
+  let ret: any = {}
+  Object.entries<Action>(actions).forEach(([key, action]) => {
+    ret[key] = consumerAction(action, modelContext)
+  })
+  return ret
 }
 
 const setPartialState = (
@@ -78,6 +107,7 @@ const getCache = (modelName: string, actionName: string) => {
 
 export {
   Consumer,
+  consumerActions,
   GlobalContext,
   setPartialState,
   timeout,

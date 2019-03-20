@@ -2,7 +2,12 @@
 import * as React from 'react'
 import Global from './global'
 import { PureComponent, useEffect, useState } from 'react'
-import { GlobalContext, Consumer, getInitialState } from './helper'
+import {
+  GlobalContext,
+  Consumer,
+  getInitialState,
+  consumerActions
+} from './helper'
 import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
 const Model = <M extends Models>(models: M, initialState?: Global['State']) => {
@@ -52,44 +57,20 @@ const getState = (modelName: keyof typeof Global.State) => {
   return Global.State[modelName]
 }
 
-const getActions = (modelName: string) => {
+const getActions = (modelName: string, baseContext: Partial<Context>) => {
   const updaters: any = {}
-  const consumerAction = (action: Action) => async (
-    params: any,
-    middlewareConfig?: any
-  ) => {
-    const context: OuterContext = {
-      type: 'outer',
-      modelName,
-      actionName: action.name,
-      newState: null,
-      params,
-      middlewareConfig,
-      consumerActions,
-      action
-    }
-    await applyMiddlewares(actionMiddlewares, context)
-  }
-  const consumerActions = (actions: Actions) => {
-    let ret: any = {}
-    Object.entries<Action>(actions).forEach(([key, action]) => {
-      ret[key] = consumerAction(action)
-    })
-    return ret
-  }
   Object.entries(Global.Actions[modelName]).forEach(
     ([key, action]) =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
         const context: InnerContext = {
-          type: 'function',
           modelName,
-          setState: () => {},
           actionName: key,
           newState: null,
           params,
           middlewareConfig,
           consumerActions,
-          action: action
+          action: action,
+          ...baseContext
         }
         await applyMiddlewares(actionMiddlewares, context)
       })
@@ -109,48 +90,7 @@ const useStore = (modelName: string, depActions?: string[]) => {
       delete Global.Setter.functionSetter[modelName][_hash]
     }
   })
-  const updaters: any = {}
-  const consumerAction = (action: Action) => async (
-    params: any,
-    middlewareConfig?: any
-  ) => {
-    const context: InnerContext = {
-      type: 'function',
-      modelName,
-      setState,
-      actionName: action.name,
-      newState: null,
-      params,
-      middlewareConfig,
-      consumerActions,
-      action
-    }
-    await applyMiddlewares(actionMiddlewares, context)
-  }
-  const consumerActions = (actions: Actions) => {
-    let ret: any = {}
-    Object.entries<Action>(actions).forEach(([key, action]) => {
-      ret[key] = consumerAction(action)
-    })
-    return ret
-  }
-  Object.entries(Global.Actions[modelName]).map(
-    ([key, action]) =>
-      (updaters[key] = async (params: any, middlewareConfig?: any) => {
-        const context: InnerContext = {
-          type: 'function',
-          modelName,
-          setState,
-          actionName: key,
-          newState: null,
-          params,
-          middlewareConfig,
-          consumerActions,
-          action: action
-        }
-        await applyMiddlewares(actionMiddlewares, context)
-      })
-  )
+  const updaters = getActions(modelName, { setState, type: 'function' })
   return [getState(modelName), updaters]
 }
 
@@ -163,9 +103,7 @@ class Provider extends PureComponent<{}, Global['State']> {
     const { children } = this.props
     Global.Setter.classSetter = this.setState.bind(this)
     return (
-      <GlobalContext.Provider
-        value={{ ...this.state, setState: this.setState.bind(this) }}
-      >
+      <GlobalContext.Provider value={{ ...this.state }}>
         {children}
       </GlobalContext.Provider>
     )
@@ -183,33 +121,8 @@ const connect = (
       return (
         <Consumer>
           {models => {
-            const { [`${modelName}`]: state, setState } = models as any
+            const { [`${modelName}`]: state } = models as any
             const actions = Global.Actions[modelName]
-            const consumerAction = (action: Action) => async (
-              params: any,
-              middlewareConfig?: any
-            ) => {
-              const context: InnerContext = {
-                type: 'class',
-                action,
-                consumerActions,
-                params,
-                middlewareConfig,
-                actionName: action.name,
-                modelName,
-                newState: null,
-                setState
-              }
-              await applyMiddlewares(actionMiddlewares, context)
-            }
-            const consumerActions = (actions: any) => {
-              let ret: any = {}
-              Object.keys(actions).map((key: string) => {
-                ret[key] = consumerAction(actions[key])
-              })
-              return ret
-            }
-
             return (
               <Component
                 {...this.props}
@@ -220,8 +133,8 @@ const connect = (
                 actions={{
                   ...prevActions,
                   ...(mapActions
-                    ? mapActions(consumerActions(actions))
-                    : consumerActions(actions))
+                    ? mapActions(consumerActions(actions, { modelName }))
+                    : consumerActions(actions, { modelName }))
                 }}
               />
             )
