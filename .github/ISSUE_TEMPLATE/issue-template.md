@@ -1,6 +1,6 @@
 ---
 name: Issue Template
-about: Issue Template
+about: Good issue can help others to position problem easily.
 title: ''
 labels: ''
 assignees: ''
@@ -30,7 +30,9 @@ I have a:
       | Node             |  |
       | react         |  |
       | Operating System |  |
+
 3. [ ] Idea:
+
     * [ ] What problem would it solve for you? 🐛
     * [ ] Do you think others will benefit from this change as well and it should in core package? 💡
     * [ ] Are you willing to (attempt) a PR yourself? ⚔
