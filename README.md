@@ -14,7 +14,39 @@ The State management library for React
 
 🐛 Debug easily on test environment
 
-![Debug Easily](https://github.com/byte-fe/react-model-experiment/raw/0974f43bae2b3778ecc8fc65c1143ec1c50914c9/images/debug.jpg)
+```tsx
+import { Model } from 'react-model'
+
+// define model
+const Todo = {
+  state: {
+    items: ['Install react-model', 'Read github docs', 'Build App']
+  },
+  actions: {
+    add: (s, actions, todo) => {
+      // s is the readonly version of state
+      // you can also return partial state here but don't need to keep immutable manually
+      // state is the mutable state
+      return state => state.items.push(todo)
+    }
+  }
+}
+
+// Model Register
+const { useStore } = Model({ Todo })
+
+const App = () => {
+  return <TodoList />
+}
+
+const TodoList = () => {
+  const [state, actions] = useStore('Todo')
+  return <div>
+    <Addon handler={actions.add} />
+    {state.items.map((item, index) => (<Todo key={index} item={item} />))}
+  </div>
+}
+```
 
 ---
 
@@ -26,18 +58,19 @@ The State management library for React
 
 install package
 
-```
+```shell
 npm install react-model
 ```
 
 ## Table of Contents
 
 - [Core Concept](#core-concept)
+  - [Model](#model)
   - [Model Register](#model-register)
   - [useStore](#usestore)
-  - [Model](#model)
   - [getState](#getstate)
-  - [getActions](#getactions)
+  - [actions](#actions)
+  - [subscribe](#subscribe)
 - [Advance Concept](#advance-concept)
   - [immutable Actions](#immutable-actions)
   - [SSR with Next.js](#ssr-with-nextjs)
@@ -46,70 +79,10 @@ npm install react-model
   - [Provider](#provider)
   - [connect](#connect)
 - [FAQ](#faq)
-  - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger?)
+  - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger)
+  - [How can I add custom middleware](#how-can-i-add-custom-middleware)
 
 ## Core Concept
-
-### Model Register
-
-react-model keep the state and actions in a global store. So you need to register them before using.
-
-`model/index.model.ts`
-
-```typescript
-import { Model } from 'react-model'
-import Home from '../model/home.model'
-import Shared from '../model/shared.model'
-
-const models = { Home, Shared }
-
-export const { getInitialState, useStore, getState, getActions } = Model(models)
-export type Models = typeof models
-```
-
-[⇧ back to top](#table-of-contents)
-
-### useStore
-
-The functional component in React ^16.8.0 can use Hooks to connect the global store.
-The actions return from useStore can invoke the dom changes.
-
-The execution of actions returned by useStore will invoke the rerender of current component first.
-
-It's the only difference between the actions returned by useStore and getActions now.
-
-```tsx
-import React from 'react'
-import { useStore } from '../index.model'
-
-// CSR
-export default () => {
-  const [state, actions] = useStore('Home')
-  const [sharedState, sharedActions] = useStore('Shared')
-
-  return (
-    <div>
-      Home model value: {JSON.stringify(state)}
-      Shared model value: {JSON.stringify(sharedState)}
-      <button onClick={e => actions.increment(33)}>home increment</button>
-      <button onClick={e => sharedActions.increment(20)}>
-        shared increment
-      </button>
-      <button onClick={e => actions.get()}>fake request</button>
-      <button onClick={e => actions.openLight()}>fake nested call</button>
-    </div>
-  )
-}
-```
-
-optional solution on huge dataset (example: TodoList(10000+ Todos)):
-
-1. use useStore on the subComponents which need it.
-2. [use useStore with depActions and React.memo to prevent child components rerender frequently.](https://github.com/ArrayZoneYour/react-model-todomvc/blob/master/src/components/TodoItem.tsx)
-
-[Demo Repo](https://github.com/ArrayZoneYour/react-model-todomvc)
-
-[⇧ back to top](#table-of-contents)
 
 ### Model
 
@@ -119,14 +92,19 @@ Every model have their own state and actions.
 const initialState = {
   counter: 0,
   light: false,
-  response: {} as {
-    code: number
-    message: string
+  response: {}
+}
+
+interface StateType = {
+  counter: number
+  light: boolean
+  response: {
+    code?: number
+    message?: string
   }
 }
 
-type StateType = typeof initialState
-type ActionsParamType = {
+interface ActionsParamType = {
   increment: number
   openLight: undefined
   get: undefined
@@ -176,6 +154,67 @@ export default Model
 
 [⇧ back to top](#table-of-contents)
 
+### Model Register
+
+react-model keep the state and actions in a separate store. So you need to register them before using.
+
+`model/index.ts`
+
+```typescript
+import { Model } from 'react-model'
+import Home from '../model/home'
+import Shared from '../model/shared'
+
+const stores = { Home, Shared }
+
+export default Model(stores)
+// the same as export const { getInitialState, useStore, getState, getActions, subscribe, unsubscribe } =
+```
+
+[⇧ back to top](#table-of-contents)
+
+### useStore
+
+The functional component in React ^16.8.0 can use Hooks to connect the global store.
+The actions return from useStore can invoke the dom changes.
+
+The execution of actions returned by useStore will invoke the rerender of current component first.
+
+It's the only difference between the actions returned by useStore and getActions now.
+
+```tsx
+import React from 'react'
+import { useStore } from '../index'
+
+// CSR
+export default () => {
+  const [state, actions] = useStore('Home')
+  const [sharedState, sharedActions] = useStore('Shared')
+
+  return (
+    <div>
+      Home model value: {JSON.stringify(state)}
+      Shared model value: {JSON.stringify(sharedState)}
+      <button onClick={e => actions.increment(33)}>home increment</button>
+      <button onClick={e => sharedActions.increment(20)}>
+        shared increment
+      </button>
+      <button onClick={e => actions.get()}>fake request</button>
+      <button onClick={e => actions.openLight()}>fake nested call</button>
+    </div>
+  )
+}
+```
+
+optional solution on huge dataset (example: TodoList(10000+ Todos)):
+
+1. use useStore on the subComponents which need it.
+2. [use useStore with depActions and React.memo to prevent child components rerender frequently.](https://github.com/ArrayZoneYour/react-model-todomvc/blob/master/src/components/TodoItem.tsx)
+
+[Demo Repo](https://github.com/ArrayZoneYour/react-model-todomvc)
+
+[⇧ back to top](#table-of-contents)
+
 ### getState
 
 Key Point: [State variable not updating in useEffect callback](https://github.com/facebook/react/issues/14066)
@@ -187,7 +226,7 @@ Note: the getState method cannot invoke the dom changes automatically by itself.
 > Hint: The state returned should only be used as readonly
 
 ```jsx
-import { useStore, getState } from '../model/index.model'
+import { useStore, getState } from '../model/index'
 
 const BasicHook = () => {
   const [state, actions] = useStore('Counter')
@@ -210,29 +249,46 @@ const BasicHook = () => {
 
 [⇧ back to top](#table-of-contents)
 
-### getActions
+### actions
 
 You can call other models' actions with getActions api
 
 getActions can be used in both class components and functional components.
 
 ```js
-import { getActions } from './index.model'
-
-const sharedActions = getActions('Shared')
-const counterActions = getActions('Counter')
+import { actions } from './index'
 
 const model = {
   state: {},
   actions: {
     crossModelCall: () => {
-      sharedActions.changeTheme('dark')
-      counterActions.increment(9)
+      actions.Shared.changeTheme('dark')
+      actions.Counter.increment(9)
     }
   }
 }
 
 export default model
+```
+
+### subscribe
+
+subscribe(storeName, actions, callback) run the callback when the specific actions executed.
+
+```typescript
+import { subscribe, unsubscribe } from './index'
+
+const callback = () => {
+  const user = getState('User')
+  localStorage.setItem('user_id', user.id)
+}
+
+// subscribe action
+subscribe('User', 'login', callback)
+// subscribe actions
+subscribe('User', ['login', 'logout'], callback)
+// unsubscribe the observer of some actions
+unsubscribe('User', 'login') // only logout will run callback now
 ```
 
 [⇧ back to top](#table-of-contents)
@@ -285,7 +341,9 @@ const Model = {
 
 ### SSR with Next.js
 
-`shared.model.ts`
+<details>
+<summary>Store: shared.ts</summary>
+<p>
 
 ```ts
 const initialState = {
@@ -309,10 +367,16 @@ const Model: ModelType<StateType, ActionsParamType> = {
 }
 ```
 
-`_app.tsx`
+</p>
+</details>
+
+<details>
+<summary>Global Config: _app.tsx</summary>
+<p>
+
 
 ```tsx
-import { models, getInitialState, Models } from '../model/index.model'
+import { models, getInitialState, Models } from '../model/index'
 
 let persistModel: any
 
@@ -349,11 +413,15 @@ MyApp.getInitialProps = async (context: NextAppContext) => {
   }
 }
 ```
+</p>
+</details>
 
-`hooks/index.tsx`
+<details>
+<summary>Page: hooks/index.tsx</summary>
+<p>
 
 ```tsx
-import { useStore, getState } from '../index.model'
+import { useStore, getState } from '../index'
 export default () => {
   const [state, actions] = useStore('Home')
   const [sharedState, sharedActions] = useStore('Shared')
@@ -371,8 +439,12 @@ export default () => {
   )
 }
 ```
+</p>
+</details>
 
-`benchmark.tsx`
+<details>
+<summary>Single Page Config: benchmark.tsx</summary>
+<p>
 
 ```tsx
 // ...
@@ -380,6 +452,8 @@ Benchmark.getInitialProps = async () => {
   return await getInitialState({ modelName: 'Todo' })
 }
 ```
+</p>
+</details>
 
 [⇧ back to top](#table-of-contents)
 
@@ -457,7 +531,9 @@ class App extends PureComponent {
 
 We can use the Provider state with connect.
 
-Javascript decorator version
+<details>
+<summary>Javascript decorator version</summary>
+<p>
 
 ```jsx
 import React, { PureComponent } from 'react'
@@ -486,12 +562,17 @@ export default class JSCounter extends PureComponent {
 }
 ```
 
-TypeScript Version
+</p>
+</details>
+
+<details>
+<summary>TypeScript Version</summary>
+<p>
 
 ```tsx
 import React, { PureComponent } from 'react'
 import { Provider, connect } from 'react-model'
-import { StateType, ActionType } from '../model/home.model'
+import { StateType, ActionType } from '../model/home'
 
 const mapProps = ({ light, counter, response }: StateType) => ({
   lightStatus: light ? 'open' : 'close',
@@ -524,12 +605,14 @@ export default connect(
   mapProps
 )(TSCounter)
 ```
+</p>
+</details>
 
 [⇧ back to top](#table-of-contents)
 
 ## FAQ
 
-### How can I disable the console debugger?
+### How can I disable the console debugger
 
 Just remove consoleDebugger middleware.
 
@@ -542,3 +625,34 @@ const consoleDebuggerMiddlewareIndex = actionMiddlewares.indexOf(
 // Remove it
 actionMiddlewares.splice(consoleDebuggerMiddlewareIndex, 1)
 ```
+
+[⇧ back to top](#table-of-contents)
+
+### How can I add custom middleware
+
+```typescript
+import { actionMiddlewares, middlewares, Model } from 'react-model'
+import { sendLog } from 'utils/log'
+import Home from '../model/home'
+import Shared from '../model/shared'
+
+// custom middleware
+const ErrorHandler: Middleware = async (context, restMiddlewares) => {
+  const { next } = context
+  await next(restMiddlewares).catch((e: Error) => sendLog(e))
+}
+
+// Find the index of middleware
+const getNewStateMiddlewareIndex = actionMiddlewares.indexOf(
+  middlewares.getNewState
+)
+
+// Replace it
+actionMiddlewares.splice(getNewStateMiddlewareIndex, 0, ErrorHandler)
+
+const stores = { Home, Shared }
+
+export default Model(stores)
+```
+
+[⇧ back to top](#table-of-contents)
