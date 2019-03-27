@@ -1,6 +1,6 @@
 {
   "name": "react-model",
-  "version": "2.5.3",
+  "version": "2.6.0-alpha.0",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "umd:main": "./dist/react-model.umd.js",
@@ -8,6 +8,7 @@
   "scripts": {
     "build": "microbundle -o ./dist --sourcemap false",
     "commit": "git-cz",
+    "lint-md": "remark .",
     "test": "jest --silent",
     "test:coverage": "jest --collect-coverage --silent"
   },
@@ -37,6 +38,9 @@
     "react-dom": "^16.8.4",
     "react-hooks-testing-library": "^0.3.6",
     "react-testing-library": "^6.0.0",
+    "remark-cli": "^6.0.1",
+    "remark-lint": "^6.0.4",
+    "remark-preset-lint-recommended": "^3.0.2",
     "ts-jest": "^24.0.0",
     "typescript": "^3.3.1"
   },
