@@ -1,6 +1,6 @@
 {
   "name": "react-model",
-  "version": "2.6.0-alpha.0",
+  "version": "2.6.0",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "umd:main": "./dist/react-model.umd.js",

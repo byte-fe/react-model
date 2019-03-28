@@ -167,8 +167,7 @@ import Shared from '../model/shared'
 
 const stores = { Home, Shared }
 
-export default Model(stores)
-// the same as export const { getInitialState, useStore, getState, getActions, subscribe, unsubscribe } =
+export const { getInitialState, useStore, getState, getActions, subscribe, unsubscribe } = Model(stores)
 ```
 
 [⇧ back to top](#table-of-contents)
