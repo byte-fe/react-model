@@ -1,12 +1,12 @@
 /// <reference path="./index.d.ts" />
 import * as React from 'react'
-import Global from './global'
 import { PureComponent, useEffect, useState } from 'react'
+import Global from './global'
 import {
-  GlobalContext,
   Consumer,
+  consumerActions,
   getInitialState,
-  consumerActions
+  GlobalContext
 } from './helper'
 import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
@@ -34,16 +34,16 @@ const Model = <M extends Models>(models: M, initialState?: Global['State']) => {
   }
   return {
     actions,
-    useStore,
-    getState,
-    getInitialState,
     getActions,
+    getInitialState,
+    getState,
     subscribe,
-    unsubscribe
+    unsubscribe,
+    useStore
   } as {
     useStore: <K extends keyof M>(
       name: K,
-      depActions?: (keyof Get<M[K], 'actions'>)[]
+      depActions?: Array<keyof Get<M[K], 'actions'>>
     ) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
     getState: <K extends keyof M>(modelName: K) => Readonly<Get<M[K], 'state'>>
     getActions: <K extends keyof M>(
@@ -52,12 +52,14 @@ const Model = <M extends Models>(models: M, initialState?: Global['State']) => {
     getInitialState: typeof getInitialState
     subscribe: <K extends keyof M>(
       modelName: K,
-      actionName: keyof Get<M[K], 'actions'> | (keyof Get<M[K], 'actions'>)[],
-      callback: Function
+      actionName:
+        | keyof Get<M[K], 'actions'>
+        | Array<keyof Get<M[K], 'actions'>>,
+      callback: () => void
     ) => void
     unsubscribe: <K extends keyof M>(
       modelName: K,
-      actionName: keyof Get<M[K], 'actions'> | (keyof Get<M[K], 'actions'>)[]
+      actionName: keyof Get<M[K], 'actions'> | Array<keyof Get<M[K], 'actions'>>
     ) => void
     actions: {
       [K in keyof M]: Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
@@ -72,7 +74,7 @@ const unsubscribe = (modelName: string, actions: string | string[]) => {
 const subscribe = (
   modelName: string,
   actions: string | string[],
-  callback?: Function
+  callback?: () => void
 ) => {
   if (Array.isArray(actions)) {
     actions.forEach(actionName => {
@@ -110,15 +112,15 @@ const getActions = (
     ([key, action]) =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
         const context: InnerContext = {
-          modelName,
+          action,
           actionName: key,
+          consumerActions,
+          middlewareConfig,
+          modelName,
           newState: null,
           params,
-          middlewareConfig,
-          consumerActions,
-          action: action,
-          Global,
-          ...baseContext
+          ...baseContext,
+          Global
         }
         await applyMiddlewares(actionMiddlewares, context)
       })
@@ -129,13 +131,14 @@ const getActions = (
 const useStore = (modelName: string, depActions?: string[]) => {
   const setState = useState(Global.State[modelName])[1]
   Global.uid += 1
-  const _hash = '' + Global.uid
-  if (!Global.Setter.functionSetter[modelName])
+  const hash = '' + Global.uid
+  if (!Global.Setter.functionSetter[modelName]) {
     Global.Setter.functionSetter[modelName] = {}
-  Global.Setter.functionSetter[modelName][_hash] = { setState, depActions }
+  }
+  Global.Setter.functionSetter[modelName][hash] = { setState, depActions }
   useEffect(() => {
     return function cleanup() {
-      delete Global.Setter.functionSetter[modelName][_hash]
+      delete Global.Setter.functionSetter[modelName][hash]
     }
   })
   const updaters = getActions(modelName, { setState, type: 'function' })
