@@ -1,15 +1,17 @@
-let State = {}
-let Actions = {}
-let AsyncState = {}
+const State = {}
+const Actions = {}
+const AsyncState = {}
 // Communicate between Provider-Consumer and Hooks
-let Setter: Setter = {
-  // classSetter stores the setState from Provider, invoke the classSetter.setState can update the state of Global Provider.
+const Setter: Setter = {
+  // classSetter stores the setState from Provider
+  // Invoke the classSetter.setState can update the state of Global Provider.
   classSetter: undefined,
-  // functionSetter stores the setState returned by useStore. These setStates can invoke the rerender of hooks components.
+  // functionSetter stores the setState returned by useStore.
+  // These setStates can invoke the rerender of hooks components.
   functionSetter: {}
 }
 
-let subscriptions = {}
+const subscriptions = {}
 
 let devTools: any
 let withDevTools = false
@@ -22,7 +24,7 @@ export default {
   Setter,
   State,
   devTools,
-  withDevTools,
+  subscriptions,
   uid,
-  subscriptions
+  withDevTools
 } as Global

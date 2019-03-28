@@ -8,6 +8,7 @@
   "scripts": {
     "build": "microbundle -o ./dist --sourcemap false",
     "commit": "git-cz",
+    "lint-ts": "tslint -c tslint.json 'src/**/*.ts'",
     "lint-md": "remark .",
     "test": "jest --silent",
     "test:coverage": "jest --collect-coverage --silent"
@@ -42,6 +43,7 @@
     "remark-lint": "^6.0.4",
     "remark-preset-lint-recommended": "^3.0.2",
     "ts-jest": "^24.0.0",
+    "tslint": "^5.14.0",
     "typescript": "^3.3.1"
   },
   "husky": {

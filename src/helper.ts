@@ -1,7 +1,7 @@
 import produce from 'immer'
 import { createContext } from 'react'
 import Global from './global'
-import { applyMiddlewares, actionMiddlewares } from './middlewares'
+import { actionMiddlewares, applyMiddlewares } from './middlewares'
 
 const initialProviderState: Global['State'] = {}
 const GlobalContext = createContext(initialProviderState)
@@ -25,15 +25,15 @@ const consumerAction = (
   modelContext: { modelName: string }
 ) => async (params: any, middlewareConfig?: any) => {
   const context: InnerContext = {
-    type: 'outer',
-    modelName: modelContext.modelName,
-    actionName: action.name,
     Global,
+    action,
+    actionName: action.name,
+    consumerActions,
+    middlewareConfig,
+    modelName: modelContext.modelName,
     newState: null,
     params,
-    middlewareConfig,
-    consumerActions,
-    action
+    type: 'outer'
   }
   await applyMiddlewares(actionMiddlewares, context)
 }
@@ -42,7 +42,7 @@ const consumerActions = (
   actions: Actions,
   modelContext: { modelName: string }
 ) => {
-  let ret: any = {}
+  const ret: any = {}
   Object.entries<Action>(actions).forEach(([key, action]) => {
     ret[key] = consumerAction(action, modelContext)
   })
@@ -51,7 +51,9 @@ const consumerActions = (
 
 const setPartialState = (
   name: keyof typeof Global['State'],
-  partialState: typeof Global['State'] | Function
+  partialState:
+    | typeof Global['State']
+    | ((state: typeof Global['State']['name']) => void)
 ) => {
   if (typeof partialState === 'function') {
     let state = Global.State[name]

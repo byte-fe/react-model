@@ -1,4 +1,4 @@
-import { setPartialState, timeout, getCache } from './helper'
+import { getCache, setPartialState, timeout } from './helper'
 // -- Middlewares --
 
 const tryCatch: Middleware = async (context, restMiddlewares) => {
@@ -52,19 +52,20 @@ const setNewState: Middleware = async (context, restMiddlewares) => {
 
 const stateUpdater: Middleware = async (context, restMiddlewares) => {
   const { modelName, next, Global } = context
-  context.type === 'function' &&
-    context.setState &&
+  if (context.type === 'function' && context.setState) {
     context.setState(Global.State[modelName])
+  }
   await next(restMiddlewares)
 }
 
 const subscription: Middleware = async (context, restMiddlewares) => {
   const { modelName, actionName, next, Global } = context
   const subscriptions = Global.subscriptions[`${modelName}_${actionName}`]
-  subscriptions &&
+  if (subscriptions) {
     subscriptions.forEach(callback => {
       callback()
     })
+  }
   await next(restMiddlewares)
 }
 
@@ -143,15 +144,15 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 const middlewares = {
-  tryCatch,
+  communicator,
+  consoleDebugger,
+  devToolsListener,
   getNewState,
   getNewStateWithCache,
   setNewState,
   stateUpdater,
-  communicator,
   subscription,
-  devToolsListener,
-  consoleDebugger
+  tryCatch
 }
 
 const applyMiddlewares = async (
@@ -160,9 +161,9 @@ const applyMiddlewares = async (
 ) => {
   context.next = (restMiddlewares: Middleware[]) =>
     restMiddlewares.length > 0 &&
-    restMiddlewares[0](<Context>context, restMiddlewares.slice(1))
+    restMiddlewares[0](context as Context, restMiddlewares.slice(1))
   if (middlewares.length > 0) {
-    await middlewares[0](<Context>context, middlewares.slice(1))
+    await middlewares[0](context as Context, middlewares.slice(1))
   }
 }
 
