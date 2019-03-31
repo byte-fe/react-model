@@ -37,7 +37,7 @@
     "prettier": "^1.16.4",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-hooks-testing-library": "^0.3.6",
+    "react-hooks-testing-library": "^0.4.0",
     "react-testing-library": "^6.0.0",
     "remark-cli": "^6.0.1",
     "remark-lint": "^6.0.4",
