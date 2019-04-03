@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 import { testHook } from 'react-hooks-testing-library'
-import { Counter } from '..'
+import { NextCounter } from '..'
 import { Model } from '../../src'
 
 describe('useStore', () => {
@@ -8,7 +8,7 @@ describe('useStore', () => {
     let state: any
     let actions: any
     let count = 0
-    const { useStore, subscribe, unsubscribe } = Model(Counter)
+    const { useStore, subscribe, unsubscribe } = Model(NextCounter)
     testHook(() => {
       ;[state, actions] = useStore()
     })

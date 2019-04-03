@@ -81,6 +81,7 @@ npm install react-model
 - [FAQ](#faq)
   - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger)
   - [How can I add custom middleware](#how-can-i-add-custom-middleware)
+    - [How can I make persist models](#how-can-i-make-persist-models)
 
 ## Core Concept
 
@@ -652,6 +653,21 @@ actionMiddlewares.splice(getNewStateMiddlewareIndex, 0, ErrorHandler)
 const stores = { Home, Shared }
 
 export default Model(stores)
+```
+
+[⇧ back to top](#table-of-contents)
+
+#### How can I make persist models
+
+```typescript
+import { actionMiddlewares } from 'react-model'
+
+const persistMiddleware: Middleware = async (context, restMiddlewares) => {
+  localStorage.setItem('__REACT_MODEL__', context.Global.State)
+  await context.next(restMiddlewares)
+}
+
+actionMiddlewares.push(persistMiddleware)
 ```
 
 [⇧ back to top](#table-of-contents)
