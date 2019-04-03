@@ -87,8 +87,67 @@ type Context<S = {}> = (InnerContext<S>) & {
 
 type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
 
-interface Models {
-  [name: string]: ModelType
+interface Models<State = any, ActionKeys = any> {
+  [name: string]:
+    | ModelType<State, ActionKeys>
+    | API<ModelType<State, ActionKeys>>
+}
+
+interface API<MT extends ModelType = any> {
+  __id: string
+  useStore: (
+    depActions?: Array<keyof MT['actions']>
+  ) => [Get<MT, 'state'>, getConsumerActionsType<Get<MT, 'actions'>>]
+  getState: () => Readonly<Get<MT, 'state'>>
+  subscribe: (
+    actionName: keyof MT['actions'] | Array<keyof MT['actions']>,
+    callback: () => void
+  ) => void
+  unsubscribe: (
+    actionName: keyof Get<MT, 'actions'> | Array<keyof Get<MT, 'actions'>>
+  ) => void
+  actions: Readonly<getConsumerActionsType<Get<MT, 'actions'>>>
+}
+
+interface APIs<M extends Models> {
+  useStore: <K extends keyof M>(
+    name: K,
+    depActions?: Array<keyof Get<M[K], 'actions'>>
+  ) => M[K] extends API
+    ? ReturnType<Get<M[K], 'useStore'>>
+    : M[K] extends ModelType
+    ? [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
+    : any
+
+  getState: <K extends keyof M>(
+    modelName: K
+  ) => M[K] extends ModelType
+    ? Readonly<Get<M[K], 'state'>>
+    : M[K] extends API
+    ? ReturnType<Get<M[K], 'getState'>>
+    : any
+  getActions: <K extends keyof M>(
+    modelName: K
+  ) => M[K] extends ModelType
+    ? Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
+    : undefined
+  getInitialState: <T extends any>(
+    context?: T | undefined
+  ) => Promise<{
+    [modelName: string]: any
+  }>
+  subscribe: <K extends keyof M>(
+    modelName: K,
+    actionName: keyof Get<M[K], 'actions'> | Array<keyof Get<M[K], 'actions'>>,
+    callback: () => void
+  ) => void
+  unsubscribe: <K extends keyof M>(
+    modelName: K,
+    actionName: keyof Get<M[K], 'actions'> | Array<keyof Get<M[K], 'actions'>>
+  ) => void
+  actions: {
+    [K in keyof M]: Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
+  }
 }
 
 type ModelType<InitStateType = any, ActionKeys = any> = {
@@ -121,8 +180,12 @@ type ModelsProps<M extends Models> = {
   useStore: <K extends keyof M>(
     name: K,
     models?: M
-  ) => [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
-  getState: <K extends keyof M>(modelName: K) => Readonly<Get<M[K], 'state'>>
+  ) => M[K] extends ModelType
+    ? [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
+    : M[K]
+  getState: <K extends keyof M>(
+    modelName: K
+  ) => M[K] extends ModelType ? Readonly<Get<M[K], 'state'>> : M[K]
 }
 
 type Subscriptions = {

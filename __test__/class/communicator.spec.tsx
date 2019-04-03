@@ -4,6 +4,7 @@ import * as React from 'react'
 import { Model, Provider, connect } from '../../src'
 import { Counter } from '../index'
 import { render, fireEvent } from 'react-testing-library'
+import { testHook } from 'react-hooks-testing-library'
 import { timeout } from '../../src/helper'
 
 const Button = connect(
@@ -27,18 +28,12 @@ const Button = connect(
 )
 
 describe('class component', () => {
-  test('Provider', () => {
-    Model({ Counter })
-    const { container } = render(
-      <Provider>
-        <Button />
-      </Provider>
-    )
-    const button = container.firstChild
-    expect(button!.textContent).toBe('0')
-  })
-  test('Consumer', async () => {
-    Model({ Counter })
+  test('communicator', async () => {
+    let state: any
+    const { useStore } = Model({ Counter })
+    testHook(() => {
+      ;[state] = useStore('Counter')
+    })
     const { container } = render(
       <Provider>
         <Button />
@@ -49,5 +44,6 @@ describe('class component', () => {
     fireEvent.click(button)
     await timeout(100, {}) // Wait Consumer rerender
     expect(button!.textContent).toBe('3')
+    expect(state.count).toBe(3)
   })
 })
