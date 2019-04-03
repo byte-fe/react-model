@@ -47,10 +47,30 @@ type Action<S = {}, P = any, ActionKeys = {}> = (
   | void
   | Promise<void>
 
+// v3.0 Action
+type NextAction<S = {}, P = any, ActionKeys = {}> = (
+  params: P,
+  context: {
+    state: S
+    actions: getConsumerNextActionsType<NextActions<S, ActionKeys>>
+  }
+) =>
+  | Partial<S>
+  | Promise<Partial<S>>
+  | ProduceFunc<S>
+  | Promise<ProduceFunc<S>>
+  | void
+  | Promise<void>
+
 type ProduceFunc<S> = (state: S) => void
 
 type Actions<S = {}, ActionKeys = {}> = {
   [P in keyof ActionKeys]: Action<S, ActionKeys[P], ActionKeys>
+}
+
+// v3.0 Actions
+type NextActions<S = {}, ActionKeys = {}> = {
+  [P in keyof ActionKeys]: NextAction<S, ActionKeys[P], ActionKeys>
 }
 
 type Dispatch<A> = (value: A) => void
@@ -90,14 +110,14 @@ type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
 interface Models<State = any, ActionKeys = any> {
   [name: string]:
     | ModelType<State, ActionKeys>
-    | API<ModelType<State, ActionKeys>>
+    | API<NextModelType<State, ActionKeys>>
 }
 
-interface API<MT extends ModelType = any> {
+interface API<MT extends NextModelType = any> {
   __id: string
   useStore: (
     depActions?: Array<keyof MT['actions']>
-  ) => [Get<MT, 'state'>, getConsumerActionsType<Get<MT, 'actions'>>]
+  ) => [Get<MT, 'state'>, getConsumerNextActionsType<Get<MT, 'actions'>>]
   getState: () => Readonly<Get<MT, 'state'>>
   subscribe: (
     actionName: keyof MT['actions'] | Array<keyof MT['actions']>,
@@ -106,7 +126,7 @@ interface API<MT extends ModelType = any> {
   unsubscribe: (
     actionName: keyof Get<MT, 'actions'> | Array<keyof Get<MT, 'actions'>>
   ) => void
-  actions: Readonly<getConsumerActionsType<Get<MT, 'actions'>>>
+  actions: Readonly<getConsumerNextActionsType<Get<MT, 'actions'>>>
 }
 
 interface APIs<M extends Models> {
@@ -158,6 +178,19 @@ type ModelType<InitStateType = any, ActionKeys = any> = {
   asyncState?: (context?: any) => Promise<Partial<InitStateType>>
 }
 
+// v3.0
+type NextModelType<InitStateType = any, ActionKeys = any> = {
+  actions: {
+    [P in keyof ActionKeys]: NextAction<
+      InitStateType,
+      ActionKeys[P],
+      ActionKeys
+    >
+  }
+  state: InitStateType
+  asyncState?: (context?: any) => Promise<Partial<InitStateType>>
+}
+
 type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
   ? A
   : never
@@ -172,6 +205,13 @@ type getConsumerActionsType<A extends Actions<any, any>> = {
         params: ArgumentTypes<A[P]>[2],
         middlewareConfig?: ArgumentTypes<A[P]>[3]
       ) => ReturnType<A[P]>
+}
+
+// v3.0
+type getConsumerNextActionsType<A extends NextActions<any, any>> = {
+  [P in keyof A]: ArgumentTypes<A[P]>[0] extends undefined
+    ? (params?: ArgumentTypes<A[P]>[0]) => ReturnType<A[P]>
+    : (params: ArgumentTypes<A[P]>[0]) => ReturnType<A[P]>
 }
 
 type Get<Object, K extends keyof Object> = Object[K]

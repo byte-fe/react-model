@@ -45,6 +45,26 @@ export const Counter: ModelType<
   }
 }
 
+// v3.0
+export const NextCounter: NextModelType<
+  CounterState,
+  CounterActionParams & ExtraActionParams
+> = {
+  state: { count: 0 },
+  actions: {
+    increment: params => {
+      return state => {
+        state.count += params
+      }
+    },
+    add: (params, { state }) => {
+      return {
+        count: state.count + params
+      }
+    }
+  }
+}
+
 export const Theme: ModelType<ThemeState, ThemeActionParams> = {
   state: {
     theme: 'dark'
