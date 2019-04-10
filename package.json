@@ -1,6 +1,6 @@
 {
   "name": "react-model",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "umd:main": "./dist/react-model.umd.js",
@@ -44,7 +44,7 @@
     "remark-preset-lint-recommended": "^3.0.2",
     "ts-jest": "^24.0.0",
     "tslint": "^5.14.0",
-    "typescript": "^3.3.1"
+    "typescript": "^3.3.4000"
   },
   "husky": {
     "hooks": {
