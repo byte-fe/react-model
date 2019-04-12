@@ -28,6 +28,7 @@ function Model<M extends Models, MT extends NextModelType>(
   initialState?: Global['State']
 ) {
   if (isNextModelType(models)) {
+    Global.uid += 1
     const hash = '__' + Global.uid
     Global.State[hash] = models.state
     const nextActions: Actions = Object.entries(models.actions).reduce(
@@ -163,17 +164,19 @@ const getActions = (
 
 const useStore = (modelName: string, depActions?: string[]) => {
   const setState = useState(Global.State[modelName])[1]
-  Global.uid += 1
-  const hash = '' + Global.uid
-  if (!Global.Setter.functionSetter[modelName]) {
-    Global.Setter.functionSetter[modelName] = {}
-  }
-  Global.Setter.functionSetter[modelName][hash] = { setState, depActions }
+
   useEffect(() => {
+    Global.uid += 1
+    const hash = '' + Global.uid
+    if (!Global.Setter.functionSetter[modelName]) {
+      Global.Setter.functionSetter[modelName] = {}
+    }
+    Global.Setter.functionSetter[modelName][hash] = { setState, depActions }
     return function cleanup() {
       delete Global.Setter.functionSetter[modelName][hash]
     }
-  })
+  }, [])
+
   const updaters = getActions(modelName, { setState, type: 'function' })
   return [getState(modelName), updaters]
 }

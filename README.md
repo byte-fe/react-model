@@ -23,7 +23,7 @@ const Todo = {
     items: ['Install react-model', 'Read github docs', 'Build App']
   },
   actions: {
-    add: (s, actions, todo) => {
+    add: todo => {
       // s is the readonly version of state
       // you can also return partial state here but don't need to keep immutable manually
       // state is the mutable state
@@ -33,14 +33,14 @@ const Todo = {
 }
 
 // Model Register
-const { useStore } = Model({ Todo })
+const { useStore } = Model(Todo)
 
 const App = () => {
   return <TodoList />
 }
 
 const TodoList = () => {
-  const [state, actions] = useStore('Todo')
+  const [state, actions] = useStore()
   return <div>
     <Addon handler={actions.add} />
     {state.items.map((item, index) => (<Todo key={index} item={item} />))}
@@ -82,12 +82,18 @@ npm install react-model
   - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger)
   - [How can I add custom middleware](#how-can-i-add-custom-middleware)
     - [How can I make persist models](#how-can-i-make-persist-models)
+  - [How can I deal with local state](#how-can-i-deal-with-local-state)
+  - [actions throw error from immer.module.js](#actions-throw-error-from-immer.module.js)
 
 ## Core Concept
 
 ### Model
 
 Every model have their own state and actions.
+
+<details>
+<summary><del>old model</del> (will be deprecated in v3.0)</summary>
+<p>
 
 ```typescript
 const initialState = {
@@ -111,7 +117,7 @@ interface ActionsParamType = {
   get: undefined
 } // You only need to tag the type of params here !
 
-const Model: ModelType<StateType, ActionsParamType> = {
+const model: ModelType<StateType, ActionsParamType> = {
   actions: {
     increment: async (state, _, params) => {
       return {
@@ -144,7 +150,73 @@ const Model: ModelType<StateType, ActionsParamType> = {
   state: initialState
 }
 
-export default Model
+export default model
+
+// You can use these types when use Class Components.
+// type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
+// type ConsumerType = { actions: ConsumerActionsType; state: StateType }
+// type ActionType = ConsumerActionsType
+// export { ConsumerType, StateType, ActionType }
+```
+</p>
+</details>
+
+```typescript
+const initialState = {
+  counter: 0,
+  light: false,
+  response: {}
+}
+
+interface StateType = {
+  counter: number
+  light: boolean
+  response: {
+    code?: number
+    message?: string
+  }
+}
+
+interface ActionsParamType = {
+  increment: number
+  openLight: undefined
+  get: undefined
+} // You only need to tag the type of params here !
+
+const model: NextModelType<StateType, ActionsParamType> = {
+  actions: {
+    increment: async (payload, { state }) => {
+      return {
+        counter: state.counter + (params || 1)
+      }
+    },
+    openLight: async (_, { state, actions }) => {
+      await actions.increment(1) // You can use other actions within the model
+      await actions.get() // support async functions (block actions)
+      actions.get()
+      await actions.increment(1) // + 1
+      await actions.increment(1) // + 2
+      await actions.increment(1) // + 3 as expected !
+      return { light: !state.light }
+    },
+    get: async () => {
+      await new Promise((resolve, reject) =>
+        setTimeout(() => {
+          resolve()
+        }, 3000)
+      )
+      return {
+        response: {
+          code: 200,
+          message: `${new Date().toLocaleString()} open light success`
+        }
+      }
+    }
+  },
+  state: initialState
+}
+
+export default Model(model)
 
 // You can use these types when use Class Components.
 // type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
@@ -157,7 +229,7 @@ export default Model
 
 ### Model Register
 
-react-model keep the state and actions in a separate store. So you need to register them before using.
+react-model keep the state and actions in the separate private store. So you need to register them if you want to use them as the public models.
 
 `model/index.ts`
 
@@ -166,9 +238,9 @@ import { Model } from 'react-model'
 import Home from '../model/home'
 import Shared from '../model/shared'
 
-const stores = { Home, Shared }
+const models = { Home, Shared }
 
-export const { getInitialState, useStore, getState, getActions, subscribe, unsubscribe } = Model(stores)
+export const { getInitialState, useStore, getState, actions, subscribe, unsubscribe } = Model(models)
 ```
 
 [⇧ back to top](#table-of-contents)
@@ -180,7 +252,7 @@ The actions return from useStore can invoke the dom changes.
 
 The execution of actions returned by useStore will invoke the rerender of current component first.
 
-It's the only difference between the actions returned by useStore and getActions now.
+It's the only difference between the actions returned by useStore and actions now.
 
 ```tsx
 import React from 'react'
@@ -251,9 +323,9 @@ const BasicHook = () => {
 
 ### actions
 
-You can call other models' actions with getActions api
+You can call other models' actions with actions api
 
-getActions can be used in both class components and functional components.
+actions can be used in both class components and functional components.
 
 ```js
 import { actions } from './index'
@@ -270,6 +342,8 @@ const model = {
 
 export default model
 ```
+
+[⇧ back to top](#table-of-contents)
 
 ### subscribe
 
@@ -307,7 +381,7 @@ TypeScript Example
 // StateType and ActionsParamType definition
 // ...
 
-const Model: ModelType<StateType, ActionsParamType> = {
+const model: NextModelType<StateType, ActionsParamType> = {
   actions: {
     increment: async (s, _, params) => {
       // issue: https://github.com/Microsoft/TypeScript/issues/29196
@@ -321,6 +395,8 @@ const Model: ModelType<StateType, ActionsParamType> = {
     }
   }
 }
+
+export default Model(model)
 ```
 
 JavaScript Example
@@ -350,9 +426,9 @@ const initialState = {
   counter: 0
 }
 
-const Model: ModelType<StateType, ActionsParamType> = {
+const model: NextModelType<StateType, ActionsParamType> = {
   actions: {
-    increment: (state, _, params) => {
+    increment: (params, { state }) => {
       return {
         counter: state.counter + (params || 1)
       }
@@ -365,6 +441,8 @@ const Model: ModelType<StateType, ActionsParamType> = {
   },
   state: initialState
 }
+
+export default Model(model)
 ```
 
 </p>
@@ -671,6 +749,105 @@ const persistMiddleware: Middleware = async (context, restMiddlewares) => {
 actionMiddlewares.push(persistMiddleware)
 
 Model({ Example }, JSON.parse(localStorage.getItem('__REACT_MODEL__')))
+```
+
+[⇧ back to top](#table-of-contents)
+
+### How can I deal with local state
+
+What should I do to make every Counter hold there own model? 🤔
+
+```tsx
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        <Counter />
+        <Counter />
+        <Counter />
+      </div>
+    )
+  }
+}
+```
+
+<details>
+<summary>Counter model</summary>
+<p>
+
+```ts
+interface State {
+  count: number
+}
+
+interface ActionParams {
+  increment: number
+}
+
+const model: NextModelType<State, ActionParams> = {
+  state: {
+    count: 0
+  },
+  actions: {
+    increment: payload => {
+      // immer.module.js:972 Uncaught (in promise) Error: An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft
+      // Not allowed
+      // return state => (state.count += payload)
+      return state => {
+        state.count += payload
+      }
+    }
+  }
+}
+
+```
+
+</p>
+</details>
+
+<details>
+<summary>Counter.tsx</summary>
+<p>
+
+```tsx
+
+const Counter = () => {
+  const [{ useStore }] = useState(() => Model(model))
+  const [state, actions] = useStore()
+  return (
+    <div>
+      <div>{state.count}</div>
+      <button onClick={() => actions.increment(3)}>Increment</button>
+    </div>
+  )
+}
+
+export default Counter
+```
+
+</p>
+</details>
+
+[⇧ back to top](#table-of-contents)
+
+### actions throw error from immer.module.js
+
+```
+immer.module.js:972 Uncaught (in promise) Error: An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft
+```
+
+How to fix:
+
+```tsx
+actions: {
+  increment: payload => {
+    // Not allowed
+    // return state => (state.count += payload)
+    return state => {
+      state.count += payload
+    }
+  }
+}
 ```
 
 [⇧ back to top](#table-of-contents)
