@@ -82,6 +82,8 @@ npm install react-model
   - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger)
   - [How can I add custom middleware](#how-can-i-add-custom-middleware)
     - [How can I make persist models](#how-can-i-make-persist-models)
+  - [How can I deal with local state](#how-can-i-deal-with-local-state)
+  - [actions throw error from immer.module.js](#actions-throw-error-from-immer.module.js)
 
 ## Core Concept
 
@@ -747,6 +749,105 @@ const persistMiddleware: Middleware = async (context, restMiddlewares) => {
 actionMiddlewares.push(persistMiddleware)
 
 Model({ Example }, JSON.parse(localStorage.getItem('__REACT_MODEL__')))
+```
+
+[⇧ back to top](#table-of-contents)
+
+### How can I deal with local state
+
+What should I do to make every Counter hold there own model? 🤔
+
+```tsx
+class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        <Counter />
+        <Counter />
+        <Counter />
+      </div>
+    )
+  }
+}
+```
+
+<details>
+<summary>Counter model</summary>
+<p>
+
+```ts
+interface State {
+  count: number
+}
+
+interface ActionParams {
+  increment: number
+}
+
+const model: NextModelType<State, ActionParams> = {
+  state: {
+    count: 0
+  },
+  actions: {
+    increment: payload => {
+      // immer.module.js:972 Uncaught (in promise) Error: An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft
+      // Not allowed
+      // return state => (state.count += payload)
+      return state => {
+        state.count += payload
+      }
+    }
+  }
+}
+
+```
+
+</p>
+</details>
+
+<details>
+<summary>Counter.tsx</summary>
+<p>
+
+```tsx
+
+const Counter = () => {
+  const [{ useStore }] = useState(() => Model(model))
+  const [state, actions] = useStore()
+  return (
+    <div>
+      <div>{state.count}</div>
+      <button onClick={() => actions.increment(3)}>Increment</button>
+    </div>
+  )
+}
+
+export default Counter
+```
+
+</p>
+</details>
+
+[⇧ back to top](#table-of-contents)
+
+### actions throw error from immer.module.js
+
+```
+immer.module.js:972 Uncaught (in promise) Error: An immer producer returned a new value *and* modified its draft. Either return a new value *or* modify the draft
+```
+
+How to fix:
+
+```tsx
+actions: {
+  increment: payload => {
+    // Not allowed
+    // return state => (state.count += payload)
+    return state => {
+      state.count += payload
+    }
+  }
+}
 ```
 
 [⇧ back to top](#table-of-contents)
