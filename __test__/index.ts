@@ -1,6 +1,8 @@
 /// <reference path="./index.d.ts" />
 /// <reference path="../src/index.d.ts" />
+import { Model } from '../src'
 import { timeout } from '../src/helper'
+import { actionMiddlewares } from '../src/middlewares'
 
 export const ActionsTester: ModelType<ActionTesterState, ActionTesterParams> = {
   state: {
@@ -124,3 +126,28 @@ export const ErrorCounter: ModelType<CounterState, CounterActionParams> = {
     }
   }
 }
+
+const delayMiddleware: Middleware = async (context, restMiddlewares) => {
+  await timeout(2000, {})
+  context.next(restMiddlewares)
+}
+
+const nextCounterModel: NextModelType<CounterState, NextCounterActionParams> = {
+  actions: {
+    add: num => {
+      return state => {
+        state.count += num
+      }
+    },
+    increment: async (num, { actions }) => {
+      actions.add(num)
+      await timeout(300, {})
+    }
+  },
+  middlewares: [delayMiddleware, ...actionMiddlewares],
+  state: {
+    count: 0
+  }
+}
+
+export const NextCounterModel = Model(nextCounterModel)

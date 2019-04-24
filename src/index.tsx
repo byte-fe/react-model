@@ -80,6 +80,7 @@ function Model<M extends Models, MT extends NextModelType>(
         }
         Global.Actions[name] = Global.Actions[model.__id]
         Global.AsyncState[name] = Global.AsyncState[model.__id]
+        Global.Middlewares[name] = Global.Middlewares[model.__id]
       }
     })
 
