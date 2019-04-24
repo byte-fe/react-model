@@ -1,6 +1,7 @@
 const State = {}
 const Actions = {}
 const AsyncState = {}
+const Middlewares = {}
 // Communicate between Provider-Consumer and Hooks
 const Setter: Setter = {
   // classSetter stores the setState from Provider
@@ -21,6 +22,7 @@ let uid = Math.random() // The unique id of hooks
 export default {
   Actions,
   AsyncState,
+  Middlewares,
   Setter,
   State,
   devTools,

@@ -24,6 +24,9 @@ interface Global {
   AsyncState: {
     [modelName: string]: undefined | ((context?: any) => Promise<Partial<any>>)
   }
+  Middlewares: {
+    [modelName: string]: Middleware[]
+  }
   subscriptions: Subscriptions
   Setter: Setter
   devTools: any
@@ -48,12 +51,12 @@ type Action<S = {}, P = any, ActionKeys = {}> = (
   | Promise<void>
 
 // v3.0 Action
-type NextAction<S = {}, P = any, ActionKeys = {}> = (
+type NextAction<S = {}, P = any, ActionKeys = {}, ExtContext = {}> = (
   params: P,
   context: {
     state: S
     actions: getConsumerNextActionsType<NextActions<S, ActionKeys>>
-  }
+  } & ExtContext
 ) =>
   | Partial<S>
   | Promise<Partial<S>>
@@ -103,6 +106,7 @@ interface InnerContext<S = {}> extends BaseContext<S> {
 
 type Context<S = {}> = (InnerContext<S>) & {
   next: Function
+  modelMiddlewares?: Middleware[]
 }
 
 type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
@@ -150,7 +154,9 @@ interface APIs<M extends Models> {
     modelName: K
   ) => M[K] extends ModelType
     ? Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
-    : undefined
+    : M[K] extends API
+    ? M[K]['actions']
+    : unknown
   getInitialState: <T extends any>(
     context?: T | undefined
   ) => Promise<{
@@ -166,7 +172,11 @@ interface APIs<M extends Models> {
     actionName: keyof Get<M[K], 'actions'> | Array<keyof Get<M[K], 'actions'>>
   ) => void
   actions: {
-    [K in keyof M]: Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
+    [K in keyof M]: M[K] extends ModelType
+      ? Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
+      : M[K] extends API
+      ? M[K]['actions']
+      : unknown
   }
 }
 
@@ -179,14 +189,16 @@ type ModelType<InitStateType = any, ActionKeys = any> = {
 }
 
 // v3.0
-type NextModelType<InitStateType = any, ActionKeys = any> = {
+type NextModelType<InitStateType = any, ActionKeys = any, ExtContext = {}> = {
   actions: {
     [P in keyof ActionKeys]: NextAction<
       InitStateType,
       ActionKeys[P],
-      ActionKeys
+      ActionKeys,
+      ExtContext
     >
   }
+  middlewares?: Middleware[]
   state: InitStateType
   asyncState?: (context?: any) => Promise<Partial<InitStateType>>
 }

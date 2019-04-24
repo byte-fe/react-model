@@ -31,6 +31,9 @@ function Model<M extends Models, MT extends NextModelType>(
     Global.uid += 1
     const hash = '__' + Global.uid
     Global.State[hash] = models.state
+    if (models.middlewares) {
+      Global.Middlewares[hash] = models.middlewares
+    }
     const nextActions: Actions = Object.entries(models.actions).reduce(
       (o: { [name: string]: Action }, [name, action]) => {
         o[name] = async (state, actions, params) => {
@@ -63,6 +66,9 @@ function Model<M extends Models, MT extends NextModelType>(
     }
     Object.entries(models).forEach(([name, model]) => {
       if (!isAPI(model)) {
+        console.warn(
+          'we recommend you to use NextModel now, document link: https://github.com/byte-fe/react-model#model'
+        )
         if (!Global.State[name]) {
           Global.State[name] = model.state
         }
@@ -156,7 +162,11 @@ const getActions = (
           ...baseContext,
           Global
         }
-        await applyMiddlewares(actionMiddlewares, context)
+        if (Global.Middlewares[modelName]) {
+          await applyMiddlewares(Global.Middlewares[modelName], context)
+        } else {
+          await applyMiddlewares(actionMiddlewares, context)
+        }
       })
   )
   return updaters
