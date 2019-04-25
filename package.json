@@ -38,7 +38,7 @@
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
     "react-hooks-testing-library": "^0.4.0",
-    "react-testing-library": "^6.0.0",
+    "react-testing-library": "^7.0.0",
     "remark-cli": "^6.0.1",
     "remark-lint": "^6.0.4",
     "remark-preset-lint-recommended": "^3.0.2",
