@@ -1,6 +1,6 @@
 {
   "name": "react-model",
-  "version": "2.7.1-alpha.2",
+  "version": "2.7.1",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "umd:main": "./dist/react-model.umd.js",
@@ -13,12 +13,7 @@
     "test": "jest --silent",
     "test:coverage": "jest --collect-coverage --silent"
   },
-  "keywords": [
-    "react",
-    "model",
-    "state-management",
-    "react-hooks"
-  ],
+  "keywords": ["react", "model", "state-management", "react-hooks"],
   "author": "ArrayZoneYour <hustliyidong@gmail.com>",
   "license": "MIT",
   "dependencies": {
