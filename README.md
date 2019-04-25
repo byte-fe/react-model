@@ -84,6 +84,7 @@ npm install react-model
     - [How can I make persist models](#how-can-i-make-persist-models)
   - [How can I deal with local state](#how-can-i-deal-with-local-state)
   - [actions throw error from immer.module.js](#actions-throw-error-from-immer.module.js)
+  - [How can I customize each model's middlewares?](#how-can-i-customize-each-model's-middlewares)
 
 ## Core Concept
 
@@ -848,6 +849,38 @@ actions: {
     }
   }
 }
+```
+
+[⇧ back to top](#table-of-contents)
+
+### How can I customize each model's middlewares?
+
+If you are using NextModel, you can customize each model's middlewares.
+
+```typescript
+import { actionMiddlewares, Model } from 'react-model'
+import { delayMiddleware } from './middlewares'
+
+const nextCounterModel: NextModelType<CounterState, NextCounterActionParams> = {
+  actions: {
+    add: num => {
+      return state => {
+        state.count += num
+      }
+    },
+    increment: async (num, { actions }) => {
+      actions.add(num)
+      await timeout(300, {})
+    }
+  },
+  // You can define the custom middlewares here
+  middlewares: [delayMiddleware, ...actionMiddlewares],
+  state: {
+    count: 0
+  }
+}
+
+export default Model(nextCounterModel)
 ```
 
 [⇧ back to top](#table-of-contents)
