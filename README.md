@@ -384,14 +384,14 @@ TypeScript Example
 
 const model: NextModelType<StateType, ActionsParamType> = {
   actions: {
-    increment: async (s, _, params) => {
+    increment: async (params, { state: s }) => {
       // issue: https://github.com/Microsoft/TypeScript/issues/29196
       // async function return produce need define type manually.
       return (state: typeof s) => {
         state.counter += params || 1
       }
     },
-    decrease: (s, _, params) => s => {
+    decrease: params => s => {
       s.counter += params || 1
     }
   }
@@ -405,7 +405,7 @@ JavaScript Example
 ```js
 const Model = {
   actions: {
-    increment: async (s, _, params) => {
+    increment: async params => {
       return state => {
         state.counter += params || 1
       }
