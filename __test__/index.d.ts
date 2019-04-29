@@ -15,6 +15,11 @@ type CounterActionParams = {
   increment: number
 }
 
+type NextCounterActionParams = {
+  increment: number
+  add: number
+}
+
 type ExtraActionParams = {
   add: number
 }

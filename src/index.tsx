@@ -10,7 +10,7 @@ import {
 } from './helper'
 import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
-const isNextModelType = (input: any): input is NextModelType => {
+const isModelType = (input: any): input is ModelType => {
   return (input as ModelType).state !== undefined
 }
 
@@ -18,29 +18,23 @@ const isAPI = (input: any): input is API => {
   return (input as API).useStore !== undefined
 }
 
-function Model<MT extends NextModelType>(models: MT): API<MT>
+function Model<MT extends ModelType>(models: MT): API<MT>
 function Model<M extends Models>(
   models: M,
   initialState?: Global['State']
 ): APIs<M>
-function Model<M extends Models, MT extends NextModelType>(
+function Model<M extends Models, MT extends ModelType>(
   models: M | MT,
   initialState?: Global['State']
 ) {
-  if (isNextModelType(models)) {
+  if (isModelType(models)) {
     Global.uid += 1
     const hash = '__' + Global.uid
     Global.State[hash] = models.state
-    const nextActions: Actions = Object.entries(models.actions).reduce(
-      (o: { [name: string]: Action }, [name, action]) => {
-        o[name] = async (state, actions, params) => {
-          return await action(params, { state, actions })
-        }
-        return o
-      },
-      {}
-    )
-    Global.Actions[hash] = nextActions
+    if (models.middlewares) {
+      Global.Middlewares[hash] = models.middlewares
+    }
+    Global.Actions[hash] = models.actions
     Global.AsyncState[hash] = models.asyncState
     const actions = getActions(hash)
     return {
@@ -63,6 +57,9 @@ function Model<M extends Models, MT extends NextModelType>(
     }
     Object.entries(models).forEach(([name, model]) => {
       if (!isAPI(model)) {
+        console.warn(
+          'we recommend you to use NextModel now, document link: https://github.com/byte-fe/react-model#model'
+        )
         if (!Global.State[name]) {
           Global.State[name] = model.state
         }
@@ -74,6 +71,7 @@ function Model<M extends Models, MT extends NextModelType>(
         }
         Global.Actions[name] = Global.Actions[model.__id]
         Global.AsyncState[name] = Global.AsyncState[model.__id]
+        Global.Middlewares[name] = Global.Middlewares[model.__id]
       }
     })
 
@@ -156,7 +154,11 @@ const getActions = (
           ...baseContext,
           Global
         }
-        await applyMiddlewares(actionMiddlewares, context)
+        if (Global.Middlewares[modelName]) {
+          await applyMiddlewares(Global.Middlewares[modelName], context)
+        } else {
+          await applyMiddlewares(actionMiddlewares, context)
+        }
       })
   )
   return updaters

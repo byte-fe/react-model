@@ -24,6 +24,9 @@ interface Global {
   AsyncState: {
     [modelName: string]: undefined | ((context?: any) => Promise<Partial<any>>)
   }
+  Middlewares: {
+    [modelName: string]: Middleware[]
+  }
   subscriptions: Subscriptions
   Setter: Setter
   devTools: any
@@ -34,26 +37,12 @@ interface Global {
 type ClassSetter = React.Dispatch<any> | undefined
 
 // Very Sad, Promise<ProduceFunc<S>> can not work with Partial<S> | ProduceFunc<S>
-type Action<S = {}, P = any, ActionKeys = {}> = (
-  state: S,
-  actions: getConsumerActionsType<Actions<S, ActionKeys>>,
-  params: P,
-  middlewareConfig?: Object
-) =>
-  | Partial<S>
-  | Promise<Partial<S>>
-  | ProduceFunc<S>
-  | Promise<ProduceFunc<S>>
-  | void
-  | Promise<void>
-
-// v3.0 Action
-type NextAction<S = {}, P = any, ActionKeys = {}> = (
+type Action<S = {}, P = any, ActionKeys = {}, ExtContext = {}> = (
   params: P,
   context: {
     state: S
-    actions: getConsumerNextActionsType<NextActions<S, ActionKeys>>
-  }
+    actions: getConsumerActionsType<Actions<S, ActionKeys>>
+  } & ExtContext
 ) =>
   | Partial<S>
   | Promise<Partial<S>>
@@ -64,13 +53,9 @@ type NextAction<S = {}, P = any, ActionKeys = {}> = (
 
 type ProduceFunc<S> = (state: S) => void
 
+// v3.0 Actions
 type Actions<S = {}, ActionKeys = {}> = {
   [P in keyof ActionKeys]: Action<S, ActionKeys[P], ActionKeys>
-}
-
-// v3.0 Actions
-type NextActions<S = {}, ActionKeys = {}> = {
-  [P in keyof ActionKeys]: NextAction<S, ActionKeys[P], ActionKeys>
 }
 
 type Dispatch<A> = (value: A) => void
@@ -103,6 +88,7 @@ interface InnerContext<S = {}> extends BaseContext<S> {
 
 type Context<S = {}> = (InnerContext<S>) & {
   next: Function
+  modelMiddlewares?: Middleware[]
 }
 
 type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
@@ -110,14 +96,14 @@ type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
 interface Models<State = any, ActionKeys = any> {
   [name: string]:
     | ModelType<State, ActionKeys>
-    | API<NextModelType<State, ActionKeys>>
+    | API<ModelType<State, ActionKeys>>
 }
 
-interface API<MT extends NextModelType = any> {
+interface API<MT extends ModelType = any> {
   __id: string
   useStore: (
     depActions?: Array<keyof MT['actions']>
-  ) => [Get<MT, 'state'>, getConsumerNextActionsType<Get<MT, 'actions'>>]
+  ) => [Get<MT, 'state'>, getConsumerActionsType<Get<MT, 'actions'>>]
   getState: () => Readonly<Get<MT, 'state'>>
   subscribe: (
     actionName: keyof MT['actions'] | Array<keyof MT['actions']>,
@@ -126,7 +112,7 @@ interface API<MT extends NextModelType = any> {
   unsubscribe: (
     actionName: keyof Get<MT, 'actions'> | Array<keyof Get<MT, 'actions'>>
   ) => void
-  actions: Readonly<getConsumerNextActionsType<Get<MT, 'actions'>>>
+  actions: Readonly<getConsumerActionsType<Get<MT, 'actions'>>>
 }
 
 interface APIs<M extends Models> {
@@ -150,7 +136,9 @@ interface APIs<M extends Models> {
     modelName: K
   ) => M[K] extends ModelType
     ? Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
-    : undefined
+    : M[K] extends API
+    ? M[K]['actions']
+    : unknown
   getInitialState: <T extends any>(
     context?: T | undefined
   ) => Promise<{
@@ -165,28 +153,20 @@ interface APIs<M extends Models> {
     modelName: K,
     actionName: keyof Get<M[K], 'actions'> | Array<keyof Get<M[K], 'actions'>>
   ) => void
-  actions: {
-    [K in keyof M]: Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
-  }
-}
-
-type ModelType<InitStateType = any, ActionKeys = any> = {
-  actions: {
-    [P in keyof ActionKeys]: Action<InitStateType, ActionKeys[P], ActionKeys>
-  }
-  state: InitStateType
-  asyncState?: (context?: any) => Promise<Partial<InitStateType>>
+  actions: { [K in keyof M]: M[K] extends API ? M[K]['actions'] : unknown }
 }
 
 // v3.0
-type NextModelType<InitStateType = any, ActionKeys = any> = {
+type ModelType<InitStateType = any, ActionKeys = any, ExtContext = {}> = {
   actions: {
-    [P in keyof ActionKeys]: NextAction<
+    [P in keyof ActionKeys]: Action<
       InitStateType,
       ActionKeys[P],
-      ActionKeys
+      ActionKeys,
+      ExtContext
     >
   }
+  middlewares?: Middleware[]
   state: InitStateType
   asyncState?: (context?: any) => Promise<Partial<InitStateType>>
 }
@@ -195,20 +175,8 @@ type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
   ? A
   : never
 
-type getConsumerActionsType<A extends Actions<any, any>> = {
-  [P in keyof A]: ArgumentTypes<A[P]>[2] extends undefined
-    ? (
-        params?: ArgumentTypes<A[P]>[2],
-        middlewareConfig?: ArgumentTypes<A[P]>[3]
-      ) => ReturnType<A[P]>
-    : (
-        params: ArgumentTypes<A[P]>[2],
-        middlewareConfig?: ArgumentTypes<A[P]>[3]
-      ) => ReturnType<A[P]>
-}
-
 // v3.0
-type getConsumerNextActionsType<A extends NextActions<any, any>> = {
+type getConsumerActionsType<A extends Actions<any, any>> = {
   [P in keyof A]: ArgumentTypes<A[P]>[0] extends undefined
     ? (params?: ArgumentTypes<A[P]>[0]) => ReturnType<A[P]>
     : (params: ArgumentTypes<A[P]>[0]) => ReturnType<A[P]>

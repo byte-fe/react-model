@@ -27,7 +27,9 @@ const Todo = {
       // s is the readonly version of state
       // you can also return partial state here but don't need to keep immutable manually
       // state is the mutable state
-      return state => state.items.push(todo)
+      return state => {
+        state.items.push(todo)
+      }
     }
   }
 }
@@ -56,6 +58,8 @@ const TodoList = () => {
 
 [Next.js + react-model work around](https://github.com/byte-fe/react-model-experiment)
 
+[v2 docs](https://github.com/byte-fe/react-model/blob/v2/README.md)
+
 install package
 
 ```shell
@@ -83,83 +87,14 @@ npm install react-model
   - [How can I add custom middleware](#how-can-i-add-custom-middleware)
     - [How can I make persist models](#how-can-i-make-persist-models)
   - [How can I deal with local state](#how-can-i-deal-with-local-state)
-  - [actions throw error from immer.module.js](#actions-throw-error-from-immer.module.js)
+  - [actions throw error from immer.module.js](#actions-throw-error-from-immermodulejs)
+  - [How can I customize each model's middlewares?](#how-can-i-customize-each-models-middlewares)
 
 ## Core Concept
 
 ### Model
 
 Every model have their own state and actions.
-
-<details>
-<summary><del>old model</del> (will be deprecated in v3.0)</summary>
-<p>
-
-```typescript
-const initialState = {
-  counter: 0,
-  light: false,
-  response: {}
-}
-
-interface StateType = {
-  counter: number
-  light: boolean
-  response: {
-    code?: number
-    message?: string
-  }
-}
-
-interface ActionsParamType = {
-  increment: number
-  openLight: undefined
-  get: undefined
-} // You only need to tag the type of params here !
-
-const model: ModelType<StateType, ActionsParamType> = {
-  actions: {
-    increment: async (state, _, params) => {
-      return {
-        counter: state.counter + (params || 1)
-      }
-    },
-    openLight: async (state, actions) => {
-      await actions.increment(1) // You can use other actions within the model
-      await actions.get() // support async functions (block actions)
-      actions.get()
-      await actions.increment(1) // + 1
-      await actions.increment(1) // + 2
-      await actions.increment(1) // + 3 as expected !
-      return { light: !state.light }
-    },
-    get: async () => {
-      await new Promise((resolve, reject) =>
-        setTimeout(() => {
-          resolve()
-        }, 3000)
-      )
-      return {
-        response: {
-          code: 200,
-          message: `${new Date().toLocaleString()} open light success`
-        }
-      }
-    }
-  },
-  state: initialState
-}
-
-export default model
-
-// You can use these types when use Class Components.
-// type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
-// type ConsumerType = { actions: ConsumerActionsType; state: StateType }
-// type ActionType = ConsumerActionsType
-// export { ConsumerType, StateType, ActionType }
-```
-</p>
-</details>
 
 ```typescript
 const initialState = {
@@ -848,6 +783,38 @@ actions: {
     }
   }
 }
+```
+
+[⇧ back to top](#table-of-contents)
+
+### How can I customize each model's middlewares?
+
+If you are using NextModel, you can customize each model's middlewares.
+
+```typescript
+import { actionMiddlewares, Model } from 'react-model'
+import { delayMiddleware } from './middlewares'
+
+const nextCounterModel: NextModelType<CounterState, NextCounterActionParams> = {
+  actions: {
+    add: num => {
+      return state => {
+        state.count += num
+      }
+    },
+    increment: async (num, { actions }) => {
+      actions.add(num)
+      await timeout(300, {})
+    }
+  },
+  // You can define the custom middlewares here
+  middlewares: [delayMiddleware, ...actionMiddlewares],
+  state: {
+    count: 0
+  }
+}
+
+export default Model(nextCounterModel)
 ```
 
 [⇧ back to top](#table-of-contents)
