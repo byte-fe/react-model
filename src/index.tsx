@@ -10,7 +10,7 @@ import {
 } from './helper'
 import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
-const isNextModelType = (input: any): input is NextModelType => {
+const isModelType = (input: any): input is ModelType => {
   return (input as ModelType).state !== undefined
 }
 
@@ -18,33 +18,23 @@ const isAPI = (input: any): input is API => {
   return (input as API).useStore !== undefined
 }
 
-function Model<MT extends NextModelType>(models: MT): API<MT>
+function Model<MT extends ModelType>(models: MT): API<MT>
 function Model<M extends Models>(
   models: M,
   initialState?: Global['State']
 ): APIs<M>
-function Model<M extends Models, MT extends NextModelType>(
+function Model<M extends Models, MT extends ModelType>(
   models: M | MT,
   initialState?: Global['State']
 ) {
-  if (isNextModelType(models)) {
+  if (isModelType(models)) {
     Global.uid += 1
     const hash = '__' + Global.uid
     Global.State[hash] = models.state
     if (models.middlewares) {
       Global.Middlewares[hash] = models.middlewares
     }
-    const nextActions: Actions = Object.entries(models.actions).reduce(
-      (o: { [name: string]: Action }, [name, action]) => {
-        o[name] = async (state, actions, params) => {
-          return await action(params, { state, actions })
-        }
-        Object.defineProperty(o[name], 'name', { value: name })
-        return o
-      },
-      {}
-    )
-    Global.Actions[hash] = nextActions
+    Global.Actions[hash] = models.actions
     Global.AsyncState[hash] = models.asyncState
     const actions = getActions(hash)
     return {

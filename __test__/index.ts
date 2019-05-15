@@ -5,25 +5,25 @@ import { timeout } from '../src/helper'
 import { actionMiddlewares } from '../src/middlewares'
 
 export const ActionsTester: ModelType<ActionTesterState, ActionTesterParams> = {
-  state: {
-    response: {
-      data: {}
-    },
-    data: {}
-  },
   actions: {
     get: async () => {
       const response = await timeout(9, { code: 0, data: { counter: 1000 } })
       return { response }
     },
+    getData: async (_, { actions }) => {
+      await actions.get()
+      actions.parse()
+    },
     parse: () => {
       return state => {
         state.data = state.response.data
       }
-    },
-    getData: async (_, actions) => {
-      await actions.get()
-      actions.parse()
+    }
+  },
+  state: {
+    data: {},
+    response: {
+      data: {}
     }
   }
 }
@@ -32,36 +32,30 @@ export const Counter: ModelType<
   CounterState,
   CounterActionParams & ExtraActionParams
 > = {
-  state: { count: 0 },
   actions: {
-    increment: (_, __, params) => {
-      return state => {
-        state.count += params
-      }
-    },
-    add: (state, __, params) => {
+    add: (params, { state }) => {
       return {
         count: state.count + params
       }
     },
     addCaller: (_, actions) => {
       actions.add(5)
-    }
-  }
-}
-
-// v3.0
-export const NextCounter: NextModelType<
-  CounterState,
-  CounterActionParams & ExtraActionParams
-> = {
-  state: { count: 0 },
-  actions: {
+    },
     increment: params => {
       return state => {
         state.count += params
       }
-    },
+    }
+  },
+  state: { count: 0 }
+}
+
+// v3.0
+export const NextCounter: ModelType<
+  CounterState,
+  CounterActionParams & ExtraActionParams
+> = {
+  actions: {
     add: (params, { state }) => {
       return {
         count: state.count + params
@@ -69,68 +63,74 @@ export const NextCounter: NextModelType<
     },
     addCaller: (_, { actions }) => {
       actions.add(5)
+    },
+    increment: params => {
+      return state => {
+        state.count += params
+      }
     }
-  }
+  },
+  state: { count: 0 }
 }
 
 export const Theme: ModelType<ThemeState, ThemeActionParams> = {
-  state: {
-    theme: 'dark'
-  },
   actions: {
-    changeTheme: state => ({
+    changeTheme: (_, { state }) => ({
       theme: state.theme === 'dark' ? 'light' : 'dark'
     })
+  },
+  state: {
+    theme: 'dark'
   }
 }
 
 export const AsyncCounter: ModelType<CounterState, CounterActionParams> = {
-  state: { count: 0 },
+  actions: {
+    increment: params => {
+      return state => {
+        state.count += params
+      }
+    }
+  },
   asyncState: async (context: { count?: number }) => ({
     count: context ? context.count || 1 : 1
   }),
-  actions: {
-    increment: (_, __, params) => {
-      return state => {
-        state.count += params
-      }
-    }
-  }
+  state: { count: 0 }
 }
 
 export const AsyncNull: ModelType<CounterState, CounterActionParams> = {
-  state: { count: 0 },
   actions: {
-    increment: (_, __, params) => {
+    increment: params => {
       return state => {
         state.count += params
       }
     }
-  }
+  },
+  state: { count: 0 }
 }
 
 export const TimeoutCounter: ModelType<CounterState, CounterActionParams> = {
-  state: { count: 0 },
-  asyncState: async () => ({
-    count: 1
-  }),
   actions: {
-    increment: async (_, __, params) => {
+    increment: async (params, { state: _ }) => {
       await timeout(4000, {})
       return (state: typeof _) => {
         state.count += params
       }
     }
-  }
+  },
+  asyncState: async () => ({
+    count: 1
+  }),
+  state: { count: 0 }
 }
 
 export const ErrorCounter: ModelType<CounterState, CounterActionParams> = {
-  state: { count: 0 },
   actions: {
     increment: async () => {
       throw 'error'
     }
-  }
+  },
+  state: { count: 0 }
 }
 
 const delayMiddleware: Middleware = async (context, restMiddlewares) => {
@@ -138,7 +138,7 @@ const delayMiddleware: Middleware = async (context, restMiddlewares) => {
   context.next(restMiddlewares)
 }
 
-const nextCounterModel: NextModelType<CounterState, NextCounterActionParams> = {
+const nextCounterModel: ModelType<CounterState, NextCounterActionParams> = {
   actions: {
     add: num => {
       return state => {

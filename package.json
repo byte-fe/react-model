@@ -1,6 +1,6 @@
 {
   "name": "react-model",
-  "version": "2.7.1",
+  "version": "3.0.0-alpha.1",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "umd:main": "./dist/react-model.umd.js",
@@ -17,7 +17,7 @@
   "author": "ArrayZoneYour <hustliyidong@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "immer": "^2.0.0"
+    "immer": "^3.0.0"
   },
   "peerDependencies": {
     "react": "^16.3.0",
@@ -26,8 +26,10 @@
   "devDependencies": {
     "@commitlint/cli": "^7.5.2",
     "@commitlint/config-conventional": "^7.5.0",
+    "@types/babel__core": "^7.1.1",
+    "@types/babel__template": "^7.0.2",
     "@types/jest": "^24.0.5",
-    "@types/node": "^11.9.4",
+    "@types/node": "^12.0.0",
     "@types/react": "^16.8.2",
     "@types/react-dom": "^16.8.0",
     "commitizen": "^3.0.7",
@@ -37,8 +39,9 @@
     "prettier": "^1.16.4",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-hooks-testing-library": "^0.4.0",
-    "react-testing-library": "^6.0.0",
+    "react-hooks-testing-library": "^0.5.0",
+    "react-test-renderer": "^16.8.6",
+    "react-testing-library": "^7.0.0",
     "remark-cli": "^6.0.1",
     "remark-lint": "^6.0.4",
     "remark-preset-lint-recommended": "^3.0.2",

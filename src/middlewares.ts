@@ -9,11 +9,10 @@ const tryCatch: Middleware = async (context, restMiddlewares) => {
 const getNewState: Middleware = async (context, restMiddlewares) => {
   const { action, modelName, consumerActions, params, next, Global } = context
   context.newState =
-    (await action(
-      Global.State[modelName],
-      consumerActions(Global.Actions[modelName], { modelName }),
-      params
-    )) || null
+    (await action(params, {
+      actions: consumerActions(Global.Actions[modelName], { modelName }),
+      state: Global.State[modelName]
+    })) || null
   await next(restMiddlewares)
 }
 
@@ -32,11 +31,10 @@ const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
   } = context
   context.newState =
     (await Promise.race([
-      action(
-        Global.State[modelName],
-        consumerActions(Global.Actions[modelName], { modelName }),
-        params
-      ),
+      action(params, {
+        actions: consumerActions(Global.Actions[modelName], { modelName }),
+        state: Global.State[modelName]
+      }),
       timeout(maxTime, getCache(modelName, actionName))
     ])) || null
   await next(restMiddlewares)
