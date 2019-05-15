@@ -39,6 +39,7 @@ function Model<M extends Models, MT extends NextModelType>(
         o[name] = async (state, actions, params) => {
           return await action(params, { state, actions })
         }
+        Object.defineProperty(o[name], 'name', { value: name })
         return o
       },
       {}
