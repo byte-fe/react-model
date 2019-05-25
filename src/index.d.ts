@@ -153,7 +153,11 @@ interface APIs<M extends Models> {
     modelName: K,
     actionName: keyof Get<M[K], 'actions'> | Array<keyof Get<M[K], 'actions'>>
   ) => void
-  actions: { [K in keyof M]: M[K] extends API ? M[K]['actions'] : unknown }
+  actions: {
+    [K in keyof M]: M[K] extends API
+      ? M[K]['actions']
+      : Readonly<getConsumerActionsType<Get<M[K], 'actions'>>>
+  }
 }
 
 // v3.0
