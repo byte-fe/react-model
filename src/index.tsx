@@ -76,7 +76,7 @@ function Model<M extends Models, MT extends ModelType>(
     })
 
     const actions = Object.keys(models).reduce(
-      (o, modelName) => ({ ...o, name: getActions(modelName) }),
+      (o, modelName) => ({ ...o, [modelName]: getActions(modelName) }),
       {}
     )
 
