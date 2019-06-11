@@ -1,9 +1,9 @@
 /// <reference path="../index.d.ts" />
-import 'react-testing-library/cleanup-after-each'
+import '@testing-library/react/cleanup-after-each'
 import * as React from 'react'
 import { Model, Provider, connect } from '../../src'
 import { Counter } from '..'
-import { render } from 'react-testing-library'
+import { render } from '@testing-library/react'
 
 const Button = connect(
   'Counter',

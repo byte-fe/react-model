@@ -1,5 +1,5 @@
 /// <reference path="../index.d.ts" />
-import 'react-testing-library/cleanup-after-each'
+import '@testing-library/react/cleanup-after-each'
 process.env.NODE_ENV = 'production'
 import { Model } from '../../src'
 import { ErrorCounter } from '..'

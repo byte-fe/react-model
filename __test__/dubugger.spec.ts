@@ -1,7 +1,7 @@
 // @ts-ignore
 console.group = undefined
 /// <reference path="./index.d.ts" />
-import 'react-testing-library/cleanup-after-each'
+import '@testing-library/react/cleanup-after-each'
 import { Model } from '../src'
 import { Counter } from '.'
 import { testHook } from 'react-hooks-testing-library'
