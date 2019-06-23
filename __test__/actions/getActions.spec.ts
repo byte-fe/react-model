@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 import '@testing-library/react/cleanup-after-each'
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { ActionsTester } from '../index'
 import { Model } from '../../src'
 
@@ -9,7 +9,7 @@ describe('actions', () => {
     const { getActions, getState } = Model({ ActionsTester })
     let state: any
     let actions: any
-    testHook(() => {
+    renderHook(() => {
       actions = getActions('ActionsTester')
     })
     await actions.getData()

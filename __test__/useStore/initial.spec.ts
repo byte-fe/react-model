@@ -1,5 +1,5 @@
 /// <reference path="../index.d.ts" />
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { Model } from '../../src'
 import { Counter } from '..'
 
@@ -7,7 +7,7 @@ describe('useStore', () => {
   test('return default initial values', () => {
     let state
     const { useStore } = Model({ Counter })
-    testHook(() => {
+    renderHook(() => {
       ;[state] = useStore('Counter')
     })
     expect(state).toEqual({ count: 0 })
@@ -16,7 +16,7 @@ describe('useStore', () => {
     let state: any
     let actions: any
     const { useStore } = Model({ Counter })
-    testHook(() => {
+    renderHook(() => {
       ;[state, actions] = useStore('Counter')
     })
     await actions.increment(3)

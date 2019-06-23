@@ -26,6 +26,8 @@
   "devDependencies": {
     "@commitlint/cli": "^8.0.0",
     "@commitlint/config-conventional": "^8.0.0",
+    "@testing-library/react": "^8.0.1",
+    "@testing-library/react-hooks": "^1.0.4",
     "@types/babel__core": "^7.1.1",
     "@types/babel__template": "^7.0.2",
     "@types/jest": "^24.0.5",
@@ -39,9 +41,7 @@
     "prettier": "^1.16.4",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-hooks-testing-library": "^0.6.0",
     "react-test-renderer": "^16.8.6",
-    "@testing-library/react": "^8.0.1",
     "remark-cli": "^6.0.1",
     "remark-lint": "^6.0.4",
     "remark-preset-lint-recommended": "^3.0.2",

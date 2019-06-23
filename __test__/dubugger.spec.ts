@@ -4,7 +4,7 @@ console.group = undefined
 import '@testing-library/react/cleanup-after-each'
 import { Model } from '../src'
 import { Counter } from '.'
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 
 describe('PubSub', () => {
   test('run callback when specific action run', async () => {
@@ -13,7 +13,7 @@ describe('PubSub', () => {
     const { useStore, subscribe } = Model({ Counter })
     subscribe('Counter', 'increment', () => (count += 1))
     subscribe('Counter', 'add', () => (count += 10))
-    testHook(() => {
+    renderHook(() => {
       ;[, actions] = useStore('Counter')
     })
     await actions.increment()

@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 import { Model, middlewares, actionMiddlewares } from '../../src'
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { TimeoutCounter } from '..'
 
 describe('getNewStateWithCache: ', () => {
@@ -13,7 +13,7 @@ describe('getNewStateWithCache: ', () => {
       3000
     )
     const { useStore } = Model({ TimeoutCounter })
-    testHook(() => {
+    renderHook(() => {
       ;[state, actions] = useStore('TimeoutCounter')
     })
     await actions.increment(3)

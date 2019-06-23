@@ -2,7 +2,7 @@
 import '@testing-library/react/cleanup-after-each'
 import { Model } from '../../src'
 import { Counter } from '..'
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 
 describe('Subscribe middleware', () => {
   test('run callback when specific action run', async () => {
@@ -12,7 +12,7 @@ describe('Subscribe middleware', () => {
     subscribe('Counter', ['increment'], () => (count += 1))
     subscribe('Counter', 'add', () => (count += 10))
     subscribe('Counter', ['increment', 'add'], () => (count += 5))
-    testHook(() => {
+    renderHook(() => {
       ;[, actions] = useStore('Counter')
     })
     await actions.increment()

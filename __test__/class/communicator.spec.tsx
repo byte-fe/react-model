@@ -4,7 +4,7 @@ import * as React from 'react'
 import { Model, Provider, connect } from '../../src'
 import { Counter } from '../index'
 import { render, fireEvent } from '@testing-library/react'
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { timeout } from '../../src/helper'
 
 const Button = connect(
@@ -31,7 +31,7 @@ describe('class component', () => {
   test('communicator', async () => {
     let state: any
     const { useStore } = Model({ Counter })
-    testHook(() => {
+    renderHook(() => {
       ;[state] = useStore('Counter')
     })
     const { container } = render(
