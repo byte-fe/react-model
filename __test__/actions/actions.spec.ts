@@ -1,5 +1,5 @@
 /// <reference path="../index.d.ts" />
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import '@testing-library/react/cleanup-after-each'
 import { Model } from '../../src'
 import { ActionsTester } from '../index'
@@ -8,7 +8,7 @@ describe('actions', () => {
   test('get actions from Model', async () => {
     const { actions, useStore } = Model({ ActionsTester })
     let state: any
-    testHook(() => {
+    renderHook(() => {
       ;[state] = useStore('ActionsTester')
     })
     await actions.ActionsTester.getData()

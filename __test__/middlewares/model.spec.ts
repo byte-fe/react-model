@@ -1,7 +1,7 @@
 /// <reference path="../index.d.ts" />
 import '@testing-library/react/cleanup-after-each'
 process.env.NODE_ENV = 'production'
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { NextCounterModel } from '..'
 import { Model } from '../../src'
 
@@ -11,7 +11,7 @@ describe('NextModel', () => {
     let state: any
     const { useStore, getActions } = Model({ NextCounterModel })
     const beginTime = Date.now()
-    testHook(() => {
+    renderHook(() => {
       ;[state, actions] = useStore('NextCounterModel')
     })
     await actions.increment(2)

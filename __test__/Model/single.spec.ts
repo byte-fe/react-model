@@ -1,5 +1,5 @@
 /// <reference path="../index.d.ts" />
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { NextCounter } from '..'
 import { Model } from '../../src'
 
@@ -9,7 +9,7 @@ describe('useStore', () => {
     let actions: any
     let count = 0
     const { useStore, subscribe, unsubscribe } = Model(NextCounter)
-    testHook(() => {
+    renderHook(() => {
       ;[state, actions] = useStore()
     })
     expect(state).toEqual({ count: 0 })

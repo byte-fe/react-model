@@ -1,5 +1,5 @@
 /// <reference path="../index.d.ts" />
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { Counter } from '..'
 import { Model } from '../../src'
 
@@ -8,7 +8,7 @@ describe('useStore', () => {
     let state: any
     let actions: any
     const { useStore } = Model({ Counter })
-    testHook(() => {
+    renderHook(() => {
       ;[state, actions] = useStore('Counter')
     })
     await actions.add(3)

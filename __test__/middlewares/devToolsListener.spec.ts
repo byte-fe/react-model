@@ -4,7 +4,7 @@ import '@testing-library/react/cleanup-after-each'
   connect: () => {},
   send: () => {}
 }
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { Model } from '../../src'
 import { Counter } from '..'
 
@@ -13,7 +13,7 @@ describe('withDevTools', () => {
     let state: any
     let actions: any
     const { useStore } = Model({ Counter })
-    testHook(() => {
+    renderHook(() => {
       ;[state, actions] = useStore('Counter')
     })
     expect(state).toEqual({ count: 0 })

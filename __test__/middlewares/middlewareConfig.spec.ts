@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 import '@testing-library/react/cleanup-after-each'
-import { testHook } from 'react-hooks-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { Model } from '../../src'
 import { Counter } from '../'
 
@@ -9,7 +9,7 @@ describe('middleware: ', () => {
     let state: any
     let actions: any
     const { useStore } = Model({ Counter })
-    testHook(() => {
+    renderHook(() => {
       ;[state, actions] = useStore('Counter')
     })
     await actions.add(3, { params: 'user-custom-params' })
