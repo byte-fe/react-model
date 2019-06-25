@@ -24,6 +24,7 @@ interface Global {
   AsyncState: {
     [modelName: string]: undefined | ((context?: any) => Promise<Partial<any>>)
   }
+  Context: any
   Middlewares: {
     [modelName: string]: Middleware[]
   }
@@ -41,7 +42,7 @@ type Action<S = {}, P = any, ActionKeys = {}, ExtContext = {}> = (
   params: P,
   context: {
     state: S
-    actions: getConsumerActionsType<Actions<S, ActionKeys>>
+    actions: getConsumerActionsType<Actions<S, ActionKeys, ExtContext>>
   } & ExtContext
 ) =>
   | Partial<S>
@@ -54,8 +55,8 @@ type Action<S = {}, P = any, ActionKeys = {}, ExtContext = {}> = (
 type ProduceFunc<S> = (state: S) => void
 
 // v3.0 Actions
-type Actions<S = {}, ActionKeys = {}> = {
-  [P in keyof ActionKeys]: Action<S, ActionKeys[P], ActionKeys>
+type Actions<S = {}, ActionKeys = {}, ExtContext = {}> = {
+  [P in keyof ActionKeys]: Action<S, ActionKeys[P], ActionKeys, ExtContext>
 }
 
 type Dispatch<A> = (value: A) => void
@@ -161,7 +162,7 @@ interface APIs<M extends Models> {
 }
 
 // v3.0
-type ModelType<InitStateType = any, ActionKeys = any, ExtContext = {}> = {
+type ModelType<InitStateType = any, ActionKeys = any, ExtContext = any> = {
   actions: {
     [P in keyof ActionKeys]: Action<
       InitStateType,
@@ -180,7 +181,7 @@ type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
   : never
 
 // v3.0
-type getConsumerActionsType<A extends Actions<any, any>> = {
+type getConsumerActionsType<A extends Actions<any, any, any>> = {
   [P in keyof A]: ArgumentTypes<A[P]>[0] extends undefined
     ? (params?: ArgumentTypes<A[P]>[0]) => ReturnType<A[P]>
     : (params: ArgumentTypes<A[P]>[0]) => ReturnType<A[P]>

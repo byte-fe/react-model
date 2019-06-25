@@ -11,7 +11,9 @@ const getNewState: Middleware = async (context, restMiddlewares) => {
   context.newState =
     (await action(params, {
       actions: consumerActions(Global.Actions[modelName], { modelName }),
-      state: Global.State[modelName]
+      state: Global.State[modelName],
+      ...(Global.Context['__global'] || {}),
+      ...(Global.Context[modelName] || {})
     })) || null
   await next(restMiddlewares)
 }

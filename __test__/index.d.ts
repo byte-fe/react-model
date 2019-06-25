@@ -2,6 +2,10 @@ type CounterState = {
   count: number
 }
 
+type ExtState = {
+  name: string
+}
+
 type ThemeState = {
   theme: 'dark' | 'light'
 }
@@ -13,6 +17,10 @@ type ActionTesterState = {
 
 type CounterActionParams = {
   increment: number
+}
+
+type ExtActionParams = {
+  ext: undefined
 }
 
 type NextCounterActionParams = {

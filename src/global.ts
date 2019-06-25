@@ -12,6 +12,10 @@ const Setter: Setter = {
   functionSetter: {}
 }
 
+const Context = {
+  __global: {}
+}
+
 const subscriptions = {}
 
 let devTools: any
@@ -22,6 +26,7 @@ let uid = Math.random() // The unique id of hooks
 export default {
   Actions,
   AsyncState,
+  Context,
   Middlewares,
   Setter,
   State,

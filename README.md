@@ -52,6 +52,11 @@ const TodoList = () => {
 
 ---
 
+## Recently Updated
+
+* [Expand Context](#expand-context)
+* [ModelType Update: NextModelType => ModelType](#model)
+
 ## Quick Start
 
 [CodeSandbox: TodoMVC](https://codesandbox.io/s/moyxon99jx)
@@ -79,6 +84,7 @@ npm install react-model
   - [immutable Actions](#immutable-actions)
   - [SSR with Next.js](#ssr-with-nextjs)
   - [Middleware](#middleware)
+  - [Expand Context](#expand-context)
 - [Other Concept required by Class Component](#other-concept-required-by-class-component)
   - [Provider](#provider)
   - [connect](#connect)
@@ -514,6 +520,33 @@ export { ... , actionMiddlewares}
 ```
 
 ⚙️ You can override the actionMiddlewares and insert your middleware to specific position
+
+[⇧ back to top](#table-of-contents)
+
+### Expand Context
+
+```typescript
+const ExtCounter: ModelType<
+  { name: string }, // State Type
+  { ext: undefined }, // ActionParamsType
+  { name: string } // ExtContextType
+> = {
+  actions: {
+    // { state, action } => { state, action, [name] }
+    ext: (_, { name }) => {
+      return { name }
+    }
+  },
+  state: { name: '' }
+}
+
+const { useStore } = Model(ExtCounter, { name: 'test' })
+// state.name = '
+const [state, actions] = useStore()
+// ...
+actions.ext()
+// state.name => 'test'
+```
 
 [⇧ back to top](#table-of-contents)
 

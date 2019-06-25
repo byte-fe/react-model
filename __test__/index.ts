@@ -67,6 +67,21 @@ export const NextCounter: ModelType<
   state: { count: 0 }
 }
 
+export const ExtCounter: ModelType<
+  ExtState,
+  ExtActionParams,
+  { name: string }
+> = {
+  actions: {
+    ext: (_, { name }) => {
+      return {
+        name
+      }
+    }
+  },
+  state: { name: '' }
+}
+
 export const Theme: ModelType<ThemeState, ThemeActionParams> = {
   actions: {
     changeTheme: (_, { state }) => ({
