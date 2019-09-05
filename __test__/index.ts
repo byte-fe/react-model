@@ -151,7 +151,7 @@ export const ErrorCounter: ModelType<CounterState, CounterActionParams> = {
 }
 
 const delayMiddleware: Middleware = async (context, restMiddlewares) => {
-  await timeout(2000, {})
+  await timeout(1000, {})
   context.next(restMiddlewares)
 }
 

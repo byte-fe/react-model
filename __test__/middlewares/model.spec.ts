@@ -7,16 +7,21 @@ import { Model } from '../../src'
 
 describe('NextModel', () => {
   test("allows you to customize model's middleware", async () => {
-    let actions: any
-    let state: any
-    const { useStore, getActions } = Model({ NextCounterModel })
+    let actions: any, nextActions: any
+    let state: any, nextState: any
+    const WrapperModel = Model(NextCounterModel)
+    const { useStore, getActions } = Model({ NextCounterModel, WrapperModel })
     const beginTime = Date.now()
     renderHook(() => {
       ;[state, actions] = useStore('NextCounterModel')
+      ;[nextState, nextActions] = useStore('WrapperModel')
     })
     await actions.increment(2)
     await getActions('NextCounterModel').increment(1)
     expect(Date.now() - beginTime > 300)
     expect(state.count).toBe(3)
+    await nextActions.increment(2)
+    await getActions('WrapperModel').increment(1)
+    expect(nextState.count).toBe(3)
   })
 })
