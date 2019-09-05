@@ -65,11 +65,11 @@ function Model<M extends Models, MT extends ModelType, E>(
     extContext && (Global.Context['__global'] = extContext)
     Object.entries(models).forEach(([name, model]) => {
       if (!isAPI(model)) {
-        console.warn(
-          'we recommend you to use NextModel now, document link: https://github.com/byte-fe/react-model#model'
-        )
         if (!Global.State[name]) {
           Global.State[name] = model.state
+        }
+        if (model.middlewares) {
+          Global.Middlewares[name] = model.middlewares
         }
         Global.Actions[name] = model.actions
         Global.AsyncState[name] = model.asyncState

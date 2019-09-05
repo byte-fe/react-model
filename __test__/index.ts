@@ -124,7 +124,7 @@ export const AsyncNull: ModelType<CounterState, CounterActionParams> = {
   state: { count: 0 }
 }
 
-export const TimeoutCounter: ModelType<CounterState, CounterActionParams> = {
+const timeoutCounter: ModelType<CounterState, CounterActionParams> = {
   actions: {
     increment: async (params, { state: _ }) => {
       await timeout(4000, {})
@@ -139,6 +139,8 @@ export const TimeoutCounter: ModelType<CounterState, CounterActionParams> = {
   state: { count: 0 }
 }
 
+export const TimeoutCounter = Model(timeoutCounter)
+
 export const ErrorCounter: ModelType<CounterState, CounterActionParams> = {
   actions: {
     increment: async () => {
@@ -149,11 +151,14 @@ export const ErrorCounter: ModelType<CounterState, CounterActionParams> = {
 }
 
 const delayMiddleware: Middleware = async (context, restMiddlewares) => {
-  await timeout(2000, {})
+  await timeout(1000, {})
   context.next(restMiddlewares)
 }
 
-const nextCounterModel: ModelType<CounterState, NextCounterActionParams> = {
+export const NextCounterModel: ModelType<
+  CounterState,
+  NextCounterActionParams
+> = {
   actions: {
     add: num => {
       return state => {
@@ -170,5 +175,3 @@ const nextCounterModel: ModelType<CounterState, NextCounterActionParams> = {
     count: 0
   }
 }
-
-export const NextCounterModel = Model(nextCounterModel)
