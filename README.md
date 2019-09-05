@@ -822,11 +822,14 @@ actions: {
 
 ### How can I customize each model's middlewares?
 
-If you are using NextModel, you can customize each model's middlewares.
+You can customize each model's middlewares.
 
 ```typescript
 import { actionMiddlewares, Model } from 'react-model'
-import { delayMiddleware } from './middlewares'
+const delayMiddleware: Middleware = async (context, restMiddlewares) => {
+  await timeout(1000, {})
+  context.next(restMiddlewares)
+}
 
 const nextCounterModel: NextModelType<CounterState, NextCounterActionParams> = {
   actions: {
