@@ -38,6 +38,9 @@ export const Counter: ModelType<
         count: state.count + params
       }
     },
+    addCaller: (_, { actions }) => {
+      actions.add(5)
+    },
     increment: params => {
       return state => {
         state.count += params
@@ -58,6 +61,9 @@ export const NextCounter: ModelType<
         count: state.count + params
       }
     },
+    addCaller: (_, { actions }) => {
+      actions.add(5)
+    },
     increment: params => {
       return state => {
         state.count += params
@@ -65,6 +71,21 @@ export const NextCounter: ModelType<
     }
   },
   state: { count: 0 }
+}
+
+export const ExtCounter: ModelType<
+  ExtState,
+  ExtActionParams,
+  { name: string }
+> = {
+  actions: {
+    ext: (_, { name }) => {
+      return {
+        name
+      }
+    }
+  },
+  state: { name: '' }
 }
 
 export const Theme: ModelType<ThemeState, ThemeActionParams> = {

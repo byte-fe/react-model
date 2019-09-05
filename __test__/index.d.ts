@@ -2,6 +2,10 @@ type CounterState = {
   count: number
 }
 
+type ExtState = {
+  name: string
+}
+
 type ThemeState = {
   theme: 'dark' | 'light'
 }
@@ -15,6 +19,10 @@ type CounterActionParams = {
   increment: number
 }
 
+type ExtActionParams = {
+  ext: undefined
+}
+
 type NextCounterActionParams = {
   increment: number
   add: number
@@ -22,6 +30,7 @@ type NextCounterActionParams = {
 
 type ExtraActionParams = {
   add: number
+  addCaller: undefined
 }
 
 type ThemeActionParams = {

@@ -18,14 +18,19 @@ const isAPI = (input: any): input is API => {
   return (input as API).useStore !== undefined
 }
 
-function Model<MT extends ModelType>(models: MT): API<MT>
-function Model<M extends Models>(
+function Model<E, MT extends ModelType<any, any, E>>(
+  models: MT,
+  // initialState represent extContext here
+  initialState?: E
+): API<MT>
+function Model<M extends Models, E>(
   models: M,
   initialState?: Global['State']
 ): APIs<M>
-function Model<M extends Models, MT extends ModelType>(
+function Model<M extends Models, MT extends ModelType, E>(
   models: M | MT,
-  initialState?: Global['State']
+  initialState?: Global['State'],
+  extContext?: E
 ) {
   if (isModelType(models)) {
     Global.uid += 1
@@ -36,6 +41,8 @@ function Model<M extends Models, MT extends ModelType>(
     }
     Global.Actions[hash] = models.actions
     Global.AsyncState[hash] = models.asyncState
+    // initialState represent extContext here
+    initialState && (Global.Context[hash] = initialState)
     const actions = getActions(hash)
     return {
       __id: hash,
@@ -55,6 +62,7 @@ function Model<M extends Models, MT extends ModelType>(
     if (initialState) {
       Global.State = initialState || {}
     }
+    extContext && (Global.Context['__global'] = extContext)
     Object.entries(models).forEach(([name, model]) => {
       if (!isAPI(model)) {
         console.warn(
@@ -72,6 +80,7 @@ function Model<M extends Models, MT extends ModelType>(
         Global.Actions[name] = Global.Actions[model.__id]
         Global.AsyncState[name] = Global.AsyncState[model.__id]
         Global.Middlewares[name] = Global.Middlewares[model.__id]
+        Global.Context[name] = Global.Context[model.__id]
       }
     })
 
