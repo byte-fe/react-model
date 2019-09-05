@@ -38,6 +38,9 @@ export const Counter: ModelType<
         count: state.count + params
       }
     },
+    addCaller: (_, { actions }) => {
+      actions.add(5)
+    },
     increment: params => {
       return state => {
         state.count += params
@@ -57,6 +60,9 @@ export const NextCounter: ModelType<
       return {
         count: state.count + params
       }
+    },
+    addCaller: (_, { actions }) => {
+      actions.add(5)
     },
     increment: params => {
       return state => {

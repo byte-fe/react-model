@@ -30,6 +30,7 @@ type NextCounterActionParams = {
 
 type ExtraActionParams = {
   add: number
+  addCaller: undefined
 }
 
 type ThemeActionParams = {
