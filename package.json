@@ -13,12 +13,7 @@
     "test": "jest --silent",
     "test:coverage": "jest --collect-coverage --silent"
   },
-  "keywords": [
-    "react",
-    "model",
-    "state-management",
-    "react-hooks"
-  ],
+  "keywords": ["react", "model", "state-management", "react-hooks"],
   "author": "ArrayZoneYour <hustliyidong@gmail.com>",
   "license": "MIT",
   "dependencies": {
