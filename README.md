@@ -322,16 +322,16 @@ TypeScript Example
 // StateType and ActionsParamType definition
 // ...
 
-const model: NextModelType<StateType, ActionsParamType> = {
+const model: ModelType<StateType, ActionsParamType> = {
   actions: {
-    increment: async (s, _, params) => {
+    increment: async (params, { state: s }) => {
       // issue: https://github.com/Microsoft/TypeScript/issues/29196
       // async function return produce need define type manually.
       return (state: typeof s) => {
         state.counter += params || 1
       }
     },
-    decrease: (s, _, params) => s => {
+    decrease: params => s => {
       s.counter += params || 1
     }
   }
@@ -345,7 +345,7 @@ JavaScript Example
 ```js
 const Model = {
   actions: {
-    increment: async (s, _, params) => {
+    increment: async (params) => {
       return state => {
         state.counter += params || 1
       }
@@ -367,7 +367,7 @@ const initialState = {
   counter: 0
 }
 
-const model: NextModelType<StateType, ActionsParamType> = {
+const model: ModelType<StateType, ActionsParamType> = {
   actions: {
     increment: (params, { state }) => {
       return {
@@ -752,7 +752,7 @@ interface ActionParams {
   increment: number
 }
 
-const model: NextModelType<State, ActionParams> = {
+const model: ModelType<State, ActionParams> = {
   state: {
     count: 0
   },
