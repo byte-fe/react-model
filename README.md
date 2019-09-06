@@ -124,7 +124,7 @@ interface ActionsParamType = {
   get: undefined
 } // You only need to tag the type of params here !
 
-const model: NextModelType<StateType, ActionsParamType> = {
+const model: ModelType<StateType, ActionsParamType> = {
   actions: {
     increment: async (payload, { state }) => {
       return {
@@ -831,7 +831,7 @@ const delayMiddleware: Middleware = async (context, restMiddlewares) => {
   context.next(restMiddlewares)
 }
 
-const nextCounterModel: NextModelType<CounterState, NextCounterActionParams> = {
+const nextCounterModel: ModelType<CounterState, NextCounterActionParams> = {
   actions: {
     add: num => {
       return state => {
