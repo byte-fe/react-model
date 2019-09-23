@@ -18,7 +18,7 @@ const isAPI = (input: any): input is API => {
   return (input as API).useStore !== undefined
 }
 
-function Model<E, MT extends ModelType<any, any, E>>(
+function Model<E, Ctx extends {}, MT extends ModelType<any, any, {}>>(
   models: MT,
   // initialState represent extContext here
   initialState?: E

@@ -38,7 +38,7 @@ interface Global {
 type ClassSetter = React.Dispatch<any> | undefined
 
 // Very Sad, Promise<ProduceFunc<S>> can not work with Partial<S> | ProduceFunc<S>
-type Action<S = {}, P = any, ActionKeys = {}, ExtContext = {}> = (
+type Action<S = {}, P = any, ActionKeys = {}, ExtContext extends {} = {}> = (
   params: P,
   context: {
     state: S
@@ -55,7 +55,7 @@ type Action<S = {}, P = any, ActionKeys = {}, ExtContext = {}> = (
 type ProduceFunc<S> = (state: S) => void
 
 // v3.0 Actions
-type Actions<S = {}, ActionKeys = {}, ExtContext = {}> = {
+type Actions<S = {}, ActionKeys = {}, ExtContext extends object = {}> = {
   [P in keyof ActionKeys]: Action<S, ActionKeys[P], ActionKeys, ExtContext>
 }
 
@@ -94,13 +94,13 @@ type Context<S = {}> = (InnerContext<S>) & {
 
 type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
 
-interface Models<State = any, ActionKeys = any> {
+interface Models<State = any, ActionKeys = any, ExtContext extends {} = {}> {
   [name: string]:
-    | ModelType<State, ActionKeys>
-    | API<ModelType<State, ActionKeys>>
+    | ModelType<State, ActionKeys, ExtContext>
+    | API<ModelType<State, ActionKeys, {}>>
 }
 
-interface API<MT extends ModelType = any> {
+interface API<MT extends ModelType = ModelType<any, any, {}>> {
   __id: string
   useStore: (
     depActions?: Array<keyof MT['actions']>
@@ -162,7 +162,11 @@ interface APIs<M extends Models> {
 }
 
 // v3.0
-type ModelType<InitStateType = any, ActionKeys = any, ExtContext = {}> = {
+type ModelType<
+  InitStateType = any,
+  ActionKeys = any,
+  ExtContext extends {} = {}
+> = {
   actions: {
     [P in keyof ActionKeys]: Action<
       InitStateType,

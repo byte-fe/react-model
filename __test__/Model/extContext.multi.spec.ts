@@ -10,7 +10,9 @@ describe('useStore', () => {
     let testActions: any
     let extState: any
     let extActions: any
+    // @ts-ignore
     const Test = Model(ExtCounter, { name: 'test' })
+    // @ts-ignore
     const Ext = Model(ExtCounter, { name: 'ext' })
     const { useStore } = Model({ Test, Ext })
     renderHook(() => {
