@@ -162,7 +162,7 @@ interface APIs<M extends Models> {
 }
 
 // v3.0
-type ModelType<InitStateType = any, ActionKeys = any, ExtContext = any> = {
+type ModelType<InitStateType = any, ActionKeys = any, ExtContext = {}> = {
   actions: {
     [P in keyof ActionKeys]: Action<
       InitStateType,
