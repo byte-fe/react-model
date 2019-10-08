@@ -709,14 +709,25 @@ export default Model(stores)
 import { actionMiddlewares, Model } from 'react-model'
 import Example from 'models/example'
 
+// Example, not recommend to use on production directly without consideration
+// Write current State to localStorage after action finish
 const persistMiddleware: Middleware = async (context, restMiddlewares) => {
   localStorage.setItem('__REACT_MODEL__', JSON.stringify(context.Global.State))
   await context.next(restMiddlewares)
 }
 
+// Use on all models
 actionMiddlewares.push(persistMiddleware)
-
 Model({ Example }, JSON.parse(localStorage.getItem('__REACT_MODEL__')))
+
+// Use on single model
+const model = {
+  state: JSON.parse(localStorage.getItem('__REACT_MODEL__'))['you model name']
+  actions: { ... },
+  middlewares: [...actionMiddlewares, persistMiddleware]
+}
+
+
 ```
 
 [⇧ back to top](#table-of-contents)

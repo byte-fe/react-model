@@ -86,7 +86,8 @@ const consoleDebugger: Middleware = async (context, restMiddlewares) => {
   console.log(
     '%c Action',
     `color: #03A9F4; font-weight: bold`,
-    context.actionName
+    context.actionName,
+    `payload: ${context.params}`
   )
   await context.next(restMiddlewares)
   console.log(
