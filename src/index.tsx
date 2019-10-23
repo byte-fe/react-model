@@ -74,7 +74,8 @@ function Model<M extends Models, MT extends ModelType, E>(
         Global.Actions[name] = model.actions
         Global.AsyncState[name] = model.asyncState
       } else {
-        if (!Global.State[name]) {
+        // If you develop on SSR mode, hot reload will still keep the old Global reference, so initialState won't change unless you restart the dev server
+        if (!Global.State[name] || !initialState) {
           Global.State[name] = Global.State[model.__id]
         }
         Global.Actions[name] = Global.Actions[model.__id]

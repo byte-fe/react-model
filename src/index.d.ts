@@ -185,6 +185,7 @@ type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any
   : never
 
 // v3.0
+// TODO: ArgumentTypes<A[P]>[0] = undefined | string
 type getConsumerActionsType<A extends Actions<any, any, any>> = {
   [P in keyof A]: ArgumentTypes<A[P]>[0] extends undefined
     ? (params?: ArgumentTypes<A[P]>[0]) => ReturnType<A[P]>
