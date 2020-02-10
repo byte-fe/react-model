@@ -4,9 +4,11 @@ The State management library for React
 
 🎉 Support Both Class and Hooks Api
 
+⚛️ Support [preact](https://github.com/byte-fe/react-model-experiment/tree/preact), react-native and Next.js
+
 ⚔ Fully TypeScript Support
 
-📦 built with microbundle
+📦 Built with microbundle
 
 ⚙️ Middlewares Pipline ( redux-devtools support ... )
 
