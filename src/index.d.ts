@@ -102,6 +102,7 @@ interface Models<State = any, ActionKeys = any, ExtContext extends {} = {}> {
 
 interface API<MT extends ModelType = ModelType<any, any, {}>> {
   __id: string
+  __ERROR__?: boolean
   useStore: (
     depActions?: Array<keyof MT['actions']>
   ) => [Get<MT, 'state'>, getConsumerActionsType<Get<MT, 'actions'>>]
@@ -167,6 +168,7 @@ type ModelType<
   ActionKeys = any,
   ExtContext extends {} = {}
 > = {
+  __ERROR__?: boolean
   actions: {
     [P in keyof ActionKeys]: Action<
       InitStateType,

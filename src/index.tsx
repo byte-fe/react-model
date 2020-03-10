@@ -59,11 +59,35 @@ function Model<M extends Models, MT extends ModelType, E>(
         useStore(hash, depActions as (string[] | undefined))
     }
   } else {
+    if (models.actions) {
+      console.error('invalid model(s) schema: ', models)
+      const errorFn = (fakeReturnVal?: unknown) => (..._: unknown[]) => {
+        return fakeReturnVal
+      }
+      // Fallback Functions
+      return {
+        __ERROR__: true,
+        actions: errorFn({}),
+        getActions: errorFn({}),
+        getInitialState: errorFn({}),
+        getState: errorFn({}),
+        subscribe: errorFn(),
+        unsubscribe: errorFn(),
+        useStore: errorFn([{}, {}])
+      } as any
+    }
     if (initialState) {
       Global.State = initialState || {}
     }
     extContext && (Global.Context['__global'] = extContext)
     Object.entries(models).forEach(([name, model]) => {
+      if (model.__ERROR__) {
+        // Fallback State and Actions when model schema is invalid
+        console.error(name + " model's schema is invalid")
+        Global.State[name] = {}
+        Global.Actions[name] = {}
+        return
+      }
       if (!isAPI(model)) {
         if (!Global.State[name]) {
           Global.State[name] = model.state
