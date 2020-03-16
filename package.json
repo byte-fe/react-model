@@ -17,7 +17,7 @@
   "author": "ArrayZoneYour <hustliyidong@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "immer": "^6.0.0"
+    "immer": "^6.0.2"
   },
   "peerDependencies": {
     "react": "^16.3.0",
