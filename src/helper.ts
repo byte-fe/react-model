@@ -80,7 +80,11 @@ const timeout = <T>(ms: number, data: T): Promise<T> =>
     }, ms)
   )
 
-const getInitialState = async <T extends any>(context?: T) => {
+const getInitialState = async <T extends any>(
+  context?: T,
+  config?: { isServer?: boolean }
+) => {
+  const ServerState: { [name: string]: any } = { __FROM_SERVER__: true }
   await Promise.all(
     Object.keys(Global.State).map(async modelName => {
       if (
@@ -91,14 +95,18 @@ const getInitialState = async <T extends any>(context?: T) => {
       ) {
         const asyncGetter = Global.AsyncState[modelName]
         const asyncState = asyncGetter ? await asyncGetter(context) : {}
-        Global.State[modelName] = {
-          ...Global.State[modelName],
-          ...asyncState
+        if (config && config.isServer) {
+          ServerState[modelName] = asyncState
+        } else {
+          Global.State[modelName] = {
+            ...Global.State[modelName],
+            ...asyncState
+          }
         }
       }
     })
   )
-  return Global.State
+  return config && config.isServer ? ServerState : Global.State
 }
 
 const getCache = (modelName: string, actionName: string) => {

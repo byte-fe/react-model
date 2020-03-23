@@ -113,6 +113,20 @@ export const AsyncCounter: ModelType<CounterState, CounterActionParams> = {
   state: { count: 0 }
 }
 
+export const SSRCounter: ModelType<SSRCounterState, CounterActionParams> = {
+  actions: {
+    increment: params => {
+      return state => {
+        state.count += params
+      }
+    }
+  },
+  asyncState: async (context: { count?: number }) => ({
+    count: context ? context.count || 1 : 1
+  }),
+  state: { count: 0, clientKey: 'unused' }
+}
+
 export const AsyncNull: ModelType<CounterState, CounterActionParams> = {
   actions: {
     increment: params => {

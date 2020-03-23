@@ -142,7 +142,8 @@ interface APIs<M extends Models> {
     ? M[K]['actions']
     : unknown
   getInitialState: <T extends any>(
-    context?: T | undefined
+    context?: T | undefined,
+    config?: { isServer: boolean }
   ) => Promise<{
     [modelName: string]: any
   }>

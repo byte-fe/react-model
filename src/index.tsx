@@ -76,7 +76,7 @@ function Model<M extends Models, MT extends ModelType, E>(
         useStore: errorFn([{}, {}])
       } as any
     }
-    if (initialState) {
+    if (initialState && !initialState.__FROM_SERVER__) {
       Global.State = initialState || {}
     }
     extContext && (Global.Context['__global'] = extContext)
@@ -89,7 +89,9 @@ function Model<M extends Models, MT extends ModelType, E>(
         return
       }
       if (!isAPI(model)) {
-        if (!Global.State[name]) {
+        if (initialState && initialState.__FROM_SERVER__) {
+          Global.State[name] = { ...model.state, ...initialState[name] }
+        } else if (!Global.State[name]) {
           Global.State[name] = model.state
         }
         if (model.middlewares) {
@@ -101,6 +103,12 @@ function Model<M extends Models, MT extends ModelType, E>(
         // If you develop on SSR mode, hot reload will still keep the old Global reference, so initialState won't change unless you restart the dev server
         if (!Global.State[name] || !initialState) {
           Global.State[name] = Global.State[model.__id]
+        }
+        if (initialState && initialState.__FROM_SERVER__) {
+          Global.State[name] = {
+            ...Global.State[model.__id],
+            ...initialState[name]
+          }
         }
         Global.Actions[name] = Global.Actions[model.__id]
         Global.AsyncState[name] = Global.AsyncState[model.__id]

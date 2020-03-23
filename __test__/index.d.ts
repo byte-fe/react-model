@@ -2,6 +2,11 @@ type CounterState = {
   count: number
 }
 
+type SSRCounterState = {
+  count: number
+  clientKey: string
+}
+
 type ExtState = {
   name: string
 }
