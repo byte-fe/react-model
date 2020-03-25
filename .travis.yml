@@ -1,14 +1,15 @@
 language: node_js
 node_js:
-  - '8'
   - '9'
   - '10'
   - '11'
   - '12'
-before_script:
+  - '13'
+
+before_install:
   - npm install react@latest react-dom@latest
-scripts:
   - npm install codecov -g
+
 after_success:
   - npm run test:coverage
   - codecov -f coverage/*.json

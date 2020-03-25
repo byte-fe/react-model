@@ -1,6 +1,5 @@
 /// <reference path="../index.d.ts" />
 import { renderHook } from '@testing-library/react-hooks'
-import '@testing-library/react/cleanup-after-each'
 import { Model } from '../../src'
 import { ActionsTester } from '../index'
 

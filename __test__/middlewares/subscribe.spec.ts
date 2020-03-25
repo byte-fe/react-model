@@ -1,5 +1,4 @@
 /// <reference path="../index.d.ts" />
-import '@testing-library/react/cleanup-after-each'
 import { Model } from '../../src'
 import { NextCounter } from '..'
 import { renderHook } from '@testing-library/react-hooks'

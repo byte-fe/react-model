@@ -1,5 +1,4 @@
 /// <reference path="../index.d.ts" />
-import '@testing-library/react/cleanup-after-each'
 ;(window as any).__REDUX_DEVTOOLS_EXTENSION__ = {
   connect: () => {},
   send: () => {}
