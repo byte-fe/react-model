@@ -1,5 +1,4 @@
 /// <reference path="./index.d.ts" />
-import '@testing-library/react/cleanup-after-each'
 import { Model } from '../src'
 import { Counter } from '.'
 

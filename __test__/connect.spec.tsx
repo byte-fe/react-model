@@ -1,19 +1,12 @@
 /// <reference path="./index.d.ts" />
-import '@testing-library/react/cleanup-after-each'
 import * as React from 'react'
 import { Model, Provider, connect } from '../src'
 import { Counter, Theme } from './'
 import { render, fireEvent } from '@testing-library/react'
 import { timeout } from '../src/helper'
 
-const Button = connect(
-  'Counter',
-  (props: any) => ({ counter: props })
-)(
-  connect(
-    'Theme',
-    (props: any) => ({ theme: props })
-  )(
+const Button = connect('Counter', (props: any) => ({ counter: props }))(
+  connect('Theme', (props: any) => ({ theme: props }))(
     class extends React.Component<any> {
       render() {
         const { state, actions } = this.props

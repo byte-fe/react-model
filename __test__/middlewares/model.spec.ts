@@ -1,5 +1,4 @@
 /// <reference path="../index.d.ts" />
-import '@testing-library/react/cleanup-after-each'
 process.env.NODE_ENV = 'production'
 import { renderHook } from '@testing-library/react-hooks'
 import { NextCounterModel } from '..'
