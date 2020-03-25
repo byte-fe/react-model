@@ -56,8 +56,8 @@ const TodoList = () => {
 
 ## Recently Updated
 
+* [SSR Support: only return asyncState from server side](#ssr-with-nextjs)
 * [Expand Context](#expand-context)
-* [ModelType Update: NextModelType => ModelType](#model)
 
 ## Quick Start
 
@@ -424,10 +424,10 @@ MyApp.getInitialProps = async (context: NextAppContext) => {
   if (!(process as any).browser) {
     const initialModels = context.Component.getInitialProps
       ? await context.Component.getInitialProps(context.ctx)
-      await getInitialState() // get all model initialState
-      // : await getInitialState({ modelName: 'Home' }) // get Home initialState only
-      // : await getInitialState({ modelName: ['Home', 'Todo'] }) // get multi initialState
-      // : await getInitialState({ data }) // You can also pass some public data as asyncData params.
+      await getInitialState(undefined, { isServer: true }) // get all model initialState
+      // : await getInitialState({ modelName: 'Home' }, { isServer: true }) // get Home initialState only
+      // : await getInitialState({ modelName: ['Home', 'Todo'] }, { isServer: true }) // get multi initialState
+      // : await getInitialState({ data }, { isServer: true }) // You can also pass some public data as asyncData params.
     return { initialModels }
   } else {
     return { persistModel }
@@ -470,7 +470,7 @@ export default () => {
 ```tsx
 // ...
 Benchmark.getInitialProps = async () => {
-  return await getInitialState({ modelName: 'Todo' })
+  return await getInitialState({ modelName: 'Todo' }, { isServer: true })
 }
 ```
 </p>
