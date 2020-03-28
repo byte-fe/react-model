@@ -6,7 +6,7 @@ node_js:
   - '12'
   - '13'
 
-before_install:
+before_script:
   - npm install react@latest react-dom@latest
   - npm install codecov -g
 
