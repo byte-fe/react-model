@@ -51,9 +51,16 @@ const setNewState: Middleware = async (context, restMiddlewares) => {
 }
 
 const stateUpdater: Middleware = async (context, restMiddlewares) => {
-  const { modelName, next, Global } = context
-  if (context.type === 'function' && context.setState) {
-    context.setState(Global.State[modelName])
+  const { modelName, next, Global, __hash } = context
+  const setter = Global.Setter.functionSetter[modelName]
+  if (
+    context.type === 'function' &&
+    __hash &&
+    setter &&
+    setter[__hash] &&
+    setter[__hash].setState
+  ) {
+    setter[__hash].setState(Global.State[modelName])
   }
   await next(restMiddlewares)
 }
@@ -62,7 +69,7 @@ const subscription: Middleware = async (context, restMiddlewares) => {
   const { modelName, actionName, next, Global } = context
   const subscriptions = Global.subscriptions[`${modelName}_${actionName}`]
   if (subscriptions) {
-    subscriptions.forEach(callback => {
+    subscriptions.forEach((callback) => {
       callback()
     })
   }
@@ -115,7 +122,7 @@ const communicator: Middleware = async (context, restMiddlewares) => {
     Global.Setter.classSetter(Global.State)
   }
   if (Global.Setter.functionSetter[modelName]) {
-    Object.keys(Global.Setter.functionSetter[modelName]).map(key => {
+    Object.keys(Global.Setter.functionSetter[modelName]).map((key) => {
       const setter = Global.Setter.functionSetter[modelName][key]
       if (setter) {
         if (
