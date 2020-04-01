@@ -84,10 +84,10 @@ interface BaseContext<S = {}> {
 interface InnerContext<S = {}> extends BaseContext<S> {
   // Actions with function type context will always invoke current component's reload.
   type?: 'function' | 'outer' | 'class'
-  setState?: Dispatch<SetStateAction<S>>
+  __hash?: string
 }
 
-type Context<S = {}> = (InnerContext<S>) & {
+type Context<S = {}> = InnerContext<S> & {
   next: Function
   modelMiddlewares?: Middleware[]
 }
