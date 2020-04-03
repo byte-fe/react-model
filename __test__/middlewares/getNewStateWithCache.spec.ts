@@ -1,15 +1,19 @@
 /// <reference path="../index.d.ts" />
-import { Model, middlewares } from '../../src'
-import { testHook } from 'react-testing-library'
-import { actionMiddlewares } from '../../src'
+import { Model, middlewares, actionMiddlewares } from '../../src'
+import { renderHook } from '@testing-library/react-hooks'
 import { TimeoutCounter } from '..'
 
 describe('getNewStateWithCache: ', () => {
   test('cache when timeout', async () => {
     let state: any, actions: any
-    actionMiddlewares[0] = middlewares.getNewStateWithCache(3000)
+    const cacheMiddlewareIndex = actionMiddlewares.indexOf(
+      middlewares.getNewState
+    )
+    actionMiddlewares[cacheMiddlewareIndex] = middlewares.getNewStateWithCache(
+      3000
+    )
     const { useStore } = Model({ TimeoutCounter })
-    testHook(() => {
+    renderHook(() => {
       ;[state, actions] = useStore('TimeoutCounter')
     })
     await actions.increment(3)

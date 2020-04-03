@@ -1,16 +1,15 @@
 /// <reference path="../index.d.ts" />
-import 'react-testing-library/cleanup-after-each'
 process.env.NODE_ENV = 'production'
 import { Model } from '../../src'
 import { ErrorCounter } from '..'
-import { testHook } from 'react-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 
 describe('tryCatch', () => {
   test("catch actions' error in production", async () => {
     let actions: any
     let errNum = 0
     const { useStore } = Model({ ErrorCounter })
-    testHook(() => {
+    renderHook(() => {
       ;[, actions] = useStore('ErrorCounter')
     })
     await actions.increment().catch(() => {

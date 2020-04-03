@@ -1,19 +1,20 @@
-import Global from './global'
-import { setPartialState, timeout, getCache } from './helper'
+import { getCache, setPartialState, timeout } from './helper'
 // -- Middlewares --
 
-const tryCatch: Middleware<{}> = async (context, restMiddlewares) => {
+const tryCatch: Middleware = async (context, restMiddlewares) => {
   const { next } = context
   await next(restMiddlewares).catch((e: any) => console.log(e))
 }
 
-const getNewState: Middleware<{}> = async (context, restMiddlewares) => {
-  const { action, modelName, consumerActions, params, next } = context
-  context.newState = await action(
-    Global.State[modelName].state,
-    consumerActions(Global.State[modelName].actions),
-    params
-  )
+const getNewState: Middleware = async (context, restMiddlewares) => {
+  const { action, modelName, consumerActions, params, next, Global } = context
+  context.newState =
+    (await action(params, {
+      actions: consumerActions(Global.Actions[modelName], { modelName }),
+      state: Global.State[modelName],
+      ...(Global.Context['__global'] || {}),
+      ...(Global.Context[modelName] || {})
+    })) || null
   await next(restMiddlewares)
 }
 
@@ -23,24 +24,25 @@ const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
 ) => {
   const {
     action,
+    Global,
     modelName,
     consumerActions,
     params,
     next,
     actionName
   } = context
-  context.newState = await Promise.race([
-    action(
-      Global.State[modelName].state,
-      consumerActions(Global.State[modelName].actions),
-      params
-    ),
-    timeout(maxTime, getCache(modelName, actionName))
-  ])
+  context.newState =
+    (await Promise.race([
+      action(params, {
+        actions: consumerActions(Global.Actions[modelName], { modelName }),
+        state: Global.State[modelName]
+      }),
+      timeout(maxTime, getCache(modelName, actionName))
+    ])) || null
   await next(restMiddlewares)
 }
 
-const setNewState: Middleware<{}> = async (context, restMiddlewares) => {
+const setNewState: Middleware = async (context, restMiddlewares) => {
   const { modelName, newState, next } = context
   if (newState) {
     setPartialState(modelName, newState)
@@ -49,62 +51,127 @@ const setNewState: Middleware<{}> = async (context, restMiddlewares) => {
 }
 
 const stateUpdater: Middleware = async (context, restMiddlewares) => {
-  const { setState, modelName, next } = context
-  setState(Global.State[modelName].state)
+  const { modelName, next, Global, __hash } = context
+  const setter = Global.Setter.functionSetter[modelName]
+  if (
+    context.type === 'function' &&
+    __hash &&
+    setter &&
+    setter[__hash] &&
+    setter[__hash].setState
+  ) {
+    setter[__hash].setState(Global.State[modelName])
+  }
   await next(restMiddlewares)
 }
 
+const subscription: Middleware = async (context, restMiddlewares) => {
+  const { modelName, actionName, next, Global } = context
+  const subscriptions = Global.subscriptions[`${modelName}_${actionName}`]
+  if (subscriptions) {
+    subscriptions.forEach((callback) => {
+      callback()
+    })
+  }
+  await next(restMiddlewares)
+}
+
+const consoleDebugger: Middleware = async (context, restMiddlewares) => {
+  const { Global } = context
+  console.group(
+    `%c ${
+      context.modelName
+    } State Change %c ${new Date().toLocaleTimeString()}`,
+    'color: gray; font-weight: lighter;',
+    'color: black; font-weight: bold;'
+  )
+  console.log(
+    '%c Previous',
+    `color: #9E9E9E; font-weight: bold`,
+    Global.State[context.modelName]
+  )
+  console.log(
+    '%c Action',
+    `color: #03A9F4; font-weight: bold`,
+    context.actionName,
+    `payload: ${context.params}`
+  )
+  await context.next(restMiddlewares)
+  console.log(
+    '%c Next',
+    `color: #4CAF50; font-weight: bold`,
+    Global.State[context.modelName]
+  )
+  console.groupEnd()
+}
+
 const devToolsListener: Middleware = async (context, restMiddlewares) => {
+  const { Global } = context
+  await context.next(restMiddlewares)
   if (Global.withDevTools) {
     Global.devTools.send(
       `${context.modelName}_${context.actionName}`,
       Global.State
     )
   }
-  await context.next(restMiddlewares)
 }
 
-const communicator: Middleware<{}> = async (context, restMiddlewares) => {
-  const { modelName, next, actionName } = context
-  Global.Setter.classSetter && Global.Setter.classSetter(Global.State)
-  Object.keys(Global.Setter.functionSetter[modelName]).map(key => {
-    const setter = Global.Setter.functionSetter[modelName][key]
-    if (setter) {
-      if (!setter.depActions || setter.depActions.indexOf(actionName) !== -1) {
-        setter.setState(Global.State[modelName].state)
+const communicator: Middleware = async (context, restMiddlewares) => {
+  const { modelName, next, actionName, Global } = context
+  if (Global.Setter.classSetter) {
+    Global.Setter.classSetter(Global.State)
+  }
+  if (Global.Setter.functionSetter[modelName]) {
+    Object.keys(Global.Setter.functionSetter[modelName]).map((key) => {
+      const setter = Global.Setter.functionSetter[modelName][key]
+      if (setter) {
+        if (
+          !setter.depActions ||
+          setter.depActions.indexOf(actionName) !== -1
+        ) {
+          setter.setState(Global.State[modelName])
+        }
       }
-    }
-  })
+    })
+  }
   await next(restMiddlewares)
 }
 
-let actionMiddlewares = [getNewState, setNewState, stateUpdater, communicator]
+let actionMiddlewares = [
+  getNewState,
+  setNewState,
+  stateUpdater,
+  communicator,
+  subscription
+]
 
 if (process.env.NODE_ENV === 'production') {
   actionMiddlewares = [tryCatch, ...actionMiddlewares]
 } else {
-  actionMiddlewares = [...actionMiddlewares, devToolsListener]
+  actionMiddlewares = [consoleDebugger, devToolsListener, ...actionMiddlewares]
 }
 
 const middlewares = {
-  tryCatch,
+  communicator,
+  consoleDebugger,
+  devToolsListener,
   getNewState,
   getNewStateWithCache,
   setNewState,
   stateUpdater,
-  communicator,
-  devToolsListener
+  subscription,
+  tryCatch
 }
 
 const applyMiddlewares = async (
   middlewares: Middleware[],
-  context: Context
+  context: BaseContext
 ) => {
   context.next = (restMiddlewares: Middleware[]) =>
     restMiddlewares.length > 0 &&
-    restMiddlewares[0](context, restMiddlewares.slice(1))
+    restMiddlewares[0](context as Context, restMiddlewares.slice(1))
   if (middlewares.length > 0) {
-    await middlewares[0](context, middlewares.slice(1))
+    await middlewares[0](context as Context, middlewares.slice(1))
   }
 }
 

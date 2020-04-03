@@ -1,10 +1,9 @@
 /// <reference path="../index.d.ts" />
-import 'react-testing-library/cleanup-after-each'
 ;(window as any).__REDUX_DEVTOOLS_EXTENSION__ = {
   connect: () => {},
   send: () => {}
 }
-import { testHook } from 'react-testing-library'
+import { renderHook } from '@testing-library/react-hooks'
 import { Model } from '../../src'
 import { Counter } from '..'
 
@@ -13,7 +12,7 @@ describe('withDevTools', () => {
     let state: any
     let actions: any
     const { useStore } = Model({ Counter })
-    testHook(() => {
+    renderHook(() => {
       ;[state, actions] = useStore('Counter')
     })
     expect(state).toEqual({ count: 0 })

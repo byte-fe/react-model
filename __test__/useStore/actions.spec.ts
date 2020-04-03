@@ -1,17 +1,17 @@
 /// <reference path="../index.d.ts" />
 import { renderHook } from '@testing-library/react-hooks'
+import { Counter } from '..'
 import { Model } from '../../src'
-import { Counter } from '../'
 
-describe('middleware: ', () => {
-  test("actions' middlewareConfig", async () => {
+describe('useStore', () => {
+  test('consumer actions return Partial<State>', async () => {
     let state: any
     let actions: any
     const { useStore } = Model({ Counter })
     renderHook(() => {
       ;[state, actions] = useStore('Counter')
     })
-    await actions.add(3, { params: 'user-custom-params' })
+    await actions.add(3)
     expect(state).toEqual({ count: 3 })
   })
 })
