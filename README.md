@@ -665,7 +665,7 @@ export default connect(
 Just remove consoleDebugger middleware.
 
 ```typescript
-import { actionMiddlewares } from 'react-model'
+import { actionMiddlewares, middlewares } from 'react-model'
 // Find the index of middleware
 const consoleDebuggerMiddlewareIndex = actionMiddlewares.indexOf(
   middlewares.consoleDebugger
