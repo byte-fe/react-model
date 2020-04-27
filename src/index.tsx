@@ -1,6 +1,6 @@
 /// <reference path="./index.d.ts" />
 import * as React from 'react'
-import { PureComponent, useEffect, useState } from 'react'
+import { PureComponent, useEffect, useState, useRef } from 'react'
 import Global from './global'
 import {
   Consumer,
@@ -51,12 +51,12 @@ function Model<M extends Models, MT extends ModelType, E>(
       subscribe: (
         actionName: keyof MT['actions'] | Array<keyof MT['actions']>,
         callback: () => void
-      ) => subscribe(hash, actionName as (string | string[]), callback),
+      ) => subscribe(hash, actionName as string | string[], callback),
       unsubscribe: (
         actionName: keyof MT['actions'] | Array<keyof MT['actions']>
-      ) => unsubscribe(hash, actionName as (string | string[])),
+      ) => unsubscribe(hash, actionName as string | string[]),
       useStore: (depActions?: Array<keyof MT['actions']>) =>
-        useStore(hash, depActions as (string[] | undefined))
+        useStore(hash, depActions as string[] | undefined)
     }
   } else {
     if (models.actions) {
@@ -151,7 +151,7 @@ const subscribe = (
   callback?: () => void
 ) => {
   if (Array.isArray(actions)) {
-    actions.forEach(actionName => {
+    actions.forEach((actionName) => {
       if (!Global.subscriptions[`${modelName}_${actionName}`]) {
         Global.subscriptions[`${modelName}_${actionName}`] = []
       }
@@ -207,21 +207,29 @@ const getActions = (
 }
 
 const useStore = (modelName: string, depActions?: string[]) => {
-  const setState = useState(Global.State[modelName])[1]
+  const setState = useState({})[1]
+  const hash = useRef<string>('')
 
   useEffect(() => {
     Global.uid += 1
-    const hash = '' + Global.uid
+    const local_hash = '' + Global.uid
+    hash.current = local_hash
     if (!Global.Setter.functionSetter[modelName]) {
       Global.Setter.functionSetter[modelName] = {}
     }
-    Global.Setter.functionSetter[modelName][hash] = { setState, depActions }
+    Global.Setter.functionSetter[modelName][local_hash] = {
+      setState,
+      depActions
+    }
     return function cleanup() {
-      delete Global.Setter.functionSetter[modelName][hash]
+      delete Global.Setter.functionSetter[modelName][local_hash]
     }
   }, [])
 
-  const updaters = getActions(modelName, { setState, type: 'function' })
+  const updaters = getActions(modelName, {
+    __hash: hash.current,
+    type: 'function'
+  })
   return [getState(modelName), updaters]
 }
 
@@ -249,7 +257,7 @@ const connect = (
       const { state: prevState = {}, actions: prevActions = {} } = this.props
       return (
         <Consumer>
-          {models => {
+          {(models) => {
             const { [`${modelName}`]: state } = models as any
             const actions = Global.Actions[modelName]
             return (
