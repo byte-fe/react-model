@@ -58,11 +58,11 @@ const setPartialState = (
   if (typeof partialState === 'function') {
     let state = Global.State[name]
     state = produce(state, partialState)
-    Global.State = produce(Global.State, s => {
+    Global.State = produce(Global.State, (s) => {
       s[name] = state
     })
   } else {
-    Global.State = produce(Global.State, s => {
+    Global.State = produce(Global.State, (s) => {
       s[name] = {
         ...s[name],
         ...partialState
@@ -73,20 +73,20 @@ const setPartialState = (
 }
 
 const timeout = <T>(ms: number, data: T): Promise<T> =>
-  new Promise(resolve =>
+  new Promise((resolve) =>
     setTimeout(() => {
       console.log(ms)
       resolve(data)
     }, ms)
   )
 
-const getInitialState = async <T extends any>(
+const getInitialState = async <T extends { modelName: string }>(
   context?: T,
   config?: { isServer?: boolean }
 ) => {
   const ServerState: { [name: string]: any } = { __FROM_SERVER__: true }
   await Promise.all(
-    Object.keys(Global.State).map(async modelName => {
+    Object.keys(Global.State).map(async (modelName) => {
       if (
         !context ||
         !context.modelName ||
