@@ -1,6 +1,18 @@
 import { getCache, setPartialState, timeout } from './helper'
 // -- Middlewares --
 
+const config: MiddlewareConfig = {
+  logger: {
+    enable: process.env.NODE_ENV !== 'production'
+  },
+  devtools: {
+    enable: process.env.NODE_ENV !== 'production'
+  },
+  tryCatch: {
+    enable: process.env.NODE_ENV === 'production'
+  }
+}
+
 const tryCatch: Middleware = async (context, restMiddlewares) => {
   const { next } = context
   await next(restMiddlewares).catch((e: any) => console.log(e))
@@ -78,37 +90,46 @@ const subscription: Middleware = async (context, restMiddlewares) => {
 
 const consoleDebugger: Middleware = async (context, restMiddlewares) => {
   const { Global } = context
-  console.group(
-    `%c ${
-      context.modelName
-    } State Change %c ${new Date().toLocaleTimeString()}`,
-    'color: gray; font-weight: lighter;',
-    'color: black; font-weight: bold;'
-  )
-  console.log(
-    '%c Previous',
-    `color: #9E9E9E; font-weight: bold`,
-    Global.State[context.modelName]
-  )
-  console.log(
-    '%c Action',
-    `color: #03A9F4; font-weight: bold`,
-    context.actionName,
-    `payload: ${context.params}`
-  )
-  await context.next(restMiddlewares)
-  console.log(
-    '%c Next',
-    `color: #4CAF50; font-weight: bold`,
-    Global.State[context.modelName]
-  )
-  console.groupEnd()
+
+  if (
+    config.logger.enable === true ||
+    (typeof config.logger.enable === 'function' &&
+      config.logger.enable(context))
+  ) {
+    console.group(
+      `%c ${
+        context.modelName
+      } State Change %c ${new Date().toLocaleTimeString()}`,
+      'color: gray; font-weight: lighter;',
+      'color: black; font-weight: bold;'
+    )
+    console.log(
+      '%c Previous',
+      `color: #9E9E9E; font-weight: bold`,
+      Global.State[context.modelName]
+    )
+    console.log(
+      '%c Action',
+      `color: #03A9F4; font-weight: bold`,
+      context.actionName,
+      `payload: ${context.params}`
+    )
+    await context.next(restMiddlewares)
+    console.log(
+      '%c Next',
+      `color: #4CAF50; font-weight: bold`,
+      Global.State[context.modelName]
+    )
+    console.groupEnd()
+  } else {
+    await context.next(restMiddlewares)
+  }
 }
 
 const devToolsListener: Middleware = async (context, restMiddlewares) => {
   const { Global } = context
   await context.next(restMiddlewares)
-  if (Global.withDevTools) {
+  if (Global.withDevTools && config.devtools.enable) {
     Global.devTools.send(
       `${context.modelName}_${context.actionName}`,
       Global.State
@@ -137,19 +158,16 @@ const communicator: Middleware = async (context, restMiddlewares) => {
   await next(restMiddlewares)
 }
 
-let actionMiddlewares = [
+const actionMiddlewares = [
+  tryCatch,
+  consoleDebugger,
+  devToolsListener,
   getNewState,
   setNewState,
   stateUpdater,
   communicator,
   subscription
 ]
-
-if (process.env.NODE_ENV === 'production') {
-  actionMiddlewares = [tryCatch, ...actionMiddlewares]
-} else {
-  actionMiddlewares = [consoleDebugger, devToolsListener, ...actionMiddlewares]
-}
 
 const middlewares = {
   communicator,
@@ -160,7 +178,8 @@ const middlewares = {
   setNewState,
   stateUpdater,
   subscription,
-  tryCatch
+  tryCatch,
+  config
 }
 
 const applyMiddlewares = async (

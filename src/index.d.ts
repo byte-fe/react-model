@@ -94,6 +94,14 @@ type Context<S = {}> = InnerContext<S> & {
 
 type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
 
+type MiddlewareConfig = {
+  logger: {
+    enable: boolean | ((context: BaseContext) => void)
+  }
+  devtools: { enable: boolean }
+  tryCatch: { enable: boolean }
+}
+
 interface Models<State = any, ActionKeys = any, ExtContext extends {} = {}> {
   [name: string]:
     | ModelType<State, ActionKeys, ExtContext>
