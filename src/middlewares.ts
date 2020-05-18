@@ -15,7 +15,11 @@ const config: MiddlewareConfig = {
 
 const tryCatch: Middleware = async (context, restMiddlewares) => {
   const { next } = context
-  await next(restMiddlewares).catch((e: any) => console.log(e))
+  if (config.tryCatch.enable) {
+    await next(restMiddlewares).catch((e: any) => console.log(e))
+  } else {
+    await next(restMiddlewares)
+  }
 }
 
 const getNewState: Middleware = async (context, restMiddlewares) => {
