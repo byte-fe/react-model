@@ -96,7 +96,7 @@ type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
 
 type MiddlewareConfig = {
   logger: {
-    enable: boolean | ((context: BaseContext) => void)
+    enable: boolean | ((context: BaseContext) => boolean)
   }
   devtools: { enable: boolean }
   tryCatch: { enable: boolean }
