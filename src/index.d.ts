@@ -120,11 +120,16 @@ type Selector<S, R> = (state: S) => R
 interface API<MT extends ModelType = ModelType<any, any, {}>> {
   __id: string
   __ERROR__?: boolean
-  useStore: <F extends Selector<Get<MT, 'state'>, any>>(
+  useStore: <
+    F extends Selector<Get<MT, 'state'>, any> = Selector<
+      Get<MT, 'state'>,
+      unknown
+    >
+  >(
     selector?: F
   ) => [
     F extends Selector<Get<MT, 'state'>, any>
-      ? Equals<F, Selector<Get<MT, 'state'>, any>> extends true
+      ? Equals<F, Selector<Get<MT, 'state'>, unknown>> extends true
         ? Get<MT, 'state'>
         : ReturnType<F>
       : Get<MT, 'state'>,
@@ -142,19 +147,12 @@ interface API<MT extends ModelType = ModelType<any, any, {}>> {
 }
 
 interface APIs<M extends Models> {
-  useStore: // | (<K extends keyof M>(
-  //     name: K
-  //   ) => M[K] extends API
-  //     ? ReturnType<Get<M[K], 'useStore'>>
-  //     : M[K] extends ModelType
-  //     ? [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
-  //     : any)
-  <
+  useStore: <
     K extends keyof M,
     S extends M[K] extends API
       ? ArgumentTypes<Get<M[K], 'useStore'>>[1]
       : M[K] extends ModelType
-      ? Selector<Get<M[K], 'state'>, any>
+      ? Selector<Get<M[K], 'state'>, unknown>
       : any
   >(
     name: K,

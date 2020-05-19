@@ -1,4 +1,4 @@
-import { getCache, setPartialState, timeout } from './helper'
+import { getCache, setPartialState, timeout, shallowEqual } from './helper'
 // -- Middlewares --
 
 const config: MiddlewareConfig = {
@@ -152,11 +152,12 @@ const communicator: Middleware = async (context, restMiddlewares) => {
       if (setter) {
         if (!setter.selector) {
           setter.setState(Global.State[modelName])
-        } else if (
-          setter.selector(Global.State[modelName]) !== setter.selectorRef
-        ) {
-          setter.selectorRef = setter.selector(Global.State[modelName])
-          setter.setState(Global.State[modelName])
+        } else {
+          const newSelectorRef = setter.selector(Global.State[modelName])
+          if (!shallowEqual(newSelectorRef, setter.selectorRef)) {
+            setter.selectorRef = newSelectorRef
+            setter.setState(Global.State[modelName])
+          }
         }
       }
     })
