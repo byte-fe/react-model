@@ -142,7 +142,7 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
 }
 
 const communicator: Middleware = async (context, restMiddlewares) => {
-  const { modelName, next, actionName, Global } = context
+  const { modelName, next, Global } = context
   if (Global.Setter.classSetter) {
     Global.Setter.classSetter(Global.State)
   }
@@ -150,10 +150,12 @@ const communicator: Middleware = async (context, restMiddlewares) => {
     Object.keys(Global.Setter.functionSetter[modelName]).map((key) => {
       const setter = Global.Setter.functionSetter[modelName][key]
       if (setter) {
-        if (
-          !setter.depActions ||
-          setter.depActions.indexOf(actionName) !== -1
+        if (!setter.selector) {
+          setter.setState(Global.State[modelName])
+        } else if (
+          setter.selector(Global.State[modelName]) !== setter.selectorRef
         ) {
+          setter.selectorRef = setter.selector(Global.State[modelName])
           setter.setState(Global.State[modelName])
         }
       }
