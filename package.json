@@ -46,7 +46,7 @@
     "remark-cli": "^8.0.0",
     "remark-lint": "^7.0.0",
     "remark-preset-lint-recommended": "^4.0.0",
-    "ts-jest": "^25.1.0",
+    "ts-jest": "^26.0.0",
     "tslint": "^5.14.0",
     "typescript": "^3.4.5"
   },
