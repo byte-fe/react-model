@@ -121,7 +121,7 @@ const shallowEqual = (objA: any, objB: any) => {
   if (
     typeof objA !== 'object' ||
     objA === null ||
-    typeof objB ||
+    typeof objB !== 'object' ||
     objB === null
   ) {
     return false
