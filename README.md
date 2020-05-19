@@ -665,13 +665,13 @@ export default connect(
 Just remove consoleDebugger middleware.
 
 ```typescript
-import { actionMiddlewares } from 'react-model'
+import { middlewares } from 'react-model'
 // Find the index of middleware
-const consoleDebuggerMiddlewareIndex = actionMiddlewares.indexOf(
-  middlewares.consoleDebugger
-)
-// Remove it
-actionMiddlewares.splice(consoleDebuggerMiddlewareIndex, 1)
+
+// Disable all actions' log
+middlewares.config.logger.enable = false
+// Disable logs from specific type of actions
+middlewares.config.logger.enable = ({ actionName }) => ['increment'].indexOf(actionName) !== -1
 ```
 
 [⇧ back to top](#table-of-contents)
