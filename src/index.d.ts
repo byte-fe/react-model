@@ -7,10 +7,17 @@ type FunctionSetter = {
   [modelName: string]: {
     [actionName: string]: {
       setState: React.Dispatch<any>
-      depActions?: string[]
+      selector?: Function
+      selectorRef?: unknown
     }
   }
 }
+
+type Equals<X, Y> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y
+  ? 1
+  : 2
+  ? true
+  : false
 
 interface Global {
   Actions: {
@@ -108,12 +115,26 @@ interface Models<State = any, ActionKeys = any, ExtContext extends {} = {}> {
     | API<ModelType<State, ActionKeys, {}>>
 }
 
+type Selector<S, R> = (state: S) => R
+
 interface API<MT extends ModelType = ModelType<any, any, {}>> {
   __id: string
   __ERROR__?: boolean
-  useStore: (
-    depActions?: Array<keyof MT['actions']>
-  ) => [Get<MT, 'state'>, getConsumerActionsType<Get<MT, 'actions'>>]
+  useStore: <
+    F extends Selector<Get<MT, 'state'>, any> = Selector<
+      Get<MT, 'state'>,
+      unknown
+    >
+  >(
+    selector?: F
+  ) => [
+    F extends Selector<Get<MT, 'state'>, any>
+      ? Equals<F, Selector<Get<MT, 'state'>, unknown>> extends true
+        ? Get<MT, 'state'>
+        : ReturnType<F>
+      : Get<MT, 'state'>,
+    getConsumerActionsType<Get<MT, 'actions'>>
+  ]
   getState: () => Readonly<Get<MT, 'state'>>
   subscribe: (
     actionName: keyof MT['actions'] | Array<keyof MT['actions']>,
@@ -126,13 +147,29 @@ interface API<MT extends ModelType = ModelType<any, any, {}>> {
 }
 
 interface APIs<M extends Models> {
-  useStore: <K extends keyof M>(
+  useStore: <
+    K extends keyof M,
+    S extends M[K] extends API
+      ? ArgumentTypes<Get<M[K], 'useStore'>>[1]
+      : M[K] extends ModelType
+      ? Selector<Get<M[K], 'state'>, unknown>
+      : any
+  >(
     name: K,
-    depActions?: Array<keyof Get<M[K], 'actions'>>
+    selector?: S
   ) => M[K] extends API
-    ? ReturnType<Get<M[K], 'useStore'>>
+    ? S extends (...args: any) => void
+      ? ReturnType<S>
+      : ReturnType<Get<M[K], 'useStore'>>
     : M[K] extends ModelType
-    ? [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
+    ? S extends (...args: any) => void
+      ? [
+          Equals<ReturnType<S>, unknown> extends true
+            ? Get<M[K], 'state'>
+            : ReturnType<S>,
+          getConsumerActionsType<Get<M[K], 'actions'>>
+        ]
+      : [Get<M[K], 'state'>, getConsumerActionsType<Get<M[K], 'actions'>>]
     : any
 
   getState: <K extends keyof M>(

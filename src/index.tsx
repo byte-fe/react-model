@@ -55,8 +55,7 @@ function Model<M extends Models, MT extends ModelType, E>(
       unsubscribe: (
         actionName: keyof MT['actions'] | Array<keyof MT['actions']>
       ) => unsubscribe(hash, actionName as string | string[]),
-      useStore: (depActions?: Array<keyof MT['actions']>) =>
-        useStore(hash, depActions as string[] | undefined)
+      useStore: (selector?: Function) => useStore(hash, selector)
     }
   } else {
     if (models.actions) {
@@ -206,7 +205,7 @@ const getActions = (
   return updaters
 }
 
-const useStore = (modelName: string, depActions?: string[]) => {
+const useStore = (modelName: string, selector?: Function) => {
   const setState = useState({})[1]
   const hash = useRef<string>('')
 
@@ -219,7 +218,7 @@ const useStore = (modelName: string, depActions?: string[]) => {
     }
     Global.Setter.functionSetter[modelName][local_hash] = {
       setState,
-      depActions
+      selector
     }
     return function cleanup() {
       delete Global.Setter.functionSetter[modelName][local_hash]
@@ -230,7 +229,10 @@ const useStore = (modelName: string, depActions?: string[]) => {
     __hash: hash.current,
     type: 'function'
   })
-  return [getState(modelName), updaters]
+  return [
+    selector ? selector(getState(modelName)) : getState(modelName),
+    updaters
+  ]
 }
 
 // Class API
