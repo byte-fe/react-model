@@ -56,8 +56,8 @@ const TodoList = () => {
 
 ## Recently Updated
 
-* [SSR Support: only return asyncState from server side](#ssr-with-nextjs)
-* [Expand Context](#expand-context)
+* [feat(middleware): support enable/disable sepecific middleware](#how-can-i-disable-the-console-debugger)
+* fix(stateupdater): fix the issue that setState on unmounted component
 
 ## Quick Start
 
@@ -111,7 +111,7 @@ const initialState = {
   response: {}
 }
 
-interface StateType = {
+interface StateType {
   counter: number
   light: boolean
   response: {
@@ -120,7 +120,7 @@ interface StateType = {
   }
 }
 
-interface ActionsParamType = {
+interface ActionsParamType {
   increment: number
   openLight: undefined
   get: undefined
@@ -130,7 +130,7 @@ const model: ModelType<StateType, ActionsParamType> = {
   actions: {
     increment: async (payload, { state }) => {
       return {
-        counter: state.counter + (params || 1)
+        counter: state.counter + (payload || 1)
       }
     },
     openLight: async (_, { state, actions }) => {
@@ -224,9 +224,9 @@ export default () => {
 optional solution on huge dataset (example: TodoList(10000+ Todos)):
 
 1. use useStore on the subComponents which need it.
-2. [use useStore with depActions and React.memo to prevent child components rerender frequently.](https://github.com/ArrayZoneYour/react-model-todomvc/blob/master/src/components/TodoItem.tsx)
+2. use useStore selector. (version >= v4.0.0-rc.0)
 
-[Demo Repo](https://github.com/ArrayZoneYour/react-model-todomvc)
+[advance example with 1000 todo items](https://codesandbox.io/s/react-model-v4-todomvc-oxyij)
 
 [⇧ back to top](#table-of-contents)
 
@@ -327,9 +327,8 @@ TypeScript Example
 const model: ModelType<StateType, ActionsParamType> = {
   actions: {
     increment: async (params, { state: s }) => {
-      // issue: https://github.com/Microsoft/TypeScript/issues/29196
-      // async function return produce need define type manually.
-      return (state: typeof s) => {
+      // return (state: typeof s) => { // TypeScript < 3.9
+      return state => {
         state.counter += params || 1
       }
     },
@@ -543,7 +542,7 @@ const ExtCounter: ModelType<
 }
 
 const { useStore } = Model(ExtCounter, { name: 'test' })
-// state.name = '
+// state.name = ''
 const [state, actions] = useStore()
 // ...
 actions.ext()
@@ -662,7 +661,6 @@ export default connect(
 
 ### How can I disable the console debugger
 
-Just remove consoleDebugger middleware.
 
 ```typescript
 import { middlewares } from 'react-model'
