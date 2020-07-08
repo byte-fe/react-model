@@ -50,7 +50,7 @@ function Model<M extends Models, MT extends ModelType, E>(
     return {
       __id: hash,
       actions,
-      getState: getState(hash),
+      getState: () => getState(hash),
       subscribe: (
         actionName: keyof MT['actions'] | Array<keyof MT['actions']>,
         callback: () => void

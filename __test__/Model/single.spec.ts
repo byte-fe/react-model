@@ -8,7 +8,7 @@ describe('useStore', () => {
     let state: any
     let actions: any
     let count = 0
-    const { useStore, subscribe, unsubscribe } = Model(NextCounter)
+    const { useStore, subscribe, unsubscribe, getState } = Model(NextCounter)
     renderHook(() => {
       ;[state, actions] = useStore()
     })
@@ -20,10 +20,12 @@ describe('useStore', () => {
     await actions.increment(4)
     expect(count).toBe(1)
     expect(state.count).toBe(7)
+    expect(getState().count).toBe(7)
     // test unsubscribe
     unsubscribe('increment')
     await actions.increment(3)
     expect(state.count).toBe(10)
+    expect(getState().count).toBe(10)
     expect(count).toBe(1)
   })
 })
