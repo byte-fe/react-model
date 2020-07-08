@@ -98,10 +98,9 @@ const getInitialState = async <T extends { modelName: string }>(
         if (config && config.isServer) {
           ServerState[modelName] = asyncState
         } else {
-          Global.State[modelName] = {
-            ...Global.State[modelName],
-            ...asyncState
-          }
+          Global.State = produce(Global.State, (s) => {
+            s[modelName] = { ...s[modelName], ...asyncState }
+          })
         }
       }
     })

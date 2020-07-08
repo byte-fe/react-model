@@ -1,4 +1,5 @@
 /// <reference path="./index.d.ts" />
+import produce from 'immer'
 import * as React from 'react'
 import { PureComponent, useEffect, useState, useRef } from 'react'
 import Global from './global'
@@ -35,7 +36,9 @@ function Model<M extends Models, MT extends ModelType, E>(
   if (isModelType(models)) {
     Global.uid += 1
     const hash = '__' + Global.uid
-    Global.State[hash] = models.state
+    Global.State = produce(Global.State, (s) => {
+      s[hash] = models.state
+    })
     if (models.middlewares) {
       Global.Middlewares[hash] = models.middlewares
     }
@@ -77,22 +80,30 @@ function Model<M extends Models, MT extends ModelType, E>(
       } as any
     }
     if (initialState && !initialState.__FROM_SERVER__) {
-      Global.State = initialState || {}
+      Global.State = produce(Global.State, (s) => {
+        Object.assign(s, initialState || {})
+      })
     }
     extContext && (Global.Context['__global'] = extContext)
     Object.entries(models).forEach(([name, model]) => {
       if (model.__ERROR__) {
         // Fallback State and Actions when model schema is invalid
         console.error(name + " model's schema is invalid")
-        Global.State[name] = {}
+        Global.State = produce(Global.State, (s) => {
+          s[name] = {}
+        })
         Global.Actions[name] = {}
         return
       }
       if (!isAPI(model)) {
         if (initialState && initialState.__FROM_SERVER__) {
-          Global.State[name] = { ...model.state, ...initialState[name] }
+          Global.State = produce(Global.State, (s) => {
+            s[name] = { ...model.state, ...initialState[name] }
+          })
         } else if (!Global.State[name]) {
-          Global.State[name] = model.state
+          Global.State = produce(Global.State, (s) => {
+            s[name] = model.state
+          })
         }
         if (model.middlewares) {
           Global.Middlewares[name] = model.middlewares
@@ -102,13 +113,14 @@ function Model<M extends Models, MT extends ModelType, E>(
       } else {
         // If you develop on SSR mode, hot reload will still keep the old Global reference, so initialState won't change unless you restart the dev server
         if (!Global.State[name] || !initialState) {
-          Global.State[name] = Global.State[model.__id]
+          Global.State = produce(Global.State, (s) => {
+            s[name] = s[model.__id]
+          })
         }
         if (initialState && initialState.__FROM_SERVER__) {
-          Global.State[name] = {
-            ...Global.State[model.__id],
-            ...initialState[name]
-          }
+          Global.State = produce(Global.State, (s) => {
+            s[name] = { ...s[model.__id], ...initialState[name] }
+          })
         }
         Global.Actions[name] = Global.Actions[model.__id]
         Global.AsyncState[name] = Global.AsyncState[model.__id]
