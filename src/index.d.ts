@@ -159,7 +159,9 @@ interface APIs<M extends Models> {
     selector?: S
   ) => M[K] extends API
     ? S extends (...args: any) => void
-      ? ReturnType<S>
+      ? Equals<S, undefined> extends true
+        ? [ReturnType<Get<M[K], 'getState'>>, Get<M[K], 'actions'>]
+        : ReturnType<S>
       : ReturnType<Get<M[K], 'useStore'>>
     : M[K] extends ModelType
     ? S extends (...args: any) => void

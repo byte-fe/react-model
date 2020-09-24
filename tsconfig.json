@@ -4,7 +4,7 @@
     "target": "es6",
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "node",
-    "outDir": "./dist",
+    "outDir": "dist",
     "experimentalDecorators": true,
     "jsx": "react",
     "lib": ["dom", "dom.iterable", "es2017"],
@@ -16,5 +16,5 @@
     "strict": true
   },
   "include": ["./src/*"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "./dist/*"]
 }

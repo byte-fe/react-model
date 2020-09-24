@@ -1,12 +1,12 @@
 {
   "name": "react-model",
-  "version": "4.0.0-rc.0",
+  "version": "4.0.0-rc.1",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "umd:main": "./dist/react-model.umd.js",
   "types": "./src/index",
   "scripts": {
-    "build": "microbundle -o ./dist --sourcemap false",
+    "build": "microbundle --sourcemap false --jsx React.createElement",
     "commit": "git-cz",
     "lint-ts": "tslint -c tslint.json 'src/**/*.ts'",
     "lint-md": "remark .",
@@ -38,7 +38,7 @@
     "cz-conventional-changelog": "^3.0.0",
     "husky": "^4.0.2",
     "jest": "^24.1.0",
-    "microbundle": "^0.12.0",
+    "microbundle": "^0.12.3",
     "prettier": "^2.0.0",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
