@@ -1,5 +1,7 @@
+// Remember to remove types: ./src/index when run `yarn build` command
 /// <reference path="./index.d.ts" />
-import produce from 'immer'
+import produce, { enableES5 } from 'immer'
+enableES5()
 import * as React from 'react'
 import { PureComponent, useEffect, useState, useRef } from 'react'
 import Global from './global'
@@ -84,7 +86,8 @@ function Model<M extends Models, MT extends ModelType, E>(
       })
     }
     extContext && (Global.Context['__global'] = extContext)
-    Object.entries(models).forEach(([name, model]) => {
+    Object.keys(models).forEach((name) => {
+      const model = models[name]
       if (model.__ERROR__) {
         // Fallback State and Actions when model schema is invalid
         console.error(name + " model's schema is invalid")
@@ -193,11 +196,11 @@ const getActions = (
   baseContext: Partial<Context> = { type: 'outer' }
 ) => {
   const updaters: any = {}
-  Object.entries(Global.Actions[modelName]).forEach(
-    ([key, action]) =>
+  Object.keys(Global.Actions[modelName]).forEach(
+    (key) =>
       (updaters[key] = async (params: any, middlewareConfig?: any) => {
         const context: InnerContext = {
-          action,
+          action: Global.Actions[modelName][key],
           actionName: key,
           consumerActions,
           middlewareConfig,

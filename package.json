@@ -1,12 +1,13 @@
 {
   "name": "react-model",
-  "version": "4.0.0-rc.1",
+  "version": "4.0.0-rc.6",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
+  "module": "./dist/react-model.esm.js",
   "umd:main": "./dist/react-model.umd.js",
   "types": "./src/index",
   "scripts": {
-    "build": "microbundle --sourcemap false --jsx React.createElement",
+    "build": "microbundle --sourcemap false --jsx React.createElement --output dist --tsconfig ./tsconfig.json",
     "commit": "git-cz",
     "lint-ts": "tslint -c tslint.json 'src/**/*.ts'",
     "lint-md": "remark .",
@@ -67,5 +68,13 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  }
+  },
+  "browserslist": [
+    "edge 17",
+    "firefox 70",
+    "chrome 48",
+    "safari 12.1",
+    "android 4.0",
+    "samsung 9.2"
+  ]
 }

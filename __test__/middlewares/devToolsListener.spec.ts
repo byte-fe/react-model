@@ -4,8 +4,10 @@
   send: () => {}
 }
 import { renderHook } from '@testing-library/react-hooks'
-import { Model } from '../../src'
+import { Model, middlewares } from '../../src'
 import { Counter } from '..'
+
+middlewares.config.devtools.enable = true
 
 describe('withDevTools', () => {
   test("won't break the behavior without DevTools", async () => {
