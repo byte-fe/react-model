@@ -91,6 +91,7 @@ npm install react-model
   - [Provider](#provider)
   - [connect](#connect)
 - [FAQ](#faq)
+  - [Migrate from 3.1.x to 4.x.x](#migrate-from-31x-to-4xx)
   - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger)
   - [How can I add custom middleware](#how-can-i-add-custom-middleware)
     - [How can I make persist models](#how-can-i-make-persist-models)
@@ -159,7 +160,7 @@ const model: ModelType<StateType, ActionsParamType> = {
   state: initialState
 }
 
-export default Model(model)
+export default model
 
 // You can use these types when use Class Components.
 // type ConsumerActionsType = getConsumerActionsType<typeof Model.actions>
@@ -338,7 +339,7 @@ const model: ModelType<StateType, ActionsParamType> = {
   }
 }
 
-export default Model(model)
+export default model
 ```
 
 JavaScript Example
@@ -384,7 +385,7 @@ const model: ModelType<StateType, ActionsParamType> = {
   state: initialState
 }
 
-export default Model(model)
+export default model
 ```
 
 </p>
@@ -658,6 +659,63 @@ export default connect(
 [⇧ back to top](#table-of-contents)
 
 ## FAQ
+
+### Migrate from 3.1.x to 4.x.x
+
+1. remove Model wrapper
+
+`sub-model.ts`
+```ts
+// 3.1.x
+export default Model(model)
+// 4.x.x
+export default model
+```
+
+`models.ts`
+```ts
+import Sub from './sub-model'
+export default Model({ Sub })
+```
+
+2. use selector to replace depActions
+
+`Shared.ts`
+```ts
+interface State {
+  counter: number
+  enable: boolean
+}
+
+interface ActionParams {
+  add: number
+  switch: undefined
+}
+
+const model: ModelType<State, ActionParams> = {
+  state: {
+    counter: 1
+    enable: false
+  },
+  actions: {
+    add: (payload) => state => {
+      state.counter += payload
+    },
+    switch: () => state => {
+      state.enable = !state.enable
+    }
+  }
+}
+```
+
+```ts
+const Component = () => {
+  // 3.1.x, Component rerender when add action is invoked
+  const [counter] = useStore('Shared', ['add'])
+  // 4.x.x, Component rerender when counter value diff
+  const [counter] = useStore('Shared', state => state.counter)
+}
+```
 
 ### How can I disable the console debugger
 
