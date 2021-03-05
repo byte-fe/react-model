@@ -1,12 +1,13 @@
 // @ts-ignore
 console.group = undefined
 /// <reference path="./index.d.ts" />
-import { Model } from '../src'
+import { Model, middlewares } from '../src'
 import { Counter } from '.'
 import { renderHook } from '@testing-library/react-hooks'
 
 describe('PubSub', () => {
   test('run callback when specific action run', async () => {
+    middlewares.config.logger.enable = true
     let actions: any
     let count = 0
     const { useStore, subscribe } = Model({ Counter })
@@ -20,5 +21,6 @@ describe('PubSub', () => {
     await actions.increment()
     await actions.increment()
     expect(count).toBe(13)
+    middlewares.config.logger.enable = false
   })
 })
