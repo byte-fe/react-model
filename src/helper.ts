@@ -43,8 +43,9 @@ const consumerActions = (
   modelContext: { modelName: string }
 ) => {
   const ret: any = {}
-  Object.entries<Action>(actions).forEach(([key, action]) => {
-    ret[key] = consumerAction(action, modelContext)
+  Object.keys(actions).forEach((key) => {
+    // @ts-ignore
+    ret[key] = consumerAction(actions[key], modelContext)
   })
   return ret
 }

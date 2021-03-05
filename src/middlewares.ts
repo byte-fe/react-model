@@ -3,13 +3,13 @@ import { getCache, setPartialState, timeout, shallowEqual } from './helper'
 
 const config: MiddlewareConfig = {
   logger: {
-    enable: process.env.NODE_ENV !== 'production'
+    enable: false
   },
   devtools: {
-    enable: process.env.NODE_ENV !== 'production'
+    enable: false
   },
   tryCatch: {
-    enable: process.env.NODE_ENV === 'production'
+    enable: true
   }
 }
 
@@ -59,7 +59,17 @@ const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
 }
 
 const setNewState: Middleware = async (context, restMiddlewares) => {
-  const { modelName, newState, next } = context
+  const { modelName, newState, next, Global } = context
+  if (Global.Setter.functionSetter[modelName]) {
+    Object.keys(Global.Setter.functionSetter[modelName]).map((key) => {
+      const setter = Global.Setter.functionSetter[modelName][key]
+      if (setter) {
+        if (setter.selector && !setter.selectorRef) {
+          setter.selectorRef = setter.selector(Global.State[modelName])
+        }
+      }
+    })
+  }
   if (newState) {
     setPartialState(modelName, newState)
     await next(restMiddlewares)
