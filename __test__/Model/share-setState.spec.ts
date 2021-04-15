@@ -7,6 +7,7 @@ describe('common used case', () => {
   test('create by single model with common setState', async () => {
     let state: any
     let actions: any
+    let failed = false
     const { useStore, getState } = Model(State)
     renderHook(() => {
       ;[state, actions] = useStore()
@@ -22,20 +23,28 @@ describe('common used case', () => {
     expect(getState().xxx).toBe("")
     expect(getState().yyy).toBe(1)
 
-    // BAD USE CASE
-    // 1. use both return value and produce modifier
-    // @ts-ignore
-    await actions.setState((state) => {
-      state.xxx = "xxx"
-      return { yyy: 10 }
-    })
-    // nothing changed
-    expect(state.yyy).toBe(1)
-    expect(getState().xxx).toBe("")
+    expect(failed).toBe(false)
+
+    try {
+      // BAD USE CASE
+      // 1. use both return value and produce modifier
+      // @ts-ignore
+      await actions.setState((state) => {
+        state.xxx = "xxx"
+        return { yyy: 10 }
+      })
+      // nothing changed
+      expect(state.yyy).toBe(1)
+      expect(getState().xxx).toBe("")
+    } catch {
+      failed = true
+    }
+
+    expect(failed).toBe(true)
 
     // 2. return partial value in produce func
     // @ts-ignore
-    await actions.setState((state) => {
+    await actions.setState(() => {
       return { yyy: 10 }
     })
     // key xxx will be dropped

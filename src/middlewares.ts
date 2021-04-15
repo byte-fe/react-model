@@ -3,13 +3,13 @@ import { getCache, setPartialState, timeout, shallowEqual } from './helper'
 
 const config: MiddlewareConfig = {
   logger: {
-    enable: false
+    enable: process.env.NODE_ENV !== 'production'
   },
   devtools: {
-    enable: false
+    enable: process.env.NODE_ENV !== 'production'
   },
   tryCatch: {
-    enable: true
+    enable: process.env.NODE_ENV === 'production'
   }
 }
 

@@ -96,6 +96,7 @@ npm install react-model
   - [How can I add custom middleware](#how-can-i-add-custom-middleware)
     - [How can I make persist models](#how-can-i-make-persist-models)
   - [How can I deal with local state](#how-can-i-deal-with-local-state)
+  - [How can I deal with huge dataset / circular dataset](#how-can-i-deal-with-huge-dataset-/-circular-dataset)
   - [actions throw error from immer.module.js](#actions-throw-error-from-immermodulejs)
   - [How can I customize each model's middlewares?](#how-can-i-customize-each-models-middlewares)
 
@@ -866,6 +867,28 @@ export default Counter
 </details>
 
 [⇧ back to top](#table-of-contents)
+
+### How can I deal with huge dataset / circular dataset
+
+[Immer assumes your state to be a unidirectional tree. That is, no object should appear twice in the tree, there should be no circular references.](https://immerjs.github.io/immer/pitfalls#immer-only-supports-unidirectional-trees)
+
+Immer freezes everything recursively, for large data objects that won't be changed in the future this might be over-kill, in that case it can be more efficient to shallowly pre-freeze data using the freeze utility.
+
+```ts
+import { freeze } from 'immer'
+
+export const ExpensiveModel: ModelType<ExpensiveState, ExpensiveActionParams> = {
+  state: {
+    moduleList: []
+  },
+  actions: {
+    setPreFreezedDataset: () => {
+      const optimizedDataset = freeze(hugeDataset)
+      return { moduleList: optimizedDataset }
+    }
+  }
+}
+```
 
 ### actions throw error from immer.module.js
 

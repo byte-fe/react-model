@@ -3,6 +3,8 @@
 import { Model } from '../src'
 import { timeout } from '../src/helper'
 import { actionMiddlewares } from '../src/middlewares'
+import { freeze } from 'immer'
+import { name } from 'faker'
 
 export const ActionsTester: ModelType<ActionTesterState, ActionTesterParams> = {
   actions: {
@@ -207,5 +209,43 @@ export const NextCounterModel: ModelType<
   middlewares: [delayMiddleware, ...actionMiddlewares],
   state: {
     count: 0
+  }
+}
+
+interface ExpensiveState {
+  moduleList: any[]
+}
+
+interface ExpensiveActionParams {
+  setState: undefined
+  setPreFreezedDataset: undefined
+}
+
+const hugeDataset = <any[]>[]
+
+// Create circular data
+console.time('create data')
+Array.from(Array(20000).keys()).forEach((_, idx) => {
+  // const obj = makeDeepFakeData(100)
+  hugeDataset.push({
+    idx,
+    name: name.findName(),
+    parent: hugeDataset
+  })
+})
+console.timeEnd('create data')
+
+export const ExpensiveModel: ModelType<ExpensiveState, ExpensiveActionParams> = {
+  state: {
+    moduleList: []
+  },
+  actions: {
+    setState: () => {
+      return { moduleList: hugeDataset }
+    },
+    setPreFreezedDataset: () => {
+      const optimizedDataset = freeze(hugeDataset)
+      return { moduleList: optimizedDataset }
+    }
   }
 }
