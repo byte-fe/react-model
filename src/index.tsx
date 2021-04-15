@@ -1,4 +1,4 @@
-// Remember to remove types: ./src/index when run `yarn build` command
+// need to remove types: ./src/index before running `yarn build` command
 /// <reference path="./index.d.ts" />
 import produce, { enableES5 } from 'immer'
 enableES5()
