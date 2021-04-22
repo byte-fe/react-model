@@ -73,6 +73,26 @@ export const NextCounter: ModelType<
   state: { count: 0 }
 }
 
+// common used case
+interface CommonState {
+  xxx: string,
+  yyy: number
+}
+
+interface CommonActionParams {
+  setState: Partial<CommonState> | ProduceFunc<Partial<CommonState>>
+}
+
+export const State: ModelType<CommonState, CommonActionParams> = {
+  state: {
+    xxx: "",
+    yyy: -1
+  },
+  actions: {
+    setState: async (payload) => payload
+  }
+}
+
 export const ExtCounter: ModelType<
   ExtState,
   ExtActionParams,
