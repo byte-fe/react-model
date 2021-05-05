@@ -3,7 +3,7 @@
 import produce, { enableES5 } from 'immer'
 enableES5()
 import * as React from 'react'
-import { PureComponent, useEffect, useState, useRef } from 'react'
+import { PureComponent, useLayoutEffect, useState, useRef } from 'react'
 import Global from './global'
 import {
   Consumer,
@@ -224,7 +224,7 @@ const useStore = (modelName: string, selector?: Function) => {
   const setState = useState({})[1]
   const hash = useRef<string>('')
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     Global.uid += 1
     const local_hash = '' + Global.uid
     hash.current = local_hash

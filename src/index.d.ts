@@ -44,7 +44,6 @@ interface Global {
 
 type ClassSetter = React.Dispatch<any> | undefined
 
-// Very Sad, Promise<ProduceFunc<S>> can not work with Partial<S> | ProduceFunc<S>
 type Action<S = {}, P = any, ActionKeys = {}, ExtContext extends {} = {}> = (
   params: P,
   context: {
@@ -53,11 +52,9 @@ type Action<S = {}, P = any, ActionKeys = {}, ExtContext extends {} = {}> = (
   } & ExtContext
 ) =>
   | Partial<S>
-  | Promise<Partial<S>>
+  | Promise<Partial<S> | ProduceFunc<S> | void>
   | ProduceFunc<S>
-  | Promise<ProduceFunc<S>>
   | void
-  | Promise<void>
 
 type ProduceFunc<S> = (state: S) => void
 
