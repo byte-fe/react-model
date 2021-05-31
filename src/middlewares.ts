@@ -96,7 +96,7 @@ const subscription: Middleware = async (context, restMiddlewares) => {
   const subscriptions = Global.subscriptions[`${modelName}_${actionName}`]
   if (subscriptions) {
     subscriptions.forEach((callback) => {
-      callback()
+      callback(context)
     })
   }
   await next(restMiddlewares)
