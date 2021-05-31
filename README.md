@@ -96,7 +96,7 @@ npm install react-model
   - [How can I add custom middleware](#how-can-i-add-custom-middleware)
     - [How can I make persist models](#how-can-i-make-persist-models)
   - [How can I deal with local state](#how-can-i-deal-with-local-state)
-  - [How can I deal with huge dataset / circular dataset](#how-can-i-deal-with-huge-dataset-/-circular-dataset)
+  - [How can I deal with huge dataset / circular dataset](#how-can-i-deal-with-huge-dataset--circular-dataset)
   - [actions throw error from immer.module.js](#actions-throw-error-from-immermodulejs)
   - [How can I customize each model's middlewares?](#how-can-i-customize-each-models-middlewares)
 

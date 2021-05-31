@@ -70,13 +70,13 @@ interface ModelContext {
   modelName: string
 }
 
-interface BaseContext<S = {}> {
+interface BaseContext<S = {}, P = any> {
   action: Action
   consumerActions: (
     actions: Actions,
     modelContext: ModelContext
   ) => getConsumerActionsType<Actions>
-  params: Object
+  params: P
   middlewareConfig?: Object
   actionName: string
   modelName: string
@@ -135,7 +135,7 @@ interface API<MT extends ModelType = ModelType<any, any, {}>> {
   getState: () => Readonly<Get<MT, 'state'>>
   subscribe: (
     actionName: keyof MT['actions'] | Array<keyof MT['actions']>,
-    callback: () => void
+    callback: (context: BaseContext) => void
   ) => void
   unsubscribe: (
     actionName: keyof Get<MT, 'actions'> | Array<keyof Get<MT, 'actions'>>
@@ -194,7 +194,7 @@ interface APIs<M extends Models> {
   subscribe: <K extends keyof M>(
     modelName: K,
     actionName: keyof Get<M[K], 'actions'> | Array<keyof Get<M[K], 'actions'>>,
-    callback: () => void
+    callback: (context: BaseContext) => void
   ) => void
   unsubscribe: <K extends keyof M>(
     modelName: K,
