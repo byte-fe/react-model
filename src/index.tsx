@@ -139,7 +139,7 @@ function Model<M extends Models, MT extends ModelType, E>(
     Global.withDevTools =
       typeof window !== 'undefined' &&
       (window as any).__REDUX_DEVTOOLS_EXTENSION__
-    if (Global.withDevTools) {
+    if (Global.withDevTools && middlewares.config.devtools.enable) {
       Global.devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__
       Global.devTools.connect()
     }
