@@ -35,7 +35,7 @@ const consumerAction = (
     params,
     type: 'outer'
   }
-  await applyMiddlewares(actionMiddlewares, context)
+  return await applyMiddlewares(actionMiddlewares, context)
 }
 
 const consumerActions = (

@@ -96,7 +96,7 @@ type Context<S = {}> = InnerContext<S> & {
   modelMiddlewares?: Middleware[]
 }
 
-type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => void
+type Middleware<S = {}> = (C: Context<S>, M: Middleware<S>[]) => Promise<void>
 
 type MiddlewareConfig = {
   logger: {

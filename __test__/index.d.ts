@@ -2,6 +2,11 @@ type CounterState = {
   count: number
 }
 
+type RetState = {
+  count: number
+  extra: string
+}
+
 type SSRCounterState = {
   count: number
   clientKey: string
@@ -31,6 +36,15 @@ type ExtActionParams = {
 type NextCounterActionParams = {
   increment: number
   add: number
+}
+
+type RetActionParams = {
+  add: number
+  asyncAdd: number
+  produceAdd: number
+  asyncProduceAdd: number
+  hocAdd: number
+  asyncHocAdd: number
 }
 
 type ExtraActionParams = {

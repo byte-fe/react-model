@@ -17,7 +17,7 @@ export const ActionsTester: ModelType<ActionTesterState, ActionTesterParams> = {
       actions.parse()
     },
     parse: () => {
-      return state => {
+      return (state) => {
         state.data = state.response.data
       }
     }
@@ -43,8 +43,8 @@ export const Counter: ModelType<
     addCaller: (_, { actions }) => {
       actions.add(5)
     },
-    increment: params => {
-      return state => {
+    increment: (params) => {
+      return (state) => {
         state.count += params
       }
     }
@@ -66,8 +66,8 @@ export const NextCounter: ModelType<
     addCaller: (_, { actions }) => {
       actions.add(5)
     },
-    increment: params => {
-      return state => {
+    increment: (params) => {
+      return (state) => {
         state.count += params
       }
     }
@@ -77,7 +77,7 @@ export const NextCounter: ModelType<
 
 // common used case
 interface CommonState {
-  xxx: string,
+  xxx: string
   yyy: number
 }
 
@@ -87,7 +87,7 @@ interface CommonActionParams {
 
 export const State: ModelType<CommonState, CommonActionParams> = {
   state: {
-    xxx: "",
+    xxx: '',
     yyy: -1
   },
   actions: {
@@ -123,8 +123,8 @@ export const Theme: ModelType<ThemeState, ThemeActionParams> = {
 
 export const AsyncCounter: ModelType<CounterState, CounterActionParams> = {
   actions: {
-    increment: params => {
-      return state => {
+    increment: (params) => {
+      return (state) => {
         state.count += params
       }
     }
@@ -137,8 +137,8 @@ export const AsyncCounter: ModelType<CounterState, CounterActionParams> = {
 
 export const SSRCounter: ModelType<SSRCounterState, CounterActionParams> = {
   actions: {
-    increment: params => {
-      return state => {
+    increment: (params) => {
+      return (state) => {
         state.count += params
       }
     }
@@ -151,8 +151,8 @@ export const SSRCounter: ModelType<SSRCounterState, CounterActionParams> = {
 
 export const AsyncNull: ModelType<CounterState, CounterActionParams> = {
   actions: {
-    increment: params => {
-      return state => {
+    increment: (params) => {
+      return (state) => {
         state.count += params
       }
     }
@@ -173,6 +173,40 @@ const timeoutCounter: ModelType<CounterState, CounterActionParams> = {
     count: 1
   }),
   state: { count: 0 }
+}
+
+export const RetTester: ModelType<RetState, RetActionParams> = {
+  state: {
+    count: 0,
+    extra: 'extra'
+  },
+  actions: {
+    add: (num, { state }) => {
+      return { count: state.count + num }
+    },
+    asyncAdd: async (num, { state }) => {
+      await timeout(300, {})
+      return { count: state.count + num }
+    },
+    produceAdd: (num) => {
+      return (state) => {
+        state.count += num
+      }
+    },
+    asyncProduceAdd: async (num) => {
+      await timeout(300, {})
+      return (state) => {
+        state.count += num
+      }
+    },
+    hocAdd: (num, { actions }) => {
+      return actions.add(num)
+    },
+    asyncHocAdd: async (num, { actions }) => {
+      await timeout(100, {})
+      return actions.add(num)
+    }
+  }
 }
 
 export const TimeoutCounter = Model(timeoutCounter)
@@ -196,8 +230,8 @@ export const NextCounterModel: ModelType<
   NextCounterActionParams
 > = {
   actions: {
-    add: num => {
-      return state => {
+    add: (num) => {
+      return (state) => {
         state.count += num
       }
     },
@@ -235,7 +269,10 @@ Array.from(Array(20000).keys()).forEach((_, idx) => {
 })
 console.timeEnd('create data')
 
-export const ExpensiveModel: ModelType<ExpensiveState, ExpensiveActionParams> = {
+export const ExpensiveModel: ModelType<
+  ExpensiveState,
+  ExpensiveActionParams
+> = {
   state: {
     moduleList: []
   },
