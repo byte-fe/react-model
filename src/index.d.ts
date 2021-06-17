@@ -28,6 +28,9 @@ interface Global {
   State: {
     [modelName: string]: any
   }
+  mutableState: {
+    [modelName: string]: any
+  }
   AsyncState: {
     [modelName: string]: undefined | ((context?: any) => Promise<Partial<any>>)
   }
@@ -40,6 +43,8 @@ interface Global {
   devTools: any
   withDevTools: boolean
   uid: number
+  storeId: number
+  currentStoreId: number
 }
 
 type ClassSetter = React.Dispatch<any> | undefined
@@ -62,6 +67,9 @@ type ProduceFunc<S> = (state: S) => void
 type Actions<S = {}, ActionKeys = {}, ExtContext extends object = {}> = {
   [P in keyof ActionKeys]: Action<S, ActionKeys[P], ActionKeys, ExtContext>
 }
+
+// v4.1+ Custom Hooks
+type CustomModelHook<State> = () => State
 
 type Dispatch<A> = (value: A) => void
 type SetStateAction<S> = S | ((prevState: S) => S)
@@ -141,6 +149,11 @@ interface API<MT extends ModelType = ModelType<any, any, {}>> {
     actionName: keyof Get<MT, 'actions'> | Array<keyof Get<MT, 'actions'>>
   ) => void
   actions: Readonly<getConsumerActionsType<Get<MT, 'actions'>>>
+}
+
+interface LaneAPI<S> {
+  useStore: () => S
+  getState: () => S
 }
 
 interface APIs<M extends Models> {
