@@ -211,9 +211,9 @@ const getActions = (
           Global
         }
         if (Global.Middlewares[modelName]) {
-          await applyMiddlewares(Global.Middlewares[modelName], context)
+          return await applyMiddlewares(Global.Middlewares[modelName], context)
         } else {
-          await applyMiddlewares(actionMiddlewares, context)
+          return await applyMiddlewares(actionMiddlewares, context)
         }
       })
   )
