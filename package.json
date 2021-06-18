@@ -1,10 +1,11 @@
 {
   "name": "react-model",
-  "version": "4.0.2",
+  "version": "4.1.0-alpha.1",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "module": "./dist/react-model.esm.js",
   "umd:main": "./dist/react-model.umd.js",
+  "types": "./src/index",
   "scripts": {
     "build:prod": "microbundle --define process.env.NODE_ENV=production --sourcemap false --jsx React.createElement --output dist --tsconfig ./tsconfig.json",
     "build:dev": "microbundle --define process.env.NODE_ENV=development --sourcemap true --jsx React.createElement --output dist --tsconfig ./tsconfig.json",

@@ -89,6 +89,7 @@ interface BaseContext<S = {}, P = any> {
   actionName: string
   modelName: string
   next?: Function
+  disableSelectorUpdate?: boolean
   newState: Global['State'] | Function | null
   Global: Global
 }

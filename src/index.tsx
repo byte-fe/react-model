@@ -25,9 +25,6 @@ const isAPI = (input: any): input is API => {
 // DON'T USE useModel OUTSIDE createStore func
 function useModel<S>(state: S): [S, (state: S) => void] {
   const storeId = Global.currentStoreId
-  if (!Global.mutableState[storeId]) {
-    Global.mutableState[storeId] = { count: 0 }
-  }
   const index = Global.mutableState[storeId].count
   Global.mutableState[storeId].count += 1
   if (!Global.mutableState[storeId][index]) {
@@ -42,6 +39,7 @@ function useModel<S>(state: S): [S, (state: S) => void] {
       },
       actionName: 'setter',
       consumerActions,
+      disableSelectorUpdate: true,
       middlewareConfig: {},
       modelName: '__' + storeId,
       newState: {},
@@ -61,11 +59,14 @@ function createStore<S>(useHook: CustomModelHook<S>): LaneAPI<S> {
   if (!Global.Actions[hash]) {
     Global.Actions[hash] = {}
   }
-  Global.currentStoreId = storeId
-  const state = useHook()
-  Global.State = produce(Global.State, (s) => {
-    s[hash] = state
-  })
+  if (!Global.mutableState[storeId]) {
+    Global.mutableState[storeId] = { count: 0 }
+  }
+  // Global.currentStoreId = storeId
+  // const state = useHook()
+  // Global.State = produce(Global.State, (s) => {
+  //   s[hash] = state
+  // })
   const selector = () => {
     Global.mutableState[storeId].count = 0
     Global.currentStoreId = storeId
