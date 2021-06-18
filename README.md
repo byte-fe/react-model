@@ -17,36 +17,25 @@ The State management library for React
 🐛 Debug easily on test environment
 
 ```tsx
-import { Model } from 'react-model'
+import { useModel, createStore } from 'react-model'
 
 // define model
-const Todo = {
-  state: {
-    items: ['Install react-model', 'Read github docs', 'Build App']
-  },
-  actions: {
-    add: todo => {
-      // s is the readonly version of state
-      // you can also return partial state here but don't need to keep immutable manually
-      // state is the mutable state
-      return state => {
-        state.items.push(todo)
-      }
-    }
-  }
+const useTodo = () => {
+  const [items, setItems] = useModel(['Install react-model', 'Read github docs', 'Build App'])
+  return { items, setItems }
 }
 
 // Model Register
-const { useStore } = Model(Todo)
+const { useStore } = createStore(Todo)
 
 const App = () => {
   return <TodoList />
 }
 
 const TodoList = () => {
-  const [state, actions] = useStore()
+  const { items, setItems } = useStore()
   return <div>
-    <Addon handler={actions.add} />
+    <Addon handler={setItems} />
     {state.items.map((item, index) => (<Todo key={index} item={item} />))}
   </div>
 }

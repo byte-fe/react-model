@@ -34,32 +34,33 @@ const getNewState: Middleware = async (context, restMiddlewares) => {
   return await next(restMiddlewares)
 }
 
-const getNewStateWithCache =
-  (maxTime: number = 5000): Middleware =>
-  async (context, restMiddlewares) => {
-    const {
-      action,
-      Global,
-      modelName,
-      consumerActions,
-      params,
-      next,
-      actionName
-    } = context
-    context.newState =
-      (await Promise.race([
-        action(params, {
-          actions: consumerActions(Global.Actions[modelName], { modelName }),
-          state: Global.State[modelName]
-        }),
-        timeout(maxTime, getCache(modelName, actionName))
-      ])) || null
-    return await next(restMiddlewares)
-  }
+const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
+  context,
+  restMiddlewares
+) => {
+  const {
+    action,
+    Global,
+    modelName,
+    consumerActions,
+    params,
+    next,
+    actionName
+  } = context
+  context.newState =
+    (await Promise.race([
+      action(params, {
+        actions: consumerActions(Global.Actions[modelName], { modelName }),
+        state: Global.State[modelName]
+      }),
+      timeout(maxTime, getCache(modelName, actionName))
+    ])) || null
+  return await next(restMiddlewares)
+}
 
 const setNewState: Middleware = async (context, restMiddlewares) => {
-  const { modelName, newState, next, Global } = context
-  if (Global.Setter.functionSetter[modelName]) {
+  const { modelName, newState, next, Global, disableSelectorUpdate } = context
+  if (Global.Setter.functionSetter[modelName] && !disableSelectorUpdate) {
     Object.keys(Global.Setter.functionSetter[modelName]).map((key) => {
       const setter = Global.Setter.functionSetter[modelName][key]
       if (setter) {
@@ -153,7 +154,7 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
 }
 
 const communicator: Middleware = async (context, restMiddlewares) => {
-  const { modelName, next, Global } = context
+  const { modelName, next, Global, disableSelectorUpdate } = context
   if (Global.Setter.classSetter) {
     Global.Setter.classSetter(Global.State)
   }
@@ -161,7 +162,7 @@ const communicator: Middleware = async (context, restMiddlewares) => {
     Object.keys(Global.Setter.functionSetter[modelName]).map((key) => {
       const setter = Global.Setter.functionSetter[modelName][key]
       if (setter) {
-        if (!setter.selector) {
+        if (!setter.selector || disableSelectorUpdate) {
           setter.setState(Global.State[modelName])
         } else {
           const newSelectorRef = setter.selector(Global.State[modelName])
