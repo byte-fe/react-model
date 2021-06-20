@@ -59,7 +59,14 @@ const getNewStateWithCache = (maxTime: number = 5000): Middleware => async (
 }
 
 const setNewState: Middleware = async (context, restMiddlewares) => {
-  const { modelName, newState, next, Global, disableSelectorUpdate } = context
+  const {
+    modelName,
+    newState,
+    next,
+    Global,
+    disableSelectorUpdate,
+    type
+  } = context
   if (Global.Setter.functionSetter[modelName] && !disableSelectorUpdate) {
     Object.keys(Global.Setter.functionSetter[modelName]).map((key) => {
       const setter = Global.Setter.functionSetter[modelName][key]
@@ -70,8 +77,8 @@ const setNewState: Middleware = async (context, restMiddlewares) => {
       }
     })
   }
-  if (newState) {
-    setPartialState(modelName, newState)
+  if (newState || type === 'useModel') {
+    setPartialState(modelName, newState || {})
     return await next(restMiddlewares)
   }
 }

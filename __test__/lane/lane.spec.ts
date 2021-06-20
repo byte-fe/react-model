@@ -29,6 +29,42 @@ describe('lane model', () => {
     })
   })
 
+  test('false value can be accepted', async () => {
+    const { useStore } = createStore(() => {
+      const [count, setCount] = useModel(true)
+      return { count, setCount }
+    })
+
+    let renderTimes = 0
+    const { result, rerender } = renderHook(() => {
+      const { count, setCount } = useStore()
+      renderTimes += 1
+      return { renderTimes, count, setCount }
+    })
+    await act(async () => {
+      expect(renderTimes).toEqual(1)
+      expect(result.current.count).toBe(true)
+    })
+
+    await act(async () => {
+      await result.current.setCount(false)
+    })
+
+    await act(() => {
+      expect(renderTimes).toEqual(2)
+      expect(result.current.count).toBe(false)
+    })
+
+    await act(() => {
+      rerender()
+    })
+
+    await act(() => {
+      expect(renderTimes).toEqual(3)
+      expect(result.current.count).toBe(false)
+    })
+  })
+
   test('multiple models', async () => {
     const { useStore } = createStore(() => {
       const [count, setCount] = useModel(1)

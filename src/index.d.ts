@@ -96,7 +96,7 @@ interface BaseContext<S = {}, P = any> {
 
 interface InnerContext<S = {}> extends BaseContext<S> {
   // Actions with function type context will always invoke current component's reload.
-  type?: 'function' | 'outer' | 'class'
+  type?: 'function' | 'outer' | 'class' | 'useModel'
   __hash?: string
 }
 
