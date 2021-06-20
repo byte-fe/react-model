@@ -27,7 +27,7 @@ function useModel<S>(state: S): [S, (state: S) => void] {
   const storeId = Global.currentStoreId
   const index = Global.mutableState[storeId].count
   Global.mutableState[storeId].count += 1
-  if (!Global.mutableState[storeId][index]) {
+  if (!Global.mutableState[storeId].hasOwnProperty(index)) {
     Global.mutableState[storeId][index] = state
   }
 
@@ -44,7 +44,7 @@ function useModel<S>(state: S): [S, (state: S) => void] {
       modelName: '__' + storeId,
       newState: {},
       params: undefined,
-      type: 'outer'
+      type: 'useModel'
     }
     Global.mutableState[storeId][index] = state
     return await applyMiddlewares(actionMiddlewares, context)
