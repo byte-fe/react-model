@@ -23,15 +23,22 @@ const isAPI = (input: any): input is API => {
 
 // useModel rules:
 // DON'T USE useModel OUTSIDE createStore func
-function useModel<S>(state: S): [S, (state: S) => void] {
+function useModel<S>(
+  state: S | (() => S)
+): [S, (state: S | ((state: S) => S)) => void] {
   const storeId = Global.currentStoreId
   const index = Global.mutableState[storeId].count
   Global.mutableState[storeId].count += 1
   if (!Global.mutableState[storeId].hasOwnProperty(index)) {
-    Global.mutableState[storeId][index] = state
+    if (typeof state === 'function') {
+      // @ts-ignore
+      Global.mutableState[storeId][index] = state()
+    } else {
+      Global.mutableState[storeId][index] = state
+    }
   }
 
-  const setter = async (state: S) => {
+  const setter = async (state: S | ((prevState: S) => S)) => {
     const context: InnerContext = {
       Global,
       action: () => {
@@ -46,7 +53,16 @@ function useModel<S>(state: S): [S, (state: S) => void] {
       params: undefined,
       type: 'useModel'
     }
-    Global.mutableState[storeId][index] = state
+
+    if (typeof state === 'function') {
+      // @ts-ignore
+      Global.mutableState[storeId][index] = state(
+        Global.mutableState[storeId][index]
+      )
+    } else {
+      Global.mutableState[storeId][index] = state
+    }
+    // pass update event to other components subscribe the same store
     return await applyMiddlewares(actionMiddlewares, context)
   }
   return [Global.mutableState[storeId][index], setter]
@@ -124,11 +140,9 @@ function Model<M extends Models, MT extends ModelType, E>(
   } else {
     if (models.actions) {
       console.error('invalid model(s) schema: ', models)
-      const errorFn =
-        (fakeReturnVal?: unknown) =>
-        (..._: unknown[]) => {
-          return fakeReturnVal
-        }
+      const errorFn = (fakeReturnVal?: unknown) => (..._: unknown[]) => {
+        return fakeReturnVal
+      }
       // Fallback Functions
       return {
         __ERROR__: true,
@@ -325,41 +339,39 @@ class Provider extends PureComponent<{}, Global['State']> {
   }
 }
 
-const connect =
-  (
-    modelName: string,
-    mapState?: Function | undefined,
-    mapActions?: Function | undefined
-  ) =>
-  (Component: typeof React.Component | typeof PureComponent) =>
-    class P extends PureComponent<any> {
-      render() {
-        const { state: prevState = {}, actions: prevActions = {} } = this.props
-        return (
-          <Consumer>
-            {(models) => {
-              const { [`${modelName}`]: state } = models as any
-              const actions = Global.Actions[modelName]
-              return (
-                <Component
-                  {...this.props}
-                  state={{
-                    ...prevState,
-                    ...(mapState ? mapState(state) : state)
-                  }}
-                  actions={{
-                    ...prevActions,
-                    ...(mapActions
-                      ? mapActions(consumerActions(actions, { modelName }))
-                      : consumerActions(actions, { modelName }))
-                  }}
-                />
-              )
-            }}
-          </Consumer>
-        )
-      }
+const connect = (
+  modelName: string,
+  mapState?: Function | undefined,
+  mapActions?: Function | undefined
+) => (Component: typeof React.Component | typeof PureComponent) =>
+  class P extends PureComponent<any> {
+    render() {
+      const { state: prevState = {}, actions: prevActions = {} } = this.props
+      return (
+        <Consumer>
+          {(models) => {
+            const { [`${modelName}`]: state } = models as any
+            const actions = Global.Actions[modelName]
+            return (
+              <Component
+                {...this.props}
+                state={{
+                  ...prevState,
+                  ...(mapState ? mapState(state) : state)
+                }}
+                actions={{
+                  ...prevActions,
+                  ...(mapActions
+                    ? mapActions(consumerActions(actions, { modelName }))
+                    : consumerActions(actions, { modelName }))
+                }}
+              />
+            )
+          }}
+        </Consumer>
+      )
     }
+  }
 
 export {
   actionMiddlewares,
