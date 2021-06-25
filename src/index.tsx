@@ -51,7 +51,7 @@ function useModel<S>(
       modelName: '__' + storeId,
       newState: {},
       params: undefined,
-      type: 'useModel'
+      type: 'u'
     }
 
     if (typeof state === 'function') {
@@ -268,7 +268,7 @@ const getState = (modelName: keyof typeof Global.State) => {
 
 const getActions = (
   modelName: string,
-  baseContext: Partial<Context> = { type: 'outer' }
+  baseContext: Partial<Context> = { type: 'o' }
 ) => {
   const updaters: any = {}
   Object.keys(Global.Actions[modelName]).forEach(
@@ -317,7 +317,7 @@ const useStore = (modelName: string, selector?: Function) => {
 
   const updaters = getActions(modelName, {
     __hash: hash.current,
-    type: 'function'
+    type: 'f'
   })
   return [
     selector ? selector(getState(modelName)) : getState(modelName),
