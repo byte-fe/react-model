@@ -33,7 +33,7 @@ const consumerAction = (
     modelName: modelContext.modelName,
     newState: null,
     params,
-    type: 'outer'
+    type: 'o'
   }
   return await applyMiddlewares(actionMiddlewares, context)
 }

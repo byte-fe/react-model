@@ -77,7 +77,7 @@ const setNewState: Middleware = async (context, restMiddlewares) => {
       }
     })
   }
-  if (newState || type === 'useModel') {
+  if (newState || type === 'u') {
     setPartialState(modelName, newState || {})
     return await next(restMiddlewares)
   }
@@ -87,7 +87,7 @@ const stateUpdater: Middleware = async (context, restMiddlewares) => {
   const { modelName, next, Global, __hash } = context
   const setter = Global.Setter.functionSetter[modelName]
   if (
-    context.type === 'function' &&
+    context.type === 'f' &&
     __hash &&
     setter &&
     setter[__hash] &&
