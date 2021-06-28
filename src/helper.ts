@@ -73,6 +73,9 @@ const setPartialState = (
   return Global.State
 }
 
+const get = <T>(p: Array<string | number>) => (o: T) =>
+  p.reduce((xs: any, key) => (xs && xs[key] ? xs[key] : null), o)
+
 const timeout = <T>(ms: number, data: T): Promise<T> =>
   new Promise((resolve) =>
     setTimeout(() => {
@@ -150,6 +153,7 @@ export {
   setPartialState,
   shallowEqual,
   timeout,
+  get,
   getCache,
   getInitialState
 }

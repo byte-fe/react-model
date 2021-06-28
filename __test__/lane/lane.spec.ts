@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 import { renderHook, act } from '@testing-library/react-hooks'
-import { createStore, useModel } from '../../src'
+import { createStore, useModel, Model } from '../../src'
 
 describe('lane model', () => {
   test('single model', async () => {
@@ -14,16 +14,49 @@ describe('lane model', () => {
       renderTimes += 1
       return { renderTimes, count, setCount }
     })
-    await act(async () => {
+
+    act(() => {
+      expect(result.current.renderTimes).toEqual(1)
+      expect(result.current.count).toBe(1)
+    })
+
+    act(() => {
+      result.current.setCount(5)
+    })
+
+    act(() => {
+      expect(renderTimes).toEqual(2)
+      expect(result.current.count).toBe(5)
+    })
+  })
+
+  test('create store with namespace', async () => {
+    const { useStore } = Model({})
+    createStore('Shared', () => {
+      const [count, setCount] = useModel(1)
+      return { count, setCount }
+    })
+
+    let renderTimes = 0
+    const { result } = renderHook(() => {
+      // @ts-ignore
+      const { count, setCount } = useStore('Shared')
+      console.group('count: ', count)
+      console.group('setCount: ', setCount)
+      renderTimes += 1
+      return { renderTimes, count, setCount }
+    })
+    act(() => {
       expect(renderTimes).toEqual(1)
       expect(result.current.count).toBe(1)
     })
 
-    await act(async () => {
-      await result.current.setCount(5)
+    act(() => {
+      // @ts-ignore
+      result.current.setCount(5)
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(2)
       expect(result.current.count).toBe(5)
     })
@@ -40,16 +73,17 @@ describe('lane model', () => {
       renderTimes += 1
       return { renderTimes, count, setCount }
     })
-    await act(async () => {
+
+    act(() => {
       expect(renderTimes).toEqual(1)
       expect(result.current.count).toBe(1)
     })
 
-    await act(async () => {
-      await result.current.setCount((count) => count + 1)
+    act(() => {
+      result.current.setCount((count) => count + 1)
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(2)
       expect(result.current.count).toBe(2)
     })
@@ -67,25 +101,25 @@ describe('lane model', () => {
       renderTimes += 1
       return { renderTimes, count, setCount }
     })
-    await act(async () => {
+    act(() => {
       expect(renderTimes).toEqual(1)
       expect(result.current.count).toBe(true)
     })
 
-    await act(async () => {
-      await result.current.setCount(false)
+    act(() => {
+      result.current.setCount(false)
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(2)
       expect(result.current.count).toBe(false)
     })
 
-    await act(() => {
+    act(() => {
       rerender()
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(3)
       expect(result.current.count).toBe(false)
     })
@@ -103,26 +137,26 @@ describe('lane model', () => {
       renderTimes += 1
       return { renderTimes, count, setCount, name, setName }
     })
-    await act(async () => {
+    act(() => {
       expect(renderTimes).toEqual(1)
       expect(result.current.count).toBe(1)
     })
 
-    await act(async () => {
-      await result.current.setCount(5)
+    act(() => {
+      result.current.setCount(5)
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(2)
       expect(result.current.count).toBe(5)
       expect(result.current.name).toBe('Jane')
     })
 
-    await act(async () => {
-      await result.current.setName('Bob')
+    act(() => {
+      result.current.setName('Bob')
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(3)
       expect(result.current.name).toBe('Bob')
       expect(result.current.count).toBe(5)
@@ -147,26 +181,27 @@ describe('lane model', () => {
       renderTimes += 1
       return { renderTimes, count, setCount, name, setName }
     })
-    await act(async () => {
+
+    act(() => {
       expect(renderTimes).toEqual(1)
       expect(result.current.count).toBe(1)
     })
 
-    await act(async () => {
-      await result.current.setCount(5)
+    act(() => {
+      result.current.setCount(5)
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(2)
       expect(result.current.count).toBe(5)
       expect(result.current.name).toBe('Jane')
     })
 
-    await act(async () => {
-      await result.current.setName('Bob')
+    act(() => {
+      result.current.setName('Bob')
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(3)
       expect(result.current.name).toBe('Bob')
       expect(result.current.count).toBe(5)
@@ -190,16 +225,16 @@ describe('lane model', () => {
       renderTimes += 1
       return { renderTimes, count, setCount }
     })
-    await act(async () => {
+    act(() => {
       expect(renderTimes).toEqual(2)
       expect(mirrorResult.current.count).toBe(1)
     })
 
-    await act(async () => {
-      await result.current.setCount(5)
+    act(() => {
+      result.current.setCount(5)
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(4)
       expect(mirrorResult.current.count).toBe(5)
     })
@@ -234,46 +269,46 @@ describe('lane model', () => {
       renderTimes += 1
       return { renderTimes, data, setName, name, status, set }
     })
-    await act(async () => {
+    act(() => {
       expect(renderTimes).toEqual(2)
       expect(mirrorResult.current.name).toBe('Jane')
     })
 
-    await act(async () => {
-      await result.current.setData({ status: 'SUCCESS' })
+    act(() => {
+      result.current.setData({ status: 'SUCCESS' })
     })
 
     // Both component will rerender
     // TODO: Only rerender second FC
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(4)
       expect(mirrorResult.current.data).toEqual({ status: 'SUCCESS' })
     })
 
-    await act(async () => {
-      await mirrorResult.current.setName('Bob')
+    act(() => {
+      mirrorResult.current.setName('Bob')
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(6)
       expect(mirrorResult.current.name).toBe('Bob')
       expect(mirrorResult.current.status).toBe(false)
     })
 
-    await act(async () => {
-      await mirrorResult.current.set(true)
+    act(() => {
+      mirrorResult.current.set(true)
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(7)
       expect(mirrorResult.current.status).toBe(true)
     })
 
-    await act(async () => {
-      await mirrorResult.current.setName('Jane')
+    act(() => {
+      mirrorResult.current.setName('Jane')
     })
 
-    await act(() => {
+    act(() => {
       expect(renderTimes).toEqual(9)
       expect(mirrorResult.current.name).toBe('Jane')
       expect(mirrorResult.current.status).toBe(true)
