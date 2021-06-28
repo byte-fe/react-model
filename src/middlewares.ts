@@ -23,14 +23,28 @@ const tryCatch: Middleware = async (context, restMiddlewares) => {
 }
 
 const getNewState: Middleware = async (context, restMiddlewares) => {
-  const { action, modelName, consumerActions, params, next, Global } = context
-  context.newState =
-    (await action(params, {
-      actions: consumerActions(Global.Actions[modelName], { modelName }),
-      state: Global.State[modelName],
-      ...(Global.Context['__global'] || {}),
-      ...(Global.Context[modelName] || {})
-    })) || null
+  const {
+    action,
+    modelName,
+    consumerActions,
+    params,
+    next,
+    Global,
+    type
+  } = context
+  if (type === 'u') {
+    // @ts-ignore
+    context.newState = action()
+  } else {
+    context.newState =
+      (await action(params, {
+        actions: consumerActions(Global.Actions[modelName], { modelName }),
+        state: Global.State[modelName],
+        ...(Global.Context['__global'] || {}),
+        ...(Global.Context[modelName] || {})
+      })) || null
+  }
+
   return await next(restMiddlewares)
 }
 

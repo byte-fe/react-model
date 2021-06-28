@@ -24,7 +24,7 @@ let withDevTools = false
 
 let uid = 0 // The unique id of hooks
 let storeId = 0 // The unique id of stores
-let currentStoreId = 0 // Used for useModel
+let currentStoreId = '0' // Used for useModel
 
 export default {
   Actions,

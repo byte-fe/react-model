@@ -44,7 +44,7 @@ interface Global {
   withDevTools: boolean
   uid: number
   storeId: number
-  currentStoreId: number
+  currentStoreId: string
 }
 
 type ClassSetter = React.Dispatch<any> | undefined
