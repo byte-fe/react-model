@@ -83,6 +83,7 @@ npm install react-model
   - [Provider](#provider)
   - [connect](#connect)
 - [FAQ](#faq)
+  - [Migrate from 4.0.x to 4.1.x](#migrate-from-40x-to-41x)
   - [Migrate from 3.1.x to 4.x.x](#migrate-from-31x-to-4xx)
   - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger)
   - [How can I add custom middleware](#how-can-i-add-custom-middleware)
@@ -693,6 +694,77 @@ export default connect(
 [⇧ back to top](#table-of-contents)
 
 ## FAQ
+
+### Migrate from 4.0.x to 4.1.x
+
+1. replace Model with createStore
+
+`counter.ts`
+
+```ts
+import { createStore } from 'react-model'
+// Remove typedef below
+// type CounterState = {
+//  count: number
+// }
+
+// type CounterActionParams = {
+//   increment: number
+// }
+
+// v4.0.x model
+const Counter: ModelType<
+  CounterState,
+  CounterActionParams
+> = {
+  actions: {
+    increment: (params) => {
+      return (state) => {
+        state.count += params
+      }
+    }
+  },
+  state: { count: 0 }
+}
+
+// v4.1.x
+const Counter = createStore(() => {
+  const [state, setState] = useModel({ count: 0 })
+  const actions = {
+    increment: (params) => {
+      setState((state) => {
+        state.count += params
+      })
+    }
+  }
+  return [state, actions]
+})
+
+export default Counter
+```
+
+2. Remove Counter from model registry
+
+```ts
+const models = {
+  // Counter
+  Shared
+}
+
+export const { getInitialState, useStore, getState, actions, subscribe, unsubscribe } = Model(models)
+```
+
+3. update useStore calls in components
+
+```tsx
+// import { useStore } from 'models'
+import Counter from 'models/counter'
+
+const Component = () => {
+  // const [state, actions] = useStore('Counter')
+  const [state, actions] = Counter.useStore()
+}
+```
 
 ### Migrate from 3.1.x to 4.x.x
 

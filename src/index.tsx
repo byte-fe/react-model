@@ -26,7 +26,7 @@ const isAPI = (input: any): input is API => {
 // DON'T USE useModel OUTSIDE createStore func
 function useModel<S>(
   state: S | (() => S)
-): [S, (state: S | ((state: S) => S)) => void] {
+): [S, (state: Partial<S> | ((state: S) => S | void)) => void] {
   const storeId = Global.currentStoreId
   const index = Global.mutableState[storeId].count
   Global.mutableState[storeId].count += 1
@@ -39,13 +39,33 @@ function useModel<S>(
     }
   }
 
-  const setter = async (state: S | ((prevState: S) => S)) => {
+  const setter = async (state: Partial<S> | ((prevState: S) => S | void)) => {
+    if (typeof state === 'function') {
+      Global.mutableState[storeId][index] = produce(
+        Global.mutableState[storeId][index],
+        // @ts-ignore
+        state
+      )
+    } else {
+      if (
+        typeof Global.mutableState[storeId][index] === 'object' &&
+        typeof state === 'object'
+      ) {
+        Global.mutableState[storeId][index] = {
+          ...Global.mutableState[storeId][index],
+          ...state
+        }
+      } else {
+        Global.mutableState[storeId][index] = state
+      }
+    }
+
     const context: InnerContext = {
       Global,
       action: () => {
         return typeof state === 'function'
           ? // @ts-ignore
-            state(Global.mutableState[storeId][index])
+            Global.mutableState[storeId][index]
           : state
       },
       actionName: 'setter',
@@ -58,14 +78,6 @@ function useModel<S>(
       type: 'u'
     }
 
-    if (typeof state === 'function') {
-      // @ts-ignore
-      Global.mutableState[storeId][index] = state(
-        Global.mutableState[storeId][index]
-      )
-    } else {
-      Global.mutableState[storeId][index] = state
-    }
     // pass update event to other components subscribe the same store
     return await applyMiddlewares(actionMiddlewares, context)
   }
