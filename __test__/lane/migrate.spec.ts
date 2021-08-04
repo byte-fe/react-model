@@ -1,8 +1,6 @@
 /// <reference path="../index.d.ts" />
 import { renderHook, act } from '@testing-library/react-hooks'
 import { createStore, useModel } from '../../src'
-import { timeout } from '../../src/helper'
-// import { timeout } from '../../src/helper'
 
 describe('migrate test', async () => {
   test('migrate from v4.0.x', async () => {
@@ -53,11 +51,9 @@ describe('migrate test', async () => {
       result.current.actions.increment(5)
     })
 
-    await timeout(300, {})
 
     act(() => {
-      // expect(renderTimes).toEqual(3)
-      console.group('expect result.current.state.count')
+      expect(renderTimes).toEqual(3)
       expect(result.current.state.count).toBe(10)
     })
   })
