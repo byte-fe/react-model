@@ -737,7 +737,7 @@ const Counter = createStore(() => {
       })
     }
   }
-  return [state, actions]
+  return [state, actions] as const
 })
 
 export default Counter
