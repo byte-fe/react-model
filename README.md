@@ -50,6 +50,8 @@ const TodoList = () => {
 
 ## Quick Start
 
+[createStore + useModel](https://codesandbox.io/s/createstore-usemodal-all-of-your-state-4u8s6)
+
 [CodeSandbox: TodoMVC](https://codesandbox.io/s/moyxon99jx)
 
 [Next.js + react-model work around](https://github.com/byte-fe/react-model-experiment)
@@ -65,6 +67,7 @@ npm install react-model
 ## Table of Contents
 
 - [Core Concept](#core-concept)
+  - [createStore](#createstore)
   - [Model](#model)
   - [Model Register](#model-register)
   - [useStore](#usestore)
@@ -90,6 +93,47 @@ npm install react-model
   - [How can I customize each model's middlewares?](#how-can-i-customize-each-models-middlewares)
 
 ## Core Concept
+
+### createStore
+
+You can create a shared / local store by createStore api.
+
+[Online Demo](https://codesandbox.io/s/createstore-usemodal-all-of-your-state-4u8s6)
+
+`model/counter.ts`
+
+```typescript
+import { useState } from 'react'
+import { useModel } from 'react-model'
+const { useStore } = createStore(() => {
+  const [localCount, setLocalCount] = useState(1) // Local State, Independent in different components
+  const [count, setCount] = useModel(1) // Global State, the value is the same in different components
+  const incLocal = () => {
+    setLocalCount(localCount + 1)
+  }
+  const inc = () => {
+    setCount(c => c + 1)
+  }
+  return { count, localCount, incLocal, inc }
+})
+
+export default useStore
+```
+
+`page/counter-1.tsx`
+
+```tsx
+import useSharedCounter from 'models/global-counter'
+const Page = () => {
+  const { count, localCount, inc, incLocal } = useStore()
+  return <div>
+    <span>count: { count }</span>
+    <span>localCount: { localCount }</span>
+    <button onClick={inc}>inc</button>
+    <button onClick={incLocal}>incLocal</button>
+  </div>
+}
+```
 
 ### Model
 

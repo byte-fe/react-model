@@ -69,7 +69,6 @@ function useModel<S>(
     // pass update event to other components subscribe the same store
     return await applyMiddlewares(actionMiddlewares, context)
   }
-  console.log('Global.mutableState[storeId]: ', Global.mutableState[storeId])
   return [Global.mutableState[storeId][index], setter]
 }
 
