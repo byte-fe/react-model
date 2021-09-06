@@ -125,6 +125,46 @@ describe('lane model', () => {
     })
   })
 
+  test('array value is protected', async () => {
+    const { useStore } = createStore(() => {
+      const [list, setList] = useModel(<Array<number>>[])
+      return { list, setList }
+    })
+
+    let renderTimes = 0
+    const { result, rerender } = renderHook(() => {
+      const { list, setList } = useStore()
+      renderTimes += 1
+      return { renderTimes, list, setList }
+    })
+    act(() => {
+      expect(renderTimes).toEqual(1)
+      expect(result.current.list.constructor.name).toBe('Array')
+    })
+
+    act(() => {
+      result.current.setList([1, 2])
+    })
+
+    act(() => {
+      expect(renderTimes).toEqual(2)
+      expect(result.current.list.constructor.name).toBe('Array')
+      expect(result.current.list[0]).toBe(1)
+      expect(result.current.list[1]).toBe(2)
+    })
+
+    act(() => {
+      rerender()
+    })
+
+    act(() => {
+      expect(renderTimes).toEqual(3)
+      expect(result.current.list.constructor.name).toBe('Array')
+      expect(result.current.list[0]).toBe(1)
+      expect(result.current.list[1]).toBe(2)
+    })
+  })
+
   test('multiple models', async () => {
     const { useStore } = createStore(() => {
       const [count, setCount] = useModel(1)

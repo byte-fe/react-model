@@ -48,8 +48,10 @@ function useModel<S>(
       )
     } else {
       if (
-        typeof Global.mutableState[storeId][index] === 'object' &&
-        typeof state === 'object'
+        Global.mutableState[storeId][index] &&
+        state &&
+        Global.mutableState[storeId][index].constructor.name === 'Object' &&
+        state.constructor.name === 'Object'
       ) {
         Global.mutableState[storeId][index] = {
           ...Global.mutableState[storeId][index],
