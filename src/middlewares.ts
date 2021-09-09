@@ -114,7 +114,10 @@ const stateUpdater: Middleware = async (context, restMiddlewares) => {
 
 const subscription: Middleware = async (context, restMiddlewares) => {
   const { modelName, actionName, next, Global } = context
-  const subscriptions = Global.subscriptions[`${modelName}_${actionName}`]
+  const subscriptions =
+    context.type === 'u'
+      ? Global.subscriptions[modelName]
+      : Global.subscriptions[`${modelName}_${actionName}`]
   if (subscriptions) {
     subscriptions.forEach((callback) => {
       callback(context)
