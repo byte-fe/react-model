@@ -113,7 +113,21 @@ function createStore<S>(n: any, u?: any): LaneAPI<S> {
   return {
     // TODO: support selector
     useStore: () => useStore(storeId, selector),
-    getState: () => selector()
+    getState: () => selector(),
+    subscribe: (callback: () => void) => {
+      if (!Global.subscriptions[storeId]) {
+        Global.subscriptions[storeId] = []
+      }
+      Global.subscriptions[storeId].push(callback)
+    },
+    unsubscribe: (callback?: () => void) => {
+      if (Global.subscriptions[storeId]) {
+        if (callback) {
+          const idx = Global.subscriptions[storeId].indexOf(callback)
+          if (idx >= 0) Global.subscriptions[storeId].splice(idx)
+        }
+      }
+    }
   }
 }
 

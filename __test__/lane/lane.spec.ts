@@ -62,6 +62,44 @@ describe('lane model', () => {
     })
   })
 
+  test('subscribe model', () => {
+    let subscribeTimes = 0
+    const { subscribe, unsubscribe, getState } = createStore(() => {
+      const [count, setCount] = useModel(1)
+      return { count, setCount }
+    })
+
+    const callback = () => {
+      subscribeTimes += 1
+    }
+
+    subscribe(callback)
+
+    act(() => {
+      expect(subscribeTimes).toEqual(0)
+    })
+
+    act(() => {
+      getState().setCount(5)
+    })
+
+    act(() => {
+      expect(subscribeTimes).toEqual(1)
+      expect(getState().count).toBe(5)
+    })
+
+    unsubscribe(callback)
+
+    act(() => {
+      getState().setCount(15)
+    })
+
+    act(() => {
+      expect(subscribeTimes).toEqual(1)
+      expect(getState().count).toBe(15)
+    })
+  })
+
   test('pass function to useModel ', async () => {
     const { useStore } = createStore(() => {
       const [count, setCount] = useModel(() => 1)
