@@ -124,7 +124,7 @@ function createStore<S>(n: any, u?: any): LaneAPI<S> {
       if (Global.subscriptions[storeId]) {
         if (callback) {
           const idx = Global.subscriptions[storeId].indexOf(callback)
-          if (idx >= 0) Global.subscriptions[storeId].splice(idx)
+          if (idx >= 0) Global.subscriptions[storeId].splice(idx, 1)
         }
       }
     }
