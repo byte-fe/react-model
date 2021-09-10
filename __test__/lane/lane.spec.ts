@@ -69,11 +69,16 @@ describe('lane model', () => {
       return { count, setCount }
     })
 
-    const callback = () => {
+    const callback_1 = () => {
       subscribeTimes += 1
     }
 
-    subscribe(callback)
+    const callback_2 = () => {
+      subscribeTimes += 1
+    }
+
+    subscribe(callback_1)
+    subscribe(callback_2)
 
     act(() => {
       expect(subscribeTimes).toEqual(0)
@@ -84,18 +89,18 @@ describe('lane model', () => {
     })
 
     act(() => {
-      expect(subscribeTimes).toEqual(1)
+      expect(subscribeTimes).toEqual(2)
       expect(getState().count).toBe(5)
     })
 
-    unsubscribe(callback)
+    unsubscribe(callback_1)
 
     act(() => {
       getState().setCount(15)
     })
 
     act(() => {
-      expect(subscribeTimes).toEqual(1)
+      expect(subscribeTimes).toEqual(3)
       expect(getState().count).toBe(15)
     })
   })
