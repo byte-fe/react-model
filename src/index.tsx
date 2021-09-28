@@ -173,6 +173,16 @@ function Model<M extends Models, MT extends ModelType, E>(
       useStore: (selector?: Function) => useStore(hash, selector)
     }
   } else {
+    if (initialState) {
+      // TODO: support multi model group under SSR
+      Global.gid = 1
+    } else {
+      Global.gid += 1
+    }
+    let prefix = ''
+    if (Global.gid > 1) {
+      prefix = Global.gid + '_'
+    }
     if (models.actions) {
       console.error('invalid model(s) schema: ', models)
       const errorFn = (fakeReturnVal?: unknown) => (..._: unknown[]) => {
@@ -196,8 +206,10 @@ function Model<M extends Models, MT extends ModelType, E>(
       })
     }
     extContext && (Global.Context['__global'] = extContext)
-    Object.keys(models).forEach((name) => {
-      const model = models[name]
+    let actions: { [name: string]: any } = {}
+    Object.keys(models).forEach((n) => {
+      let name = prefix + n
+      const model = models[n]
       if (model.__ERROR__) {
         // Fallback State and Actions when model schema is invalid
         console.error(name + " model's schema is invalid")
@@ -239,12 +251,9 @@ function Model<M extends Models, MT extends ModelType, E>(
         Global.Middlewares[name] = Global.Middlewares[model.__id]
         Global.Context[name] = Global.Context[model.__id]
       }
-    })
 
-    const actions = Object.keys(models).reduce(
-      (o, modelName) => ({ ...o, [modelName]: getActions(modelName) }),
-      {}
-    )
+      actions[n] = getActions(name)
+    })
 
     Global.withDevTools =
       typeof window !== 'undefined' &&
@@ -255,12 +264,23 @@ function Model<M extends Models, MT extends ModelType, E>(
     }
     return {
       actions,
-      getActions,
-      getInitialState,
-      getState,
-      subscribe,
-      unsubscribe,
-      useStore
+      getActions: (name: string) => getActions(prefix + name),
+      getInitialState: async <T extends { modelName: string | string[] }>(
+        context?: T,
+        config?: { isServer?: boolean }
+      ) => getInitialState(context, { ...config, prefix }),
+      getState: (name: string) => getState(prefix + name),
+      subscribe: (
+        name: string,
+        actions: keyof MT['actions'] | Array<keyof MT['actions']>,
+        callback: () => void
+      ) => subscribe(prefix + name, actions as string | string[], callback),
+      unsubscribe: (
+        name: string,
+        actionName: keyof MT['actions'] | Array<keyof MT['actions']>
+      ) => unsubscribe(prefix + name, actionName as string | string[]),
+      useStore: (name: string, selector?: Function) =>
+        useStore(prefix + name, selector)
     } as APIs<M>
   }
 }

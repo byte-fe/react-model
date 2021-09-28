@@ -42,6 +42,7 @@ interface Global {
   Setter: Setter
   devTools: any
   withDevTools: boolean
+  gid: number
   uid: number
   storeId: number
   currentStoreId: string
