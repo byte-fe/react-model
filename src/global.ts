@@ -25,6 +25,7 @@ let withDevTools = false
 let uid = 0 // The unique id of hooks
 let storeId = 0 // The unique id of stores
 let currentStoreId = '0' // Used for useModel
+let gid = 0 // The unique id of models' group
 
 export default {
   Actions,
@@ -36,6 +37,7 @@ export default {
   devTools,
   subscriptions,
   mutableState,
+  gid,
   uid,
   storeId,
   currentStoreId,

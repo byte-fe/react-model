@@ -84,18 +84,19 @@ const timeout = <T>(ms: number, data: T): Promise<T> =>
     }, ms)
   )
 
-const getInitialState = async <T extends { modelName: string }>(
+const getInitialState = async <T extends { modelName: string | string[] }>(
   context?: T,
-  config?: { isServer?: boolean }
+  config?: { isServer?: boolean; prefix?: string }
 ) => {
   const ServerState: { [name: string]: any } = { __FROM_SERVER__: true }
   await Promise.all(
     Object.keys(Global.State).map(async (modelName) => {
+      let prefix = config?.prefix || ''
       if (
         !context ||
         !context.modelName ||
-        modelName === context.modelName ||
-        context.modelName.indexOf(modelName) !== -1
+        modelName === prefix + context.modelName ||
+        context.modelName.indexOf(prefix + modelName) !== -1
       ) {
         const asyncGetter = Global.AsyncState[modelName]
         const asyncState = asyncGetter ? await asyncGetter(context) : {}
