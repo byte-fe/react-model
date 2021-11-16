@@ -3,7 +3,13 @@
 import produce, { enableES5 } from 'immer'
 enableES5()
 import * as React from 'react'
-import { PureComponent, useLayoutEffect, useState, useRef } from 'react'
+import {
+  PureComponent,
+  useLayoutEffect,
+  useEffect,
+  useState,
+  useRef
+} from 'react'
 import Global from './global'
 import {
   Consumer,
@@ -13,6 +19,9 @@ import {
   GlobalContext
 } from './helper'
 import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
+
+const useStoreEffect =
+  typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 const isModelType = (input: any): input is ModelType => {
   return (input as ModelType).state !== undefined
@@ -360,7 +369,7 @@ const useStore = (modelName: string, selector?: Function) => {
   const usedSelector = isFromCreateStore ? mutableState.selector : selector
   const usedState = isFromCreateStore ? mutableState : getState(modelName)
 
-  useLayoutEffect(() => {
+  useStoreEffect(() => {
     Global.uid += 1
     const local_hash = '' + Global.uid
     hash.current = local_hash

@@ -91,7 +91,7 @@ const getInitialState = async <T extends { modelName: string | string[] }>(
   const ServerState: { [name: string]: any } = { __FROM_SERVER__: true }
   await Promise.all(
     Object.keys(Global.State).map(async (modelName) => {
-      let prefix = config?.prefix || ''
+      let prefix = (config && config.prefix) || ''
       if (
         !context ||
         !context.modelName ||
