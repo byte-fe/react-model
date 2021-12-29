@@ -8,6 +8,7 @@ import {
   useLayoutEffect,
   useEffect,
   useState,
+  useContext,
   useRef
 } from 'react'
 import Global from './global'
@@ -95,6 +96,98 @@ function useModel<S>(
   return [Global.mutableState[storeId][index], setter]
 }
 
+function useAtom<S>(
+  state: S | (() => S)
+): [S, (state: Partial<S> | ((state: S) => S | void)) => void] {
+  const storeId = Global.currentStoreId
+  const index = Global.mutableState[storeId].count
+  Global.mutableState[storeId].count += 1
+  const globalStates = useContext(GlobalContext)
+  if (!Global.mutableState[storeId].hasOwnProperty(index)) {
+    if (typeof state === 'function') {
+      // @ts-ignore
+      Global.mutableState[storeId][index] = state()
+    } else {
+      Global.mutableState[storeId][index] = state
+    }
+  }
+
+  const setter = async (state: Partial<S> | ((prevState: S) => S | void)) => {
+    const context: InnerContext = {
+      Global,
+      action: () => {
+        if (!Global.Setter.classSetter) return
+        if (typeof state === 'function') {
+          Global.Setter.classSetter((stores: any) => {
+            let newState: any
+            if (!stores[storeId].hasOwnProperty(index)) {
+              newState = produce(
+                Global.mutableState[storeId][index],
+                // @ts-ignore
+                state
+              )
+            } else {
+              newState = produce(
+                stores[storeId][index],
+                // @ts-ignore
+                state
+              )
+            }
+            return produce(stores, (s: any) => {
+              s[storeId][index] = newState
+            })
+          })
+        } else {
+          Global.Setter.classSetter((stores: any) => {
+            if (
+              stores[storeId][index] &&
+              state &&
+              stores[storeId][index].constructor.name === 'Object' &&
+              state.constructor.name === 'Object'
+            ) {
+              return produce(stores, (s: any) => {
+                s[storeId][index] = { ...s[storeId][index], ...state }
+              })
+            } else if (
+              state.constructor.name === 'Object' &&
+              !stores[storeId][index] &&
+              Global.mutableState[storeId][index].constructor.name === 'Object'
+            ) {
+              return produce(stores, (s: any) => {
+                s[storeId][index] = {
+                  ...Global.mutableState[storeId][index],
+                  ...state
+                }
+              })
+            } else {
+              return produce(stores, (s: any) => {
+                s[storeId][index] = state
+              })
+            }
+          })
+        }
+      },
+      actionName: 'setter',
+      consumerActions,
+      disableSelectorUpdate: true,
+      middlewareConfig: {},
+      modelName: storeId,
+      newState: {},
+      params: undefined,
+      type: 'u'
+    }
+
+    // pass update event to other components subscribe the same store
+    return await applyMiddlewares(actionMiddlewares, context)
+  }
+  return [
+    globalStates[storeId][index] === undefined
+      ? Global.mutableState[storeId][index]
+      : globalStates[storeId][index],
+    setter
+  ]
+}
+
 function createStore<S>(useHook: CustomModelHook<S>): LaneAPI<S>
 function createStore<S>(name: string, useHook: CustomModelHook<S>): LaneAPI<S>
 function createStore<S>(n: any, u?: any): LaneAPI<S> {
@@ -106,6 +199,11 @@ function createStore<S>(n: any, u?: any): LaneAPI<S> {
   }
   if (!Global.mutableState[storeId]) {
     Global.mutableState[storeId] = { count: 0 }
+  }
+  if (!Global.State[storeId]) {
+    Global.State = produce(Global.State, (s) => {
+      s[storeId] = {}
+    })
   }
   // Global.currentStoreId = storeId
   // const state = useHook()
@@ -400,6 +498,7 @@ const useStore = (modelName: string, selector?: Function) => {
 class Provider extends PureComponent<{}, Global['State']> {
   state = Global.State
   render() {
+    console.info('Provider rerender!', this.state)
     const { children } = this.props
     Global.Setter.classSetter = this.setState.bind(this)
     return (
@@ -447,6 +546,7 @@ const connect = (
 export {
   actionMiddlewares,
   createStore,
+  useAtom,
   useModel,
   Model,
   middlewares,
