@@ -1,12 +1,12 @@
 /// <reference path="../index.d.ts" />
 import { renderHook, act } from '@testing-library/react-hooks'
-import { createStore, useAtom, Provider } from '../../src'
+import { createStore, useModel, Provider } from '../../src'
 
 describe('migrate test', () => {
   test('migrate from v4.0.x', () => {
     const wrapper = Provider
     const store = createStore(() => {
-      const [state, setState] = useAtom({ count: 0, otherKey: 'key' })
+      const [state, setState] = useModel({ count: 0, otherKey: 'key' })
       const actions = {
         add: (params: number) => {
           return setState({

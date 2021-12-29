@@ -17,11 +17,11 @@ The State management library for React
 🐛 Debug easily on test environment
 
 ```tsx
-import { useModel, createStore } from 'react-model'
+import { model, createStore } from 'react-model'
 
 // define model
 const useTodo = () => {
-  const [items, setItems] = useModel(['Install react-model', 'Read github docs', 'Build App'])
+  const [items, setItems] = model(['Install react-model', 'Read github docs', 'Build App'])
   return { items, setItems }
 }
 
@@ -50,7 +50,7 @@ const TodoList = () => {
 
 ## Quick Start
 
-[createStore + useModel](https://codesandbox.io/s/createstore-usemodal-all-of-your-state-4u8s6)
+[createStore + model](https://codesandbox.io/s/createstore-usemodal-all-of-your-state-4u8s6)
 
 [CodeSandbox: TodoMVC](https://codesandbox.io/s/moyxon99jx)
 
@@ -105,10 +105,10 @@ You can create a shared / local store by createStore api.
 
 ```typescript
 import { useState } from 'react'
-import { useModel } from 'react-model'
+import { model } from 'react-model'
 const { useStore } = createStore(() => {
   const [localCount, setLocalCount] = useState(1) // Local State, Independent in different components
-  const [count, setCount] = useModel(1) // Global State, the value is the same in different components
+  const [count, setCount] = model(1) // Global State, the value is the same in different components
   const incLocal = () => {
     setLocalCount(localCount + 1)
   }
@@ -729,7 +729,7 @@ const Counter: ModelType<
 
 // v4.1.x
 const Counter = createStore(() => {
-  const [state, setState] = useModel({ count: 0 })
+  const [state, setState] = model({ count: 0 })
   const actions = {
     increment: (params) => {
       setState((state) => {

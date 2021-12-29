@@ -3,13 +3,13 @@ import * as React from 'react'
 import { renderHook, act } from '@testing-library/react-hooks'
 import { render } from '@testing-library/react'
 import { act as RAct } from 'react-dom/test-utils'
-import { createStore, Model, useAtom, Provider } from '../../src'
+import { createStore, Model, useModel, Provider } from '../../src'
 
 describe('lane model', () => {
   test('single model', () => {
     const wrapper = Provider
     const { useStore } = createStore(() => {
-      const [count, setCount] = useAtom(1)
+      const [count, setCount] = useModel(1)
       return { count, setCount }
     })
     let renderTimes = 0
@@ -41,7 +41,7 @@ describe('lane model', () => {
     const wrapper = Provider
     const { useStore } = Model({})
     createStore('Shared', () => {
-      const [count, setCount] = useAtom(1)
+      const [count, setCount] = useModel(1)
       return { count, setCount }
     })
 
@@ -75,7 +75,7 @@ describe('lane model', () => {
     const wrapper = Provider
     let subscribeTimes = 0
     const { subscribe, unsubscribe, getState } = createStore(() => {
-      const [count, setCount] = useAtom(1)
+      const [count, setCount] = useModel(1)
       return { count, setCount }
     })
 
@@ -123,10 +123,10 @@ describe('lane model', () => {
     })
   })
 
-  test('pass function to useAtom ', () => {
+  test('pass function to useModel ', () => {
     const wrapper = Provider
     const { useStore } = createStore(() => {
-      const [count, setCount] = useAtom(() => 1)
+      const [count, setCount] = useModel(() => 1)
       return { count, setCount }
     })
     let renderTimes = 0
@@ -157,7 +157,7 @@ describe('lane model', () => {
   test('false value can be accepted', () => {
     const wrapper = Provider
     const { useStore } = createStore(() => {
-      const [count, setCount] = useAtom(true)
+      const [count, setCount] = useModel(true)
       return { count, setCount }
     })
 
@@ -197,7 +197,7 @@ describe('lane model', () => {
   test('array value is protected', () => {
     const wrapper = Provider
     const { useStore } = createStore(() => {
-      const [list, setList] = useAtom([] as number[])
+      const [list, setList] = useModel([] as number[])
       return { list, setList }
     })
 
@@ -241,7 +241,7 @@ describe('lane model', () => {
   test('object value is merged', () => {
     const wrapper = Provider
     const { useStore } = createStore(() => {
-      const [obj, setObj] = useAtom({ name: 'Bob', age: 17 })
+      const [obj, setObj] = useModel({ name: 'Bob', age: 17 })
       return { obj, setObj }
     })
 
@@ -294,8 +294,8 @@ describe('lane model', () => {
   test('multiple models', () => {
     const wrapper = Provider
     const { useStore } = createStore(() => {
-      const [count, setCount] = useAtom(1)
-      const [name, setName] = useAtom('Jane')
+      const [count, setCount] = useModel(1)
+      const [name, setName] = useModel('Jane')
       return { count, name, setName, setCount }
     })
     let renderTimes = 0
@@ -336,13 +336,13 @@ describe('lane model', () => {
   test('multiple stores', () => {
     const wrapper = Provider
     const { useStore } = createStore(() => {
-      const [count, setCount] = useAtom(1)
+      const [count, setCount] = useModel(1)
 
       return { count, setCount }
     })
 
     const { useStore: useOtherStore } = createStore(() => {
-      const [name, setName] = useAtom('Jane')
+      const [name, setName] = useModel('Jane')
       return { name, setName }
     })
     let renderTimes = 0
@@ -385,7 +385,7 @@ describe('lane model', () => {
   test('share single model between components', () => {
     const wrapper = Provider
     const { useStore } = createStore(() => {
-      const [count, setCount] = useAtom(1)
+      const [count, setCount] = useModel(1)
       return { count, setCount }
     })
     let renderTimes = 0
@@ -429,16 +429,16 @@ describe('lane model', () => {
     }
 
     const { useStore } = createStore(() => {
-      const [count, setCount] = useAtom(1)
-      const [name, setName] = useAtom('Jane')
+      const [count, setCount] = useModel(1)
+      const [name, setName] = useModel('Jane')
       return { count, setCount, name, setName }
     })
     const { useStore: useOtherStore } = createStore(() => {
-      const [data, setData] = useAtom({ status: 'UNKNOWN' })
+      const [data, setData] = useModel({ status: 'UNKNOWN' })
       return { data, setData }
     })
     const { useStore: useOnce } = createStore(() => {
-      const [status, set] = useAtom(false)
+      const [status, set] = useModel(false)
       return { status, set }
     })
     let renderTimes = 0

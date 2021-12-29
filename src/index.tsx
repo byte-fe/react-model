@@ -32,9 +32,9 @@ const isAPI = (input: any): input is API => {
   return (input as API).useStore !== undefined
 }
 
-// useModel rules:
-// DON'T USE useModel OUTSIDE createStore func
-function useModel<S>(
+// model rules:
+// DON'T USE model OUTSIDE createStore func
+function model<S>(
   state: S | (() => S)
 ): [S, (state: Partial<S> | ((state: S) => S | void)) => void] {
   const storeId = Global.currentStoreId
@@ -96,7 +96,7 @@ function useModel<S>(
   return [Global.mutableState[storeId][index], setter]
 }
 
-function useAtom<S>(
+function useModel<S>(
   state: S | (() => S)
 ): [S, (state: Partial<S> | ((state: S) => S | void)) => void] {
   const storeId = Global.currentStoreId
@@ -545,8 +545,8 @@ const connect = (
 export {
   actionMiddlewares,
   createStore,
-  useAtom,
   useModel,
+  model,
   Model,
   middlewares,
   Provider,

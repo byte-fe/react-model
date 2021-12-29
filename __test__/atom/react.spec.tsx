@@ -2,7 +2,7 @@
 import { renderHook, act } from '@testing-library/react-hooks'
 import { render } from '@testing-library/react'
 import { act as RAct } from 'react-dom/test-utils'
-import { createStore, useAtom, Provider } from '../../src'
+import { createStore, useModel, Provider } from '../../src'
 import { useState, useEffect } from 'react'
 import * as React from 'react'
 
@@ -164,8 +164,8 @@ describe('compatible with useState + useEffect', () => {
     const useCount = () => {
       // useState create local state
       const [count, setCount] = useState(1)
-      // useAtom create shared state
-      const [name, setName] = useAtom('Jane')
+      // useModel create shared state
+      const [name, setName] = useModel('Jane')
       return { count, setCount, name, setName }
     }
     const { useStore } = createStore(useCount)

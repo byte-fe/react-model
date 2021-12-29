@@ -1,11 +1,11 @@
 /// <reference path="../index.d.ts" />
 import { renderHook, act } from '@testing-library/react-hooks'
-import { createStore, useModel, Model } from '../../src'
+import { createStore, model, Model } from '../../src'
 
 describe('lane model', () => {
   test('single model', async () => {
     const { useStore } = createStore(() => {
-      const [count, setCount] = useModel(1)
+      const [count, setCount] = model(1)
       return { count, setCount }
     })
     let renderTimes = 0
@@ -33,7 +33,7 @@ describe('lane model', () => {
   test('create store with namespace', async () => {
     const { useStore } = Model({})
     createStore('Shared', () => {
-      const [count, setCount] = useModel(1)
+      const [count, setCount] = model(1)
       return { count, setCount }
     })
 
@@ -65,7 +65,7 @@ describe('lane model', () => {
   test('subscribe model', () => {
     let subscribeTimes = 0
     const { subscribe, unsubscribe, getState } = createStore(() => {
-      const [count, setCount] = useModel(1)
+      const [count, setCount] = model(1)
       return { count, setCount }
     })
 
@@ -105,9 +105,9 @@ describe('lane model', () => {
     })
   })
 
-  test('pass function to useModel ', async () => {
+  test('pass function to model ', async () => {
     const { useStore } = createStore(() => {
-      const [count, setCount] = useModel(() => 1)
+      const [count, setCount] = model(() => 1)
       return { count, setCount }
     })
     let renderTimes = 0
@@ -134,7 +134,7 @@ describe('lane model', () => {
 
   test('false value can be accepted', async () => {
     const { useStore } = createStore(() => {
-      const [count, setCount] = useModel(true)
+      const [count, setCount] = model(true)
       return { count, setCount }
     })
 
@@ -170,7 +170,7 @@ describe('lane model', () => {
 
   test('array value is protected', async () => {
     const { useStore } = createStore(() => {
-      const [list, setList] = useModel(<Array<number>>[])
+      const [list, setList] = model(<Array<number>>[])
       return { list, setList }
     })
 
@@ -210,8 +210,8 @@ describe('lane model', () => {
 
   test('multiple models', async () => {
     const { useStore } = createStore(() => {
-      const [count, setCount] = useModel(1)
-      const [name, setName] = useModel('Jane')
+      const [count, setCount] = model(1)
+      const [name, setName] = model('Jane')
       return { count, name, setName, setCount }
     })
     let renderTimes = 0
@@ -248,13 +248,13 @@ describe('lane model', () => {
 
   test('multiple stores', async () => {
     const { useStore } = createStore(() => {
-      const [count, setCount] = useModel(1)
+      const [count, setCount] = model(1)
 
       return { count, setCount }
     })
 
     const { useStore: useOtherStore } = createStore(() => {
-      const [name, setName] = useModel('Jane')
+      const [name, setName] = model('Jane')
       return { name, setName }
     })
     let renderTimes = 0
@@ -293,7 +293,7 @@ describe('lane model', () => {
 
   test('share single model between components', async () => {
     const { useStore } = createStore(() => {
-      const [count, setCount] = useModel(1)
+      const [count, setCount] = model(1)
       return { count, setCount }
     })
     let renderTimes = 0
@@ -325,16 +325,16 @@ describe('lane model', () => {
 
   test('complex case', async () => {
     const { useStore, getState } = createStore(() => {
-      const [count, setCount] = useModel(1)
-      const [name, setName] = useModel('Jane')
+      const [count, setCount] = model(1)
+      const [name, setName] = model('Jane')
       return { count, setCount, name, setName }
     })
     const { useStore: useOtherStore } = createStore(() => {
-      const [data, setData] = useModel({ status: 'UNKNOWN' })
+      const [data, setData] = model({ status: 'UNKNOWN' })
       return { data, setData }
     })
     const { useStore: useOnce } = createStore(() => {
-      const [status, set] = useModel(false)
+      const [status, set] = model(false)
       return { status, set }
     })
     let renderTimes = 0
