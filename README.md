@@ -79,10 +79,12 @@ npm install react-model
   - [SSR with Next.js](#ssr-with-nextjs)
   - [Middleware](#middleware)
   - [Expand Context](#expand-context)
+  - [Concurrent Mode Support](#concurrent-mode-support)
 - [Other Concept required by Class Component](#other-concept-required-by-class-component)
   - [Provider](#provider)
   - [connect](#connect)
 - [FAQ](#faq)
+  - [Migrate from 4.1.x to 5.x.x](#migrate-from-41x-to-5xx)
   - [Migrate from 4.0.x to 4.1.x](#migrate-from-40x-to-41x)
   - [Migrate from 3.1.x to 4.x.x](#migrate-from-31x-to-4xx)
   - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger)
@@ -587,6 +589,46 @@ actions.ext()
 
 [⇧ back to top](#table-of-contents)
 
+### Concurrent Mode Support
+
+To achieve [level-3 support](https://github.com/reactwg/react-18/discussions/70#discussion-3450022) for concurrent mode for specific state, you should only depend on React state.
+
+react-model provide `useModel` for developers out-of-box.
+
+It only needs a few changes for the startup example.
+
+```tsx
+import { Provider, useModel, createStore } from 'react-model'
+
+// define model
+const useTodo = () => {
+  // changes 1: model -> useModel
+  const [items, setItems] = useModel(['Install react-model', 'Read github docs', 'Build App'])
+  return { items, setItems }
+}
+
+// Model Register
+// NOTE : getState is only valid inside hooks component if Todo contains custom hooks like useModel / useState
+const { useStore } = createStore(Todo)
+
+const App = () => {
+  // changes 2: wrap root components with Provider
+  return (
+    <Provider>
+      <TodoList />
+    </Provider>
+  )
+}
+
+const TodoList = () => {
+  const { items, setItems } = useStore()
+  return <div>
+    <Addon handler={setItems} />
+    {state.items.map((item, index) => (<Todo key={index} item={item} />))}
+  </div>
+}
+```
+
 ## Other Concept required by Class Component
 
 ### Provider
@@ -694,6 +736,33 @@ export default connect(
 [⇧ back to top](#table-of-contents)
 
 ## FAQ
+
+### Migrate from 4.1.x to 5.x.x
+
+1. replace useModel with model
+
+```tsx
+import { model } from 'react-model'
+const useTodo = () => {
+  // useModel -> model
+  const [items, setItems] = model(['Install react-model', 'Read github docs', 'Build App'])
+  return { items, setItems }
+}
+```
+
+2. wrap root component with Provider (required for concurrent mode)
+
+```tsx
+import { Provider } from 'react-model'
+const App = () => {
+  // changes 2: wrap root components with Provider
+  return (
+    <Provider>
+      <TodoList />
+    </Provider>
+  )
+}
+```
 
 ### Migrate from 4.0.x to 4.1.x
 
