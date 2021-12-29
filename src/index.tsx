@@ -498,7 +498,6 @@ const useStore = (modelName: string, selector?: Function) => {
 class Provider extends PureComponent<{}, Global['State']> {
   state = Global.State
   render() {
-    console.info('Provider rerender!', this.state)
     const { children } = this.props
     Global.Setter.classSetter = this.setState.bind(this)
     return (

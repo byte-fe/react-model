@@ -7,7 +7,6 @@ describe('migrate test', () => {
     const wrapper = Provider
     const store = createStore(() => {
       const [state, setState] = useAtom({ count: 0, otherKey: 'key' })
-      console.error('store state: ', state)
       const actions = {
         add: (params: number) => {
           return setState({

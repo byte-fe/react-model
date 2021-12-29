@@ -50,8 +50,6 @@ describe('lane model', () => {
       () => {
         // @ts-ignore
         const { count, setCount } = useStore('Shared')
-        console.group('count: ', count)
-        console.group('setCount: ', setCount)
         renderTimes += 1
         return { renderTimes, count, setCount }
       },
@@ -110,7 +108,6 @@ describe('lane model', () => {
 
     act(() => {
       expect(subscribeTimes).toEqual(2)
-      console.error('result.current.state: ', result.current.state)
       expect(result.current.state.count).toBe(5)
     })
 
