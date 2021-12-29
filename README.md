@@ -17,11 +17,11 @@ The State management library for React
 🐛 Debug easily on test environment
 
 ```tsx
-import { useModel, createStore } from 'react-model'
+import { model, createStore } from 'react-model'
 
 // define model
 const useTodo = () => {
-  const [items, setItems] = useModel(['Install react-model', 'Read github docs', 'Build App'])
+  const [items, setItems] = model(['Install react-model', 'Read github docs', 'Build App'])
   return { items, setItems }
 }
 
@@ -50,7 +50,7 @@ const TodoList = () => {
 
 ## Quick Start
 
-[createStore + useModel](https://codesandbox.io/s/createstore-usemodal-all-of-your-state-4u8s6)
+[createStore + model](https://codesandbox.io/s/createstore-usemodal-all-of-your-state-4u8s6)
 
 [CodeSandbox: TodoMVC](https://codesandbox.io/s/moyxon99jx)
 
@@ -79,10 +79,12 @@ npm install react-model
   - [SSR with Next.js](#ssr-with-nextjs)
   - [Middleware](#middleware)
   - [Expand Context](#expand-context)
+  - [Concurrent Mode Support](#concurrent-mode-support)
 - [Other Concept required by Class Component](#other-concept-required-by-class-component)
   - [Provider](#provider)
   - [connect](#connect)
 - [FAQ](#faq)
+  - [Migrate from 4.1.x to 5.x.x](#migrate-from-41x-to-5xx)
   - [Migrate from 4.0.x to 4.1.x](#migrate-from-40x-to-41x)
   - [Migrate from 3.1.x to 4.x.x](#migrate-from-31x-to-4xx)
   - [How can I disable the console debugger?](#how-can-i-disable-the-console-debugger)
@@ -105,10 +107,10 @@ You can create a shared / local store by createStore api.
 
 ```typescript
 import { useState } from 'react'
-import { useModel } from 'react-model'
+import { model } from 'react-model'
 const { useStore } = createStore(() => {
   const [localCount, setLocalCount] = useState(1) // Local State, Independent in different components
-  const [count, setCount] = useModel(1) // Global State, the value is the same in different components
+  const [count, setCount] = model(1) // Global State, the value is the same in different components
   const incLocal = () => {
     setLocalCount(localCount + 1)
   }
@@ -587,6 +589,46 @@ actions.ext()
 
 [⇧ back to top](#table-of-contents)
 
+### Concurrent Mode Support
+
+To achieve [level-3 support](https://github.com/reactwg/react-18/discussions/70#discussion-3450022) for concurrent mode for specific state, you should only depend on React state.
+
+react-model provide `useModel` for developers out-of-box.
+
+It only needs a few changes for the startup example.
+
+```tsx
+import { Provider, useModel, createStore } from 'react-model'
+
+// define model
+const useTodo = () => {
+  // changes 1: model -> useModel
+  const [items, setItems] = useModel(['Install react-model', 'Read github docs', 'Build App'])
+  return { items, setItems }
+}
+
+// Model Register
+// NOTE : getState is only valid inside hooks component if Todo contains custom hooks like useModel / useState
+const { useStore } = createStore(Todo)
+
+const App = () => {
+  // changes 2: wrap root components with Provider
+  return (
+    <Provider>
+      <TodoList />
+    </Provider>
+  )
+}
+
+const TodoList = () => {
+  const { items, setItems } = useStore()
+  return <div>
+    <Addon handler={setItems} />
+    {state.items.map((item, index) => (<Todo key={index} item={item} />))}
+  </div>
+}
+```
+
 ## Other Concept required by Class Component
 
 ### Provider
@@ -695,6 +737,33 @@ export default connect(
 
 ## FAQ
 
+### Migrate from 4.1.x to 5.x.x
+
+1. replace useModel with model
+
+```tsx
+import { model } from 'react-model'
+const useTodo = () => {
+  // useModel -> model
+  const [items, setItems] = model(['Install react-model', 'Read github docs', 'Build App'])
+  return { items, setItems }
+}
+```
+
+2. wrap root component with Provider (required for concurrent mode)
+
+```tsx
+import { Provider } from 'react-model'
+const App = () => {
+  // changes 2: wrap root components with Provider
+  return (
+    <Provider>
+      <TodoList />
+    </Provider>
+  )
+}
+```
+
 ### Migrate from 4.0.x to 4.1.x
 
 1. replace Model with createStore
@@ -729,7 +798,7 @@ const Counter: ModelType<
 
 // v4.1.x
 const Counter = createStore(() => {
-  const [state, setState] = useModel({ count: 0 })
+  const [state, setState] = model({ count: 0 })
   const actions = {
     increment: (params) => {
       setState((state) => {

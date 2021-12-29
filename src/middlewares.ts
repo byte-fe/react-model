@@ -178,8 +178,8 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
 }
 
 const communicator: Middleware = async (context, restMiddlewares) => {
-  const { modelName, next, Global, disableSelectorUpdate } = context
-  if (Global.Setter.classSetter) {
+  const { modelName, next, Global, disableSelectorUpdate, type } = context
+  if (Global.Setter.classSetter && type !== 'u') {
     Global.Setter.classSetter(Global.State)
   }
   if (Global.Setter.functionSetter[modelName]) {

@@ -1,11 +1,12 @@
 /// <reference path="../index.d.ts" />
 import { renderHook, act } from '@testing-library/react-hooks'
-import { createStore, model } from '../../src'
+import { createStore, useModel, Provider } from '../../src'
 
-describe('migrate test', async () => {
-  test('migrate from v4.0.x', async () => {
+describe('migrate test', () => {
+  test('migrate from v4.0.x', () => {
+    const wrapper = Provider
     const store = createStore(() => {
-      const [state, setState] = model({ count: 0, otherKey: 'key' })
+      const [state, setState] = useModel({ count: 0, otherKey: 'key' })
       const actions = {
         add: (params: number) => {
           return setState({
@@ -26,11 +27,14 @@ describe('migrate test', async () => {
 
     let renderTimes = 0
 
-    const { result } = renderHook(() => {
-      renderTimes += 1
-      const [state, actions] = store.useStore()
-      return { state, renderTimes, actions }
-    })
+    const { result } = renderHook(
+      () => {
+        renderTimes += 1
+        const [state, actions] = store.useStore()
+        return { state, renderTimes, actions }
+      },
+      { wrapper }
+    )
 
     act(() => {
       expect(result.current.renderTimes).toEqual(1)

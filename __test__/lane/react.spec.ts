@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 import { renderHook, act } from '@testing-library/react-hooks'
-import { createStore, useModel } from '../../src'
+import { createStore, model } from '../../src'
 import { useState, useEffect } from 'react'
 
 describe('compatible with useState + useEffect', () => {
@@ -136,8 +136,8 @@ describe('compatible with useState + useEffect', () => {
     const useCount = () => {
       // useState create local state
       const [count, setCount] = useState(1)
-      // useModel create shared state
-      const [name, setName] = useModel('Jane')
+      // model create shared state
+      const [name, setName] = model('Jane')
       return { count, setCount, name, setName }
     }
     const { useStore } = createStore(useCount)
