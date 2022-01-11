@@ -168,10 +168,27 @@ const consoleDebugger: Middleware = async (context, restMiddlewares) => {
 const devToolsListener: Middleware = async (context, restMiddlewares) => {
   const { Global } = context
   const ret = await context.next(restMiddlewares)
+  Global.withDevTools =
+    typeof window !== 'undefined' &&
+    (window as any).__REDUX_DEVTOOLS_EXTENSION__
+  if (
+    Global.withDevTools &&
+    middlewares.config.devtools.enable &&
+    !Global.devTools
+  ) {
+    Global.devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__
+    Global.devTools.connect()
+  }
   if (Global.withDevTools && config.devtools.enable) {
+    const actionName =
+      context.type === 'u' && context.disableSelectorUpdate
+        ? `store[${context.modelName}].update`
+        : `${context.modelName}_${context.actionName}`
     Global.devTools.send(
-      `${context.modelName}_${context.actionName}`,
-      Global.State
+      actionName,
+      Global.mutableState[context.modelName],
+      undefined,
+      context.modelName
     )
   }
   return ret
