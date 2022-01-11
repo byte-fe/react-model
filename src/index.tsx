@@ -264,13 +264,6 @@ function Model<M extends Models, MT extends ModelType, E>(
       actions[n] = getActions(name)
     })
 
-    Global.withDevTools =
-      typeof window !== 'undefined' &&
-      (window as any).__REDUX_DEVTOOLS_EXTENSION__
-    if (Global.withDevTools && middlewares.config.devtools.enable) {
-      Global.devTools = (window as any).__REDUX_DEVTOOLS_EXTENSION__
-      Global.devTools.connect()
-    }
     return {
       actions,
       getActions: (name: string) => getActions(prefix + name),
