@@ -26,7 +26,7 @@ const useTodo = () => {
 }
 
 // Model Register
-const { useStore } = createStore(Todo)
+const { useStore } = createStore(useTodo)
 
 const App = () => {
   return <TodoList />
