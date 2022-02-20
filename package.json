@@ -1,6 +1,6 @@
 {
   "name": "react-model",
-  "version": "4.2.1-rc.0",
+  "version": "4.3.0-alpha.1",
   "description": "The State management library for React",
   "main": "./dist/react-model.js",
   "module": "./dist/react-model.esm.js",

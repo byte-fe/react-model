@@ -115,14 +115,15 @@ function createStore<S>(n: any, u?: any): LaneAPI<S> {
   const selector = () => {
     Global.mutableState[storeId].count = 0
     Global.currentStoreId = storeId
-    const res = u ? u() : n()
-    return res
+    Global.mutableState[storeId].cachedResult = u ? u() : n()
+    return Global.mutableState[storeId].cachedResult
   }
   Global.mutableState[storeId].selector = selector
   return {
     // TODO: support selector
     useStore: () => useStore(storeId, selector),
     getState: () => selector(),
+    getStore: () => Global.mutableState[storeId].cachedResult,
     subscribe: (callback: () => void) => {
       if (!Global.subscriptions[storeId]) {
         Global.subscriptions[storeId] = []

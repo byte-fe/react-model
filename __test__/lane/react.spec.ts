@@ -132,6 +132,49 @@ describe('compatible with useState + useEffect', () => {
     })
   })
 
+  test('getStore with useEffect inside FC', async () => {
+    const useCount = () => {
+      const [count, setCount] = useState(1)
+      return { count, setCount }
+    }
+    const { useStore, getStore } = createStore(useCount)
+    let renderTimes = 0
+    let validEffectTimes = 0
+    const { result } = renderHook(() => {
+      const { count: lastCount } = getStore() || { count: undefined }
+      const { count, setCount } = useStore()
+      useEffect(() => {
+        const { count: cachedCount } = getStore() || { count: undefined }
+        console.error(lastCount, ' ', count, ' ', cachedCount)
+        if (cachedCount === count && count !== lastCount) {
+          validEffectTimes += 1
+        }
+      })
+      renderTimes += 1
+      console.error('validEffectTimes: ', validEffectTimes)
+      return { renderTimes, count, setCount, validEffectTimes }
+    })
+    act(() => {
+      expect(result.current.renderTimes).toEqual(1)
+      expect(validEffectTimes).toEqual(1)
+      // effect is next tick
+      expect(result.current.validEffectTimes).toEqual(0)
+      expect(result.current.count).toBe(1)
+    })
+
+    act(() => {
+      result.current.setCount(5)
+    })
+
+    act(() => {
+      expect(renderTimes).toEqual(2)
+      expect(validEffectTimes).toEqual(2)
+      // effect is next tick
+      expect(result.current.validEffectTimes).toEqual(1)
+      expect(result.current.count).toBe(5)
+    })
+  })
+
   test('combine useState and useStore', async () => {
     const useCount = () => {
       // useState create local state

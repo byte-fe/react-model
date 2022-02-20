@@ -208,6 +208,40 @@ describe('lane model', () => {
     })
   })
 
+  test('use getStore outside react lifecycle', async () => {
+    const { useStore, getStore } = createStore(() => {
+      const [count, setCount] = useModel(1)
+      return { count, setCount }
+    })
+    let renderTimes = 0
+
+    act(() => {
+      expect(getStore()).toEqual(undefined)
+    })
+
+    const { result } = renderHook(() => {
+      const { count, setCount } = useStore()
+      renderTimes += 1
+      return { renderTimes, count, setCount }
+    })
+
+    act(() => {
+      expect(result.current.renderTimes).toEqual(1)
+      expect(result.current.count).toBe(1)
+      expect(getStore()?.count).toBe(1)
+    })
+
+    act(() => {
+      result.current.setCount(5)
+    })
+
+    act(() => {
+      expect(renderTimes).toEqual(2)
+      expect(result.current.count).toBe(5)
+      expect(getStore()?.count).toBe(5)
+    })
+  })
+
   test('multiple models', async () => {
     const { useStore } = createStore(() => {
       const [count, setCount] = useModel(1)

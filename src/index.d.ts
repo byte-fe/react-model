@@ -157,6 +157,7 @@ interface API<MT extends ModelType = ModelType<any, any, {}>> {
 interface LaneAPI<S> {
   useStore: () => S
   getState: () => S
+  getStore: () => S | undefined
   subscribe: (callback: () => void) => void
   unsubscribe: (callback: () => void) => void
 }
