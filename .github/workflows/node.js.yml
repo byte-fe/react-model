@@ -5,14 +5,14 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev ]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     strategy:
       matrix:
@@ -25,9 +25,9 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm install react@latest react-dom@latest
-    - run: npm install codecov -g
-    - run: npm run test:coverage
+        cache: 'yarn'
+    - run: yarn
+    - run: yarn global add codecov
+    - run: yarn test:coverage
     - run: codecov -f coverage/*.json
     - run: bash <(curl -s https://codecov.io/bash)
