@@ -195,9 +195,11 @@ function Model<M extends Models, MT extends ModelType, E>(
     }
     if (models.actions) {
       console.error('invalid model(s) schema: ', models)
-      const errorFn = (fakeReturnVal?: unknown) => (..._: unknown[]) => {
-        return fakeReturnVal
-      }
+      const errorFn =
+        (fakeReturnVal?: unknown) =>
+        (..._: unknown[]) => {
+          return fakeReturnVal
+        }
       // Fallback Functions
       return {
         __ERROR__: true,
@@ -404,39 +406,42 @@ class Provider extends PureComponent<{}, Global['State']> {
   }
 }
 
-const connect = (
-  modelName: string,
-  mapState?: Function | undefined,
-  mapActions?: Function | undefined
-) => (Component: typeof React.Component | typeof PureComponent) =>
-  class P extends PureComponent<any> {
-    render() {
-      const { state: prevState = {}, actions: prevActions = {} } = this.props
-      return (
-        <Consumer>
-          {(models) => {
-            const { [`${modelName}`]: state } = models as any
-            const actions = Global.Actions[modelName]
-            return (
-              <Component
-                {...this.props}
-                state={{
-                  ...prevState,
-                  ...(mapState ? mapState(state) : state)
-                }}
-                actions={{
-                  ...prevActions,
-                  ...(mapActions
-                    ? mapActions(consumerActions(actions, { modelName }))
-                    : consumerActions(actions, { modelName }))
-                }}
-              />
-            )
-          }}
-        </Consumer>
-      )
+const connect =
+  (
+    modelName: string,
+    mapState?: Function | undefined,
+    mapActions?: Function | undefined
+  ) =>
+  (Component: typeof React.Component | typeof PureComponent) =>
+    class P extends PureComponent<any> {
+      render() {
+        const { state: prevState = {}, actions: prevActions = {} } = this.props
+        return (
+          <Consumer>
+            {(models) => {
+              const { [`${modelName}`]: state } = models as any
+              const actions = Global.Actions[modelName]
+              return (
+                // @ts-ignore
+                <Component
+                  {...this.props}
+                  state={{
+                    ...prevState,
+                    ...(mapState ? mapState(state) : state)
+                  }}
+                  actions={{
+                    ...prevActions,
+                    ...(mapActions
+                      ? mapActions(consumerActions(actions, { modelName }))
+                      : consumerActions(actions, { modelName }))
+                  }}
+                />
+              )
+            }}
+          </Consumer>
+        )
+      }
     }
-  }
 
 export {
   actionMiddlewares,
