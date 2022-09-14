@@ -2,6 +2,7 @@ const State = {}
 const mutableState = {}
 const Actions = {}
 const AsyncState = {}
+const Effects = {}
 const Middlewares = {}
 // Communicate between Provider-Consumer and Hooks
 const Setter: Setter = {
@@ -31,6 +32,7 @@ export default {
   Actions,
   AsyncState,
   Context,
+  Effects,
   Middlewares,
   Setter,
   State,

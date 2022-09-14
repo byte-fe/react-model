@@ -20,7 +20,7 @@ import {
 } from './helper'
 import { actionMiddlewares, applyMiddlewares, middlewares } from './middlewares'
 
-const useStoreEffect =
+const useEffectImpl =
   typeof window === 'undefined' ? useEffect : useLayoutEffect
 
 const isModelType = (input: any): input is ModelType => {
@@ -95,6 +95,35 @@ function useModel<S>(
   return [Global.mutableState[storeId][index], setter]
 }
 
+function useStoreEffect(effect: EffectCallback, deps: DependencyList) {
+  const storeId = Global.currentStoreId
+  const index = Global.Effects[storeId].idx
+  Global.Effects[storeId].idx += 1
+  if (!Global.Effects[storeId].effects[index]) {
+    // mount effect
+    const destructor = effect()
+    Global.Effects[storeId].effects[index] = {
+      effectCallback: effect,
+      deps,
+      destructor
+    }
+  } else {
+    let isDepChanged = false
+    const preDeps = Global.Effects[storeId].effects[index].deps
+    const destructor = Global.Effects[storeId].effects[index].destructor
+    deps.forEach((dep, idx) => {
+      if (preDeps[idx] !== dep) isDepChanged = true
+    })
+    if (isDepChanged) {
+      if (destructor) {
+        destructor()
+      }
+      Global.Effects[storeId].effects[index].deps = deps
+      Global.Effects[storeId].effects[index].destructor = effect()
+    }
+  }
+}
+
 function createStore<S>(useHook: CustomModelHook<S>): LaneAPI<S>
 function createStore<S>(name: string, useHook: CustomModelHook<S>): LaneAPI<S>
 function createStore<S>(n: any, u?: any): LaneAPI<S> {
@@ -107,6 +136,9 @@ function createStore<S>(n: any, u?: any): LaneAPI<S> {
   if (!Global.mutableState[storeId]) {
     Global.mutableState[storeId] = { count: 0 }
   }
+  if (!Global.Effects[storeId]) {
+    Global.Effects[storeId] = { idx: 0, effects: [] }
+  }
   // Global.currentStoreId = storeId
   // const state = useHook()
   // Global.State = produce(Global.State, (s) => {
@@ -114,6 +146,7 @@ function createStore<S>(n: any, u?: any): LaneAPI<S> {
   // })
   const selector = () => {
     Global.mutableState[storeId].count = 0
+    Global.Effects[storeId].idx = 0
     Global.currentStoreId = storeId
     Global.mutableState[storeId].cachedResult = u ? u() : n()
     return Global.mutableState[storeId].cachedResult
@@ -365,7 +398,7 @@ const useStore = (modelName: string, selector?: Function) => {
   const usedSelector = isFromCreateStore ? mutableState.selector : selector
   const usedState = isFromCreateStore ? mutableState : getState(modelName)
 
-  useStoreEffect(() => {
+  useEffectImpl(() => {
     Global.uid += 1
     const local_hash = '' + Global.uid
     hash.current = local_hash
@@ -447,6 +480,7 @@ export {
   actionMiddlewares,
   createStore,
   useModel,
+  useStoreEffect,
   Model,
   middlewares,
   Provider,
