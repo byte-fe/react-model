@@ -186,7 +186,7 @@ const devToolsListener: Middleware = async (context, restMiddlewares) => {
         : `${context.modelName}_${context.actionName}`
     Global.devTools.send(
       actionName,
-      Global.mutableState[context.modelName],
+      context.type === 'u' ? Global.mutableState[context.modelName] : Global.State[context.modelName],
       undefined,
       context.modelName
     )
