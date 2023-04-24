@@ -1,3 +1,9 @@
+declare const UNDEFINED_VOID_ONLY: unique symbol
+// Destructors are only allowed to return void.
+type Destructor = () => void | { [UNDEFINED_VOID_ONLY]: never }
+type EffectCallback = () => void | Destructor
+type DependencyList = ReadonlyArray<any>
+
 type Setter = {
   classSetter: ClassSetter
   functionSetter: FunctionSetter
@@ -27,6 +33,16 @@ interface Global {
   }
   State: {
     [modelName: string]: any
+  }
+  Effects: {
+    [modelName: string]: {
+      idx: number
+      effects: Array<{
+        effectCallback: EffectCallback
+        deps: DependencyList
+        destructor: Destructor | void
+      }>
+    }
   }
   mutableState: {
     [modelName: string]: any

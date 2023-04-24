@@ -1,6 +1,6 @@
 /// <reference path="../index.d.ts" />
 import { renderHook, act } from '@testing-library/react-hooks'
-import { createStore, useModel, Model } from '../../src'
+import { createStore, useModel, Model, useStoreEffect } from '../../src'
 
 describe('lane model', () => {
   test('single model', async () => {
@@ -431,6 +431,94 @@ describe('lane model', () => {
       expect(mirrorResult.current.status).toBe(true)
       expect(getState().name).toBe('Jane')
       expect(getState().count).toBe(1)
+    })
+  })
+
+  test('complex case with useStoreEffect', async () => {
+    let onceEffectInvokeTimes = 0
+    let nameEffectInvokeTimes = 0
+    let countEffectInvokeTimes = 0
+
+    const { useStore } = createStore(() => {
+      const [count, setCount] = useModel(1)
+      const [name, setName] = useModel('Jane')
+      useStoreEffect(() => {
+        onceEffectInvokeTimes += 1
+      }, [])
+      useStoreEffect(() => {
+        nameEffectInvokeTimes += 1
+      }, [name])
+      useStoreEffect(() => {
+        countEffectInvokeTimes += 1
+      }, [count])
+
+      return { count, setCount, name, setName }
+    })
+
+    let renderTimes = 0
+    const { result } = renderHook(() => {
+      const { count, setCount, setName } = useStore()
+      renderTimes += 1
+      return { renderTimes, count, setCount, setName }
+    })
+
+    const { result: mirrorResult } = renderHook(() => {
+      const { setName, name } = useStore()
+      renderTimes += 1
+      return { renderTimes, setName, name }
+    })
+
+    act(() => {
+      expect(renderTimes).toEqual(2)
+      expect(mirrorResult.current.name).toBe('Jane')
+      expect(onceEffectInvokeTimes).toEqual(1)
+      expect(nameEffectInvokeTimes).toEqual(1)
+      expect(countEffectInvokeTimes).toEqual(1)
+    })
+
+    act(() => {
+      mirrorResult.current.setName('Bob')
+    })
+
+    act(() => {
+      expect(renderTimes).toEqual(4)
+      expect(onceEffectInvokeTimes).toEqual(1)
+      expect(nameEffectInvokeTimes).toEqual(2)
+      expect(countEffectInvokeTimes).toEqual(1)
+      expect(mirrorResult.current.name).toBe('Bob')
+    })
+
+    act(() => {
+      result.current.setName('Jane')
+    })
+
+    act(() => {
+      expect(mirrorResult.current.name).toBe('Jane')
+      expect(onceEffectInvokeTimes).toEqual(1)
+      expect(nameEffectInvokeTimes).toEqual(3)
+      expect(countEffectInvokeTimes).toEqual(1)
+    })
+
+    act(() => {
+      result.current.setCount(2)
+    })
+
+    act(() => {
+      expect(result.current.count).toBe(2)
+      expect(onceEffectInvokeTimes).toEqual(1)
+      expect(nameEffectInvokeTimes).toEqual(3)
+      expect(countEffectInvokeTimes).toEqual(2)
+    })
+
+    act(() => {
+      result.current.setCount(2)
+    })
+
+    act(() => {
+      expect(mirrorResult.current.name).toBe('Jane')
+      expect(onceEffectInvokeTimes).toEqual(1)
+      expect(nameEffectInvokeTimes).toEqual(3)
+      expect(countEffectInvokeTimes).toEqual(2)
     })
   })
 })
